@@ -77,7 +77,7 @@ public class ChatActivity extends Activity {
                 tr2.addView(textview);
                 tab.addView(tr2);
                 new Send().execute();
-                
+
             }
         });
 
