@@ -3,10 +3,14 @@ package learn2crack.chat;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -22,7 +26,7 @@ public class MainActivity extends Activity {
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     String SENDER_ID = "681641134962";
-
+    Fragment reg = null;
 
 
     static final String TAG = "L2C";
@@ -44,22 +48,58 @@ public class MainActivity extends Activity {
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             ft.addToBackStack(null);
             ft.commit();
-        }else  if(!prefs.getString("REG_ID", "").isEmpty()){
-            Fragment reg = new LoginFragment();
+        }else  if(validateRegistration()){
+            reg = new LoginFragment();
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.replace(R.id.content_frame, reg);
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             ft.addToBackStack(null);
             ft.commit();
 
-        }else if(checkPlayServices()){
-
-            new Register().execute();
-
-        }else{
-            Toast.makeText(getApplicationContext(),"This device is not supported",Toast.LENGTH_SHORT).show();
         }
     }
+
+    public boolean validateRegistration(){
+        if(prefs.getString("REG_ID", "").isEmpty()){
+            if(checkPlayServices()){
+                new Register().execute();
+                return true;
+            }else{
+                Toast.makeText(getApplicationContext(),"This device is not supported",Toast.LENGTH_SHORT).show();
+                return  false;
+            }
+        }
+        return true;
+    }
+
+    public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            SharedPreferences prefs = context.getSharedPreferences("Chat", 0);
+            Bundle extras = intent.getExtras();
+            if (extras == null)
+                return;
+
+            String phoneNumber = prefs.getString("REG_FROM", "");
+            if(phoneNumber.equals(""))
+                return;
+
+            String uniqueKey = prefs.getString("UUID", "");
+            if(phoneNumber.isEmpty())
+                return;
+
+            Object[] pdus = (Object[]) extras.get("pdus");
+            SmsMessage msg = SmsMessage.createFromPdu((byte[]) pdus[0]);
+            String origNumber = msg.getOriginatingAddress();
+            String msgBody = msg.getMessageBody();
+            if(!msgBody.equals("Activation:"+uniqueKey))
+                return;
+            SharedPreferences.Editor edit = prefs.edit();
+            edit.putString("MOB_NUM_ACTIVE", "true");
+            edit.commit();
+        }
+    };
+
     private boolean checkPlayServices() {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         if (resultCode != ConnectionResult.SUCCESS) {
