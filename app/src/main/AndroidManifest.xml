@@ -8,6 +8,9 @@
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
 
     <permission
         android:name="com.example.gcm.permission.C2D_MESSAGE"
@@ -31,7 +34,6 @@
                 <category android:name="com.example.gcm" />
             </intent-filter>
         </receiver>
-
         <service android:name=".MSGService" />
         <activity
             android:name=".MainActivity"
@@ -50,6 +52,33 @@
             android:name=".WNMessage"
             android:launchMode="singleTask"
             android:label="@string/app_name" />
+        <provider
+            android:name="learn2crack.chat.StubProvider"
+            android:authorities="learn2crack.chat.SyncAdapter"
+            android:exported="false"
+            android:syncable="true"/>
+        <service android:name="learn2crack.chat.SyncService"
+            android:exported="true"
+            android:permission="android.permission.INTERNET">
+            <!-- This intent filter is required. It allows the system to launch our sync service
+            as needed. -->
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <!-- This points to a required XML file which describes our SyncAdapter. -->
+            <meta-data android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter" />
+        </service>
+        <service android:name=".GenericAccountService"
+            android:permission="android.permission.INTERNET">
+            <!-- Required filter used by the system to launch our account service. -->
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <!-- This points to an XMLf ile which describes our account service. -->
+            <meta-data android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
     </application>
 
 </manifest>

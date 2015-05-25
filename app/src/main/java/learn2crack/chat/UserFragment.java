@@ -34,7 +34,6 @@ public class UserFragment extends Fragment {
     List<NameValuePair> params;
     SharedPreferences prefs;
 
-
     @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
         View view =inflater.inflate(R.layout.user_fragment, container, false);
@@ -65,6 +64,7 @@ public class UserFragment extends Fragment {
             }
         });
         new Load().execute();
+
 
         return view;
     }

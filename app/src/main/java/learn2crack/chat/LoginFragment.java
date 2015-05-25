@@ -96,7 +96,7 @@ public class LoginFragment extends Fragment {
         prefs = getActivity().getSharedPreferences("Chat", 0);
         IntentFilter filter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
         getActivity().registerReceiver(mMessageReceiver, filter);
-
+        SyncUtils.CreateSyncAccount(getActivity());
         name = (EditText)view.findViewById(R.id.name);
         mobno = (EditText)view.findViewById(R.id.mobno);
         login = (Button)view.findViewById(R.id.log_btn);
