@@ -11,6 +11,8 @@
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
 
     <permission
         android:name="com.example.gcm.permission.C2D_MESSAGE"
@@ -57,7 +59,7 @@
             android:authorities="learn2crack.chat.SyncAdapter"
             android:exported="false"
             android:syncable="true"/>
-        <service android:name="learn2crack.chat.SyncService"
+        <service android:name=".SyncService"
             android:exported="true"
             android:permission="android.permission.INTERNET">
             <!-- This intent filter is required. It allows the system to launch our sync service
@@ -69,7 +71,7 @@
             <meta-data android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
-        <service android:name=".GenericAccountService"
+        <service android:name=".GenericAccountService" android:exported="true"
             android:permission="android.permission.INTERNET">
             <!-- Required filter used by the system to launch our account service. -->
             <intent-filter>

@@ -14,11 +14,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-
+<!--android:accountType="learn2crack.chat.account"
+              android:userVisible="false"-->
+<!--android:contentAuthority="learn2crack.chat"-->
 <sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
-              android:contentAuthority="learn2crack.chat"
+
+              android:contentAuthority="com.android.contacts"
               android:accountType="learn2crack.chat.account"
-              android:userVisible="false"
               android:supportsUploading="false"
               android:allowParallelSyncs="false"
               android:isAlwaysSyncable="true"

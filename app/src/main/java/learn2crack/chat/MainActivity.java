@@ -38,24 +38,31 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        prefs = getSharedPreferences("Chat", 0);
-        context = getApplicationContext();
-        if(!prefs.getString("REG_FROM","").isEmpty()){
-            Fragment user = new UserFragment();
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.replace(R.id.content_frame, user);
-            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-            ft.addToBackStack(null);
-            ft.commit();
-        }else  if(validateRegistration()){
-            reg = new LoginFragment();
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.replace(R.id.content_frame, reg);
-            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-            ft.addToBackStack(null);
-            ft.commit();
+        try {
+            setContentView(R.layout.activity_main);
+            prefs = getSharedPreferences("Chat", 0);
+            context = getApplicationContext();
+            if (!prefs.getString("REG_FROM", "").isEmpty()) {
+                Fragment user = new UserFragment();
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.replace(R.id.content_frame, user);
+                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                ft.addToBackStack(null);
+                ft.commit();
+            } else {
+                if (validateRegistration()) {
+                    reg = new LoginFragment();
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.replace(R.id.content_frame, reg);
+                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                    ft.addToBackStack(null);
+                    ft.commit();
 
+                }
+            }
+        }
+        catch (Exception e){
+            int num = 5;
         }
     }
 

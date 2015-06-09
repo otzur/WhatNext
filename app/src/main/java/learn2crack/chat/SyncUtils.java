@@ -22,6 +22,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 
 
 /**
@@ -29,7 +30,7 @@ import android.preference.PreferenceManager;
  */
 public class SyncUtils {
     private static final long SYNC_FREQUENCY = 60 * 60;  // 1 hour (in seconds)
-    private static final String CONTENT_AUTHORITY = "learn2crack.chat";
+    private static final String CONTENT_AUTHORITY = "com.android.contacts";//"learn2crack.chat.account";
     private static final String PREF_SETUP_COMPLETE = "setup_complete";
 
     /**
@@ -44,6 +45,7 @@ public class SyncUtils {
 
         // Create account, if it's missing. (Either first run, or user has deleted account.)
         Account account = GenericAccountService.GetAccount();
+
         AccountManager accountManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
         if (accountManager.addAccountExplicitly(account, null, null)) {
             // Inform the system that this account supports sync
@@ -79,13 +81,13 @@ public class SyncUtils {
      * the OS additional freedom in scheduling your sync request.
      */
     public static void TriggerRefresh() {
-        /*Bundle b = new Bundle();
+        Bundle b = new Bundle();
         // Disable sync backoff and ignore sync preferences. In other words...perform sync NOW!
         b.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         b.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         ContentResolver.requestSync(
                 GenericAccountService.GetAccount(),      // Sync account
-                FeedContract.CONTENT_AUTHORITY, // Content authority
+                ContactsContract.AUTHORITY, // Content authority
                 b);                                      // Extras
-    */}
+    }
 }

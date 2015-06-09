@@ -19,6 +19,7 @@ package learn2crack.chat;
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
+import android.accounts.AccountManager;
 import android.accounts.NetworkErrorException;
 import android.app.Service;
 import android.content.Context;
@@ -30,7 +31,7 @@ import android.util.Log;
 public class GenericAccountService extends Service {
     private static final String TAG = "GenericAccountService";
     public static final String ACCOUNT_NAME = "Account";
-    private static final String ACCOUNT_TYPE = "learn2crack.chat";
+    private static final String ACCOUNT_TYPE = "learn2crack.chat.account";
     private Authenticator mAuthenticator;
 
     /**
@@ -114,7 +115,10 @@ public class GenericAccountService extends Service {
         public Bundle hasFeatures(AccountAuthenticatorResponse accountAuthenticatorResponse,
                                   Account account, String[] strings)
                 throws NetworkErrorException {
-            throw new UnsupportedOperationException();
+            final Bundle result = new Bundle();
+            result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, false);
+
+            return result;
         }
     }
 

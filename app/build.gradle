@@ -1,13 +1,13 @@
 apply plugin: 'android'
 
 android {
-    compileSdkVersion 19
+    compileSdkVersion 22
     buildToolsVersion "19.1.0"
 
     defaultConfig {
         applicationId "learn2crack.chat"
         minSdkVersion 14
-        targetSdkVersion 19
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
     }

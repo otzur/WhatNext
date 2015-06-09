@@ -92,35 +92,45 @@ public class LoginFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.login_fragment, container, false);
-        prefs = getActivity().getSharedPreferences("Chat", 0);
-        IntentFilter filter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
-        getActivity().registerReceiver(mMessageReceiver, filter);
-        SyncUtils.CreateSyncAccount(getActivity());
-        name = (EditText)view.findViewById(R.id.name);
-        mobno = (EditText)view.findViewById(R.id.mobno);
-        login = (Button)view.findViewById(R.id.log_btn);
-        progress = new ProgressDialog(getActivity());
-        progress.setMessage("Registering ...");
-        progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progress.setIndeterminate(true);
+        try {
+            View view = inflater.inflate(R.layout.login_fragment, container, false);
+            prefs = getActivity().getSharedPreferences("Chat", 0);
+            IntentFilter filter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
+            getActivity().registerReceiver(mMessageReceiver, filter);
+            SyncUtils.CreateSyncAccount(getActivity());
+            name = (EditText) view.findViewById(R.id.name);
+            mobno = (EditText) view.findViewById(R.id.mobno);
+            login = (Button) view.findViewById(R.id.log_btn);
+            progress = new ProgressDialog(getActivity());
+            progress.setMessage("Registering ...");
+            progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progress.setIndeterminate(true);
 
 
+            login.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    progress.show();
+                    SharedPreferences.Editor edit = prefs.edit();
+                    edit.putString("REG_FROM", mobno.getText().toString());
+                    edit.putString("FROM_NAME", name.getText().toString());
+                    UUID uniqueKey = UUID.randomUUID();
+                    edit.putString("UUID", uniqueKey.toString());
+                    edit.putString("PHONE_NUMBER", mobno.getText().toString());
 
-        login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                progress.show();
-                SharedPreferences.Editor edit = prefs.edit();
-                edit.putString("REG_FROM", mobno.getText().toString());
-                edit.putString("FROM_NAME", name.getText().toString());
-                edit.commit();
-                sendVerificationSms(v.getContext(), mobno.getText().toString());
-
-            }
-        });
-
-        return view;
+                    //sendVerificationSms(v.getContext(), mobno.getText().toString());
+                    edit.putString("MOB_NUM_ACTIVE", "true");
+                    edit.commit();
+                    new Login().execute();
+                }
+            });
+            return view;
+        }
+        catch (Exception e){
+            int bls= 4, bla2 = 5;
+            bla2 -= bls;
+        }
+       return null;
     }
 
     @Override
