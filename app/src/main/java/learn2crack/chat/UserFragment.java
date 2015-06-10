@@ -108,9 +108,11 @@ public class UserFragment extends Fragment {
                                         int position, long id) {
                     Bundle args = new Bundle();
                     args.putString("mobno", users.get(position).get("mobno"));
-                    Intent chat = new Intent(getActivity(), ChatActivity.class);
-                    chat.putExtra("INFO", args);
-                    startActivity(chat);
+                    args.putString("name", users.get(position).get("name"));
+                    //Intent chat = new Intent(getActivity(), ChatActivity.class);
+                    Intent message = new Intent(getActivity(), MessageActivity.class);
+                    message.putExtra("INFO", args);
+                    startActivity(message);
                 }
             });
         }

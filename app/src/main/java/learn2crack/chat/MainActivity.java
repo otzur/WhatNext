@@ -25,7 +25,7 @@ public class MainActivity extends Activity {
 
 
 
-    static final String TAG = "L2C";
+    static final String TAG = "WN";
 
     GoogleCloudMessaging gcm;
     SharedPreferences prefs;
