@@ -165,7 +165,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
              ContentProviderResult[] res = mContentResolver.applyBatch(ContactsContract.AUTHORITY, ops);
             for(int i=0; i<res.length; i++){
-                paramsDebug.add(new BasicNameValuePair("msg", res[i].toString() + res[i].describeContents()));
+                paramsDebug.add(new BasicNameValuePair("msg", res[i].toString()));
                 JSONArray debug6=json.getJSONArray("http://nodejs-whatnext.rhcloud.com/log", paramsDebug);
                 paramsDebug.clear();
             }
