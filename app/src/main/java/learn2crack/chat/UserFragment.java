@@ -182,6 +182,7 @@ public class UserFragment extends Fragment {
             Cursor pCur = null, temp = null;
             String MainNumber="";//phonetype=""
             boolean hasWN,toAdd;
+            boolean forDebug = true;
             while (cur.moveToNext()) {
                 hasWN = false;
                 toAdd = false;
@@ -220,6 +221,50 @@ public class UserFragment extends Fragment {
                         }
                         else {
                             map.put("wn", "false");
+                            if(forDebug) {
+                                forDebug = false;
+                                int backId = 0;
+                                ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+                                ops.add(ContentProviderOperation.newInsert(RawContacts.CONTENT_URI)
+                                        .withValue(RawContacts.ACCOUNT_NAME, "Account")
+                                        .withValue(RawContacts.ACCOUNT_TYPE, "learn2crack.chat.account")
+                                        .build());//.withValue(ContactsContract.Settings.UNGROUPED_VISIBLE, true)
+                                ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, backId)
+                                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+                                        .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name).build());
+                                ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, backId)
+                                        .withValue(ContactsContract.Data.MIMETYPE,
+                                                ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                                        .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, MainNumber)
+                                        .withValue(ContactsContract.CommonDataKinds.Phone.TYPE,
+                                                ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE)
+                                        .build());
+                                try{
+                                    Handler handler = new Handler(Looper.getMainLooper());
+                                    final String msg ="name : " + name;
+                                    handler.post(new Runnable() {
+
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getActivity(),msg, Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                    getActivity().getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
+                                }
+                                catch (Exception e){
+                                    Handler handler = new Handler(Looper.getMainLooper());
+                                    final String msg ="name : " + name;
+                                    handler.post(new Runnable() {
+
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getActivity(),msg, Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                }
+                            }
                         }
                     }
 
@@ -247,6 +292,31 @@ public class UserFragment extends Fragment {
                             //final String msg ="name : " + name + " phone : " + MainNumber;
                            // map.put("mobno", MainNumber);
                             //toAdd = true;
+                    /*
+                         if(kk<1){
+                        map.put("wn", "true");
+                        kk++;
+                        ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+                        int rawContactInsertIndex = ops.size();
+                        int backId = 0;
+                        ops.add(ContentProviderOperation.newInsert(RawContacts.CONTENT_URI)
+                                .withValue(RawContacts.ACCOUNT_NAME, "Account")
+                                .withValue(RawContacts.ACCOUNT_TYPE, "learn2crack.chat.account")
+                                .build());
+
+                        ops.add(ContentProviderOperation.newInsert(Data.CONTENT_URI)
+                                .withValueBackReference(Data.RAW_CONTACT_ID, backId)
+                                .withValue(Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+                                .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name)
+                                .build());
+                        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, backId)
+                                .withValue(ContactsContract.Data.MIMETYPE,
+                                        ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, MainNumber)
+                                .withValue(ContactsContract.CommonDataKinds.Phone.TYPE,
+                                        CommonDataKinds.Phone.TYPE_WORK_MOBILE)
+                                .build());
                             /*if(kk<1){
                                 map.put("wn", "true");
                                 kk++;
@@ -337,6 +407,9 @@ public class UserFragment extends Fragment {
             }
             if(pCur != null) {
                 pCur.close();
+            }
+            if(cur != null){
+                cur.close();
             }
             //phones.close();
             return users;
