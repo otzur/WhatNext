@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -158,6 +159,9 @@ public class MessageActivity extends FragmentActivity implements  ActionBar.TabL
             params.add((new BasicNameValuePair("msg","This is a test only")));
             //params.add(new BasicNameValuePair("msgType",getTabHost().getCurrentTabTag()));
 
+            String selectedOptions = ((OptionFragment)mAdapter.getFragment()).getSelectedOptions();
+            Log.i(TAG,"selectedOptions = " + selectedOptions);
+            params.add((new BasicNameValuePair("selectedOptions","Ohad")));
             //View view  = getTabHost().getCurrentTab().getCurrentTabView();
 
 
@@ -167,7 +171,6 @@ public class MessageActivity extends FragmentActivity implements  ActionBar.TabL
 //            // ArrayList<int> selected = activity.getSelectedOptions();
 //            String selected = activity.getSelectedOptions();
 //
-//            Log.i(TAG, selected);
 
             JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/send",params);
             return jObj;

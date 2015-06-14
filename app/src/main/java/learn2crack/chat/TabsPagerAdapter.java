@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.util.Log;
 
 
 public class TabsPagerAdapter extends FragmentPagerAdapter {
@@ -15,10 +16,22 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
         super(fm);
     }
 
+    private OptionFragment optionFragment;
+    public Fragment getFragment(){
+        if(optionFragment!= null) {
+
+            Log.i("WN", "optionFragment not null");
+            return optionFragment;
+        }
+        else {
+            Log.i("WN", "optionFragment is null");
+            return null;
+        }
+    }
     @Override
     public Fragment getItem(int index) {
 
-        OptionFragment optionFragment = new OptionFragment();
+        optionFragment = new OptionFragment();
         Bundle bundl = new Bundle();
 
         switch (index) {

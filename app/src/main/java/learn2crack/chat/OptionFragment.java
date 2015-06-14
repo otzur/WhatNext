@@ -91,7 +91,7 @@ public class OptionFragment extends ListFragment {
         ArrayList<String>  selectedItems   = new ArrayList<String>();
         for (int i = 0; i < list.size(); i++) {
             if(list.get(i).isSelected())
-                selectedItems.add(String.valueOf(i));
+                selectedItems.add(String.valueOf(i)+" ");
         }
         return selectedItems.toString();
     }
