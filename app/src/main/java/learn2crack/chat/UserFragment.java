@@ -221,7 +221,7 @@ public class UserFragment extends Fragment {
                         }
                         else {
                             map.put("wn", "false");
-                            if(forDebug) {
+                            /*if(forDebug) {
                                 forDebug = false;
                                 int backId = 0;
                                 ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
@@ -264,7 +264,7 @@ public class UserFragment extends Fragment {
                                         }
                                     });
                                 }
-                            }
+                            }*/
                         }
                     }
 

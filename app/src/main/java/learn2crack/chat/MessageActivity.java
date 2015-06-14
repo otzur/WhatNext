@@ -153,9 +153,12 @@ public class MessageActivity extends FragmentActivity implements  ActionBar.TabL
             params = new ArrayList<NameValuePair>();
 
             params.add(new BasicNameValuePair("from", prefs.getString("REG_FROM","")));
-            params.add(new BasicNameValuePair("fromn", prefs.getString("FROM_NAME","")));
+            params.add(new BasicNameValuePair("fromn", prefs.getString("FROM_NAME", "")));
             params.add(new BasicNameValuePair("to", bundle.getString("mobno")));
             params.add((new BasicNameValuePair("msg","This is a test only")));
+            int selectedTab= actionBar.getSelectedNavigationIndex();
+            //actionBar.Tab tempTab= actionBar.getTabAt(selectedTab);
+            //tempTab
             //params.add(new BasicNameValuePair("msgType",getTabHost().getCurrentTabTag()));
 
             //View view  = getTabHost().getCurrentTab().getCurrentTabView();
