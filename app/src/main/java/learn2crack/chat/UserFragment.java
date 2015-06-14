@@ -442,11 +442,12 @@ public class UserFragment extends Fragment {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view,
                                         int position, long id) {
+
                     if(users.get(position).get("wn").equals("true")) {
                         Bundle args = new Bundle();
                         args.putString("mobno", users.get(position).get("mobno"));
-                        //args.putString("name", users.get(position).get("name"));
-                        Intent chat = new Intent(getActivity(), ChatActivity.class);
+                        args.putString("name", users.get(position).get("name"));
+                        Intent chat = new Intent(getActivity(), MessageActivity.class);
                         chat.putExtra("INFO", args);
                         startActivity(chat);
                     }
