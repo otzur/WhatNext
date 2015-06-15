@@ -183,19 +183,13 @@ public class UserFragment extends Fragment {
             String MainNumber="";//phonetype=""
             boolean hasWN,toAdd;
             boolean forDebug = true;
+            id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
+            name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
             while (cur.moveToNext()) {
                 hasWN = false;
                 toAdd = false;
                 map = new HashMap<String, String>();
-                id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
-                name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                 try {
-
-
-                    //pCur = getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                   //         null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID
-                    //                + " = ?", new String[]{id}, null);
-
                     String[] projection    = new String[] {
                             RawContacts._ID,  ContactsContract.CommonDataKinds.Phone.CONTACT_ID, ContactsContract.CommonDataKinds.Phone.NUMBER , RawContacts.ACCOUNT_TYPE};
                     Cursor people = getActivity().getContentResolver().query(  ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection,   RawContacts.CONTACT_ID + "= ?",
@@ -221,50 +215,6 @@ public class UserFragment extends Fragment {
                         }
                         else {
                             map.put("wn", "false");
-                            /*if(forDebug) {
-                                forDebug = false;
-                                int backId = 0;
-                                ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
-                                ops.add(ContentProviderOperation.newInsert(RawContacts.CONTENT_URI)
-                                        .withValue(RawContacts.ACCOUNT_NAME, "Account")
-                                        .withValue(RawContacts.ACCOUNT_TYPE, "learn2crack.chat.account")
-                                        .build());//.withValue(ContactsContract.Settings.UNGROUPED_VISIBLE, true)
-                                ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, backId)
-                                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                                        .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name).build());
-                                ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, backId)
-                                        .withValue(ContactsContract.Data.MIMETYPE,
-                                                ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                                        .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, MainNumber)
-                                        .withValue(ContactsContract.CommonDataKinds.Phone.TYPE,
-                                                ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE)
-                                        .build());
-                                try{
-                                    Handler handler = new Handler(Looper.getMainLooper());
-                                    final String msg ="name : " + name;
-                                    handler.post(new Runnable() {
-
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(getActivity(),msg, Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                                    getActivity().getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
-                                }
-                                catch (Exception e){
-                                    Handler handler = new Handler(Looper.getMainLooper());
-                                    final String msg ="name : " + name;
-                                    handler.post(new Runnable() {
-
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(getActivity(),msg, Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                                }
-                            }*/
                         }
                     }
 
@@ -292,107 +242,7 @@ public class UserFragment extends Fragment {
                             //final String msg ="name : " + name + " phone : " + MainNumber;
                            // map.put("mobno", MainNumber);
                             //toAdd = true;
-                    /*
-                         if(kk<1){
-                        map.put("wn", "true");
-                        kk++;
-                        ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
-                        int rawContactInsertIndex = ops.size();
-                        int backId = 0;
-                        ops.add(ContentProviderOperation.newInsert(RawContacts.CONTENT_URI)
-                                .withValue(RawContacts.ACCOUNT_NAME, "Account")
-                                .withValue(RawContacts.ACCOUNT_TYPE, "learn2crack.chat.account")
-                                .build());
 
-                        ops.add(ContentProviderOperation.newInsert(Data.CONTENT_URI)
-                                .withValueBackReference(Data.RAW_CONTACT_ID, backId)
-                                .withValue(Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                                .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name)
-                                .build());
-                        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, backId)
-                                .withValue(ContactsContract.Data.MIMETYPE,
-                                        ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, MainNumber)
-                                .withValue(ContactsContract.CommonDataKinds.Phone.TYPE,
-                                        CommonDataKinds.Phone.TYPE_WORK_MOBILE)
-                                .build());
-                            /*if(kk<1){
-                                map.put("wn", "true");
-                                kk++;
-                                ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
-                                int rawContactInsertIndex = ops.size();
-                                int backId = 0;
-                                ops.add(ContentProviderOperation.newInsert(RawContacts.CONTENT_URI)
-                                        .withValue(RawContacts.ACCOUNT_NAME, "Account")
-                                        .withValue(RawContacts.ACCOUNT_TYPE, "learn2crack.chat.account")
-                                        .build());
-
-                                ops.add(ContentProviderOperation.newInsert(Data.CONTENT_URI)
-                                        .withValueBackReference(Data.RAW_CONTACT_ID, backId)
-                                        .withValue(Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                                        .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name)
-                                        .build());
-                                ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, backId)
-                                        .withValue(ContactsContract.Data.MIMETYPE,
-                                                ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                                        .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, MainNumber)
-                                        .withValue(ContactsContract.CommonDataKinds.Phone.TYPE,
-                                                CommonDataKinds.Phone.TYPE_WORK_MOBILE)
-                                        .build());
-
-                                /*ops.add(ContentProviderOperation.newInsert(Data.CONTENT_URI)
-                                        .withValueBackReference(Data.RAW_CONTACT_ID, backId)
-                                        .withValue(Data.MIMETYPE, CommonDataKinds.Email.CONTENT_ITEM_TYPE)
-                                        .withValue(Data.DATA1, 12345)
-                                        .withValue(Data.DATA2, "data2")
-                                        .withValue(Data.DATA3, "data3")
-                                        .build());
-                                Handler handler = new Handler(Looper.getMainLooper());
-                                final String msg ="name : " + name;
-                                 handler.post(new Runnable() {
-
-                                   @Override
-                                     public void run() {
-                                         Toast.makeText(getActivity(),msg, Toast.LENGTH_LONG).show();
-                                     }
-                                 });
-
-                                ops.add(ContentProviderOperation.newInsert(RawContacts.CONTENT_URI)
-                                        .withValue(RawContacts.ACCOUNT_TYPE, "learn2crack.chat")
-                                        .withValue(RawContacts.ACCOUNT_NAME, "Account")
-                                                //.withValue(CommonDataKinds.StructuredName.DISPLAY_NAME, name)
-                                                //.withValue(Settings.UNGROUPED_VISIBLE, true)
-                                        .build());*/
-                                /*ops.add(ContentProviderOperation.newInsert(
-                                        ContactsContract.Data.CONTENT_URI)
-                                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-                                        .withValue(ContactsContract.Data.MIMETYPE,
-                                                ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                                        .withValue(
-                                                ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME,
-                                                name).build());
-
-                                ops.add(ContentProviderOperation.newInsert(Data.CONTENT_URI).withValueBackReference(Data.RAW_CONTACT_ID, rawContactInsertIndex)
-                                        .withValue(Data.MIMETYPE, CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                                        .withValue(CommonDataKinds.StructuredName.DISPLAY_NAME, name)
-                                        //.withValue(ContactsContract.Data.DATA1, "")//TODO:fill with gcd num
-                                        .build());
-                                try {
-                                    getActivity().getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
-                                }
-                                catch (Exception e){
-                                    kk--;
-
-                                }
-                            } else{
-                                map.put("wn", "false");
-                            }*/
-
-                       // }
-                       // break;
-                    //}
                     if(toAdd) {
                         users.add(map);
                     }
