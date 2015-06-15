@@ -183,11 +183,11 @@ public class UserFragment extends Fragment {
             String MainNumber="";//phonetype=""
             boolean hasWN,toAdd;
             boolean forDebug = true;
-            id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
-            name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
             while (cur.moveToNext()) {
                 hasWN = false;
                 toAdd = false;
+                id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
+                name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                 map = new HashMap<String, String>();
                 try {
                     String[] projection    = new String[] {
@@ -197,6 +197,7 @@ public class UserFragment extends Fragment {
                     int indexNumber = people.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
                     int indexAccountType = people.getColumnIndex(RawContacts.ACCOUNT_TYPE);
                     int counter= 0;
+                    MainNumber="";
                     while (people.moveToNext()){
                         String accountType = people.getString(indexAccountType);
                         MainNumber = people.getString(indexNumber);
