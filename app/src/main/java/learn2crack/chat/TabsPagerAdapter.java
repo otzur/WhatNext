@@ -7,10 +7,13 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.util.Log;
+
 
 
 public class TabsPagerAdapter extends FragmentPagerAdapter {
 
+    static final String TAG = "WN";
     public TabsPagerAdapter(FragmentManager fm) {
         super(fm);
     }
@@ -19,6 +22,7 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int index) {
 
         OptionFragment optionFragment = new OptionFragment();
+        Log.i(TAG, "Fragment getItem");
         Bundle bundl = new Bundle();
 
         switch (index) {

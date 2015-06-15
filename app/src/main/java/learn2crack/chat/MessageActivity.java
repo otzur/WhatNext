@@ -1,6 +1,8 @@
 package learn2crack.chat;
 
 import android.app.ActionBar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -8,16 +10,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -157,6 +158,12 @@ public class MessageActivity extends FragmentActivity implements  ActionBar.TabL
             params.add(new BasicNameValuePair("to", bundle.getString("mobno")));
             params.add((new BasicNameValuePair("msg","This is a test only")));
             int selectedTab= actionBar.getSelectedNavigationIndex();
+            if(mAdapter != null)
+            {
+                OptionFragment of = getVisibleFragment(selectedTab);
+                params.add((new BasicNameValuePair("SelectedOptions", of.getSelectedOptions())));
+                Log.i(TAG, "SelectedOptions = " +  of.getSelectedOptions());
+            }
             //actionBar.Tab tempTab= actionBar.getTabAt(selectedTab);
             //tempTab
             //params.add(new BasicNameValuePair("msgType",getTabHost().getCurrentTabTag()));
@@ -191,6 +198,20 @@ public class MessageActivity extends FragmentActivity implements  ActionBar.TabL
                 e.printStackTrace();
             }
 
+        }
+
+        private OptionFragment getVisibleFragment(int index){
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            List<Fragment> fragments = fragmentManager.getFragments();
+            if(fragments.isEmpty())
+                return null;
+            else
+                return (OptionFragment)fragments.get(index);
+//            for(android.support.v4.app.Fragment fragment : fragments){
+//                if(fragment != null && fragment.isVisible())
+//                    return (OptionFragment) fragment;
+//            }
+//            return null;
         }
     }
 }
