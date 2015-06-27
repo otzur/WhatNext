@@ -45,7 +45,7 @@ import static android.provider.ContactsContract.Settings;
 public class UserFragment extends Fragment {
 
 
-   // ListView list;
+    // ListView list;
     ArrayList<HashMap<String, String>> users;
     //ArrayList<String> userList = new ArrayList<>();
 
@@ -146,7 +146,7 @@ public class UserFragment extends Fragment {
 
     private class Load extends AsyncTask<String, String, ArrayList<HashMap<String, String> > > {
         public Load() {
-           // users.clear();
+            // users.clear();
         }
         /*public JSONArray arrayLToJSON(ArrayList<HashMap<String, String>> list)
         {
@@ -258,7 +258,7 @@ public class UserFragment extends Fragment {
 
 
                     //pCur = getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                   //         null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID
+                    //         null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID
                     //                + " = ?", new String[]{id}, null);
 
                     String[] projection    = new String[] {
@@ -338,26 +338,26 @@ public class UserFragment extends Fragment {
                     //while (pCur!= null && pCur.moveToNext()) {
                     //    String phonetype = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
                     //    MainNumber = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                       // temp = getActivity().getContentResolver().query(RawContacts.CONTENT_URI,
-                        //        null, RawContacts.ACCOUNT_TYPE +" = ?", new String[]{"learn2crack.chat.account"}, null);
-                        //Uri rawContactUri = RawContacts.CONTENT_URI.buildUpon()
-                       //         .appendQueryParameter(RawContacts.ACCOUNT_NAME, "Account")
-                        //        .appendQueryParameter(RawContacts.ACCOUNT_TYPE, "learn2crack.chat.account")
-                        //        .build();
-                        //temp = getActivity().getContentResolver().query(rawContactUri, null,null,null,null);
-                       // temp = getActivity().getContentResolver().query(RawContacts.CONTENT_URI,new String[]{RawContacts.ACCOUNT_NAME, RawContacts.ACCOUNT_TYPE},
-                        //        RawContacts.ACCOUNT_NAME + "=? and "+ RawContacts.ACCOUNT_TYPE + "=?",new String[]{"Account","learn2crack.chat.account"},null);
-                       // while(temp.moveToNext()){
-                       //     String tempName = temp.getString(temp.getColumnIndex(RawContacts.DISPLAY_NAME_PRIMARY));
-                       // }
+                    // temp = getActivity().getContentResolver().query(RawContacts.CONTENT_URI,
+                    //        null, RawContacts.ACCOUNT_TYPE +" = ?", new String[]{"learn2crack.chat.account"}, null);
+                    //Uri rawContactUri = RawContacts.CONTENT_URI.buildUpon()
+                    //         .appendQueryParameter(RawContacts.ACCOUNT_NAME, "Account")
+                    //        .appendQueryParameter(RawContacts.ACCOUNT_TYPE, "learn2crack.chat.account")
+                    //        .build();
+                    //temp = getActivity().getContentResolver().query(rawContactUri, null,null,null,null);
+                    // temp = getActivity().getContentResolver().query(RawContacts.CONTENT_URI,new String[]{RawContacts.ACCOUNT_NAME, RawContacts.ACCOUNT_TYPE},
+                    //        RawContacts.ACCOUNT_NAME + "=? and "+ RawContacts.ACCOUNT_TYPE + "=?",new String[]{"Account","learn2crack.chat.account"},null);
+                    // while(temp.moveToNext()){
+                    //     String tempName = temp.getString(temp.getColumnIndex(RawContacts.DISPLAY_NAME_PRIMARY));
+                    // }
 
-                        //String accountType = temp.getString(cur.getColumnIndex(RawContacts.ACCOUNT_TYPE));
+                    //String accountType = temp.getString(cur.getColumnIndex(RawContacts.ACCOUNT_TYPE));
 
-                        //if ((!name.equals("")) && (!MainNumber.equals(""))) {
-                        //    map.put("mobno", MainNumber);
-                            //final String msg ="name : " + name + " phone : " + MainNumber;
-                           // map.put("mobno", MainNumber);
-                            //toAdd = true;
+                    //if ((!name.equals("")) && (!MainNumber.equals(""))) {
+                    //    map.put("mobno", MainNumber);
+                    //final String msg ="name : " + name + " phone : " + MainNumber;
+                    // map.put("mobno", MainNumber);
+                    //toAdd = true;
                     /*
                          if(kk<1){
                         map.put("wn", "true");
@@ -456,8 +456,8 @@ public class UserFragment extends Fragment {
                                 map.put("wn", "false");
                             }*/
 
-                       // }
-                       // break;
+                    // }
+                    // break;
                     //}
                     if(toAdd) {
                         users.add(map);
@@ -613,7 +613,7 @@ public class UserFragment extends Fragment {
 
 
         public SimpleStringRecyclerViewAdapter(Context context, List<HashMap<String, String>> items) {
-        //public SimpleStringRecyclerViewAdapter(Context context, List<String> items) {
+            //public SimpleStringRecyclerViewAdapter(Context context, List<String> items) {
             context.getTheme().resolveAttribute(R.attr.selectableItemBackground, mTypedValue, true);
             mBackground = mTypedValue.resourceId;
             mValues = items;
@@ -659,12 +659,12 @@ public class UserFragment extends Fragment {
                     //intent.putExtra(CheeseDetailActivity.EXTRA_NAME, holder.mBoundString);
 
 //                    if(users.get(position).get("wn").equals("true")) {
-                        Bundle args = new Bundle();
-                        args.putString("mobno", (String) text2.getText());
-                        args.putString("name", (String) text1.getText());
-                        Intent chat = new Intent(context , Message2Activity.class);
-                        chat.putExtra("INFO", args);
-                        context.startActivity(chat);
+                    Bundle args = new Bundle();
+                    args.putString("mobno", (String) text2.getText());
+                    args.putString("name", (String) text1.getText());
+                    Intent chat = new Intent(context , Message2Activity.class);
+                    chat.putExtra("INFO", args);
+                    context.startActivity(chat);
 
 //                        Adapter adapter = new Adapter(getActivity().getSupportFragmentManager());
 //                        adapter.addFragment(new Message2Activity(), "Message");
