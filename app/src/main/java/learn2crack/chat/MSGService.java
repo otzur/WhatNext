@@ -51,9 +51,9 @@ public class MSGService extends IntentService {
                     MESSAGE_TYPE_MESSAGE.equals(messageType)) {
 
                 if(!prefs.getString("CURRENT_ACTIVE","").equals(extras.getString("fromu"))) {
-                    sendNotification(extras.getString("selectedOptions"), extras.getString("fromu"), extras.getString("name"), extras.getString("selectedOptions"));
+                    sendNotification(extras.getString("msg"), extras.getString("fromu"), extras.getString("name"));
                 }
-                Log.i("TAG", "Received: " + extras.getString("selectedOptions"));
+                Log.i("TAG", "Received: " + extras.getString("msg"));
             }
         }
         MSGReceiver.completeWakefulIntent(intent);
@@ -62,13 +62,12 @@ public class MSGService extends IntentService {
 
 
 
-    private void sendNotification(String msg,String mobno,String name, String selectedOptions) {
+    private void sendNotification(String msg,String mobno,String name) {
 
         Bundle args = new Bundle();
         args.putString("mobno", mobno);
         args.putString("name", name);
         args.putString("msg", msg);
-        args.putString("selectedOptions", selectedOptions);
         Intent chat = new Intent(this, ChatActivity.class);
         chat.putExtra("INFO", args);
         notification = new NotificationCompat.Builder(this);

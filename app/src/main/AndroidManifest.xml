@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
 
     <permission
         android:name="com.example.gcm.permission.C2D_MESSAGE"
@@ -22,9 +23,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/Theme.DesignDemo" >
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -53,8 +54,7 @@
             android:name=".ChatActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask" />
-        <activity
-            android:name=".MessageActivity"
+        <activity android:name=".Message2Activity"
             android:label="@string/app_name"
             android:launchMode="singleTask" />
         <provider
@@ -63,8 +63,8 @@
             android:exported="false"
             android:syncable="true"/>
         <service android:name=".SyncService"
-            android:exported="true"
-            android:permission="android.permission.INTERNET">
+            android:exported="true"><!--com.android.contact -->
+            <!--android:process=":sync"-->
             <!-- This intent filter is required. It allows the system to launch our sync service
             as needed. -->
             <intent-filter>
@@ -74,8 +74,7 @@
             <meta-data android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
-        <service android:name=".GenericAccountService" android:exported="true"
-            android:permission="android.permission.INTERNET">
+        <service android:name="learn2crack.chat.GenericAccountService" android:exported="true">
             <!-- Required filter used by the system to launch our account service. -->
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
@@ -84,7 +83,6 @@
             <meta-data android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
->>>>>>> 2206922152464bbd5e8ca42e1b7e8cd30356b0f0
     </application>
 
 </manifest>
