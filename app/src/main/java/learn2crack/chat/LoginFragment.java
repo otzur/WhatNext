@@ -9,20 +9,29 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -70,7 +79,7 @@ public class LoginFragment extends Fragment {
             new Login().execute();
         }
     };
-
+    static final String TAG = "WN";
     public boolean sendVerificationSms(Context context, String phoneNumber){
         SharedPreferences prefs =  context.getSharedPreferences("Chat", 0);
         SharedPreferences.Editor edit = prefs.edit();
@@ -85,6 +94,39 @@ public class LoginFragment extends Fragment {
     public boolean sendSms(String phoneNumber, String message){
         SmsManager sm = SmsManager.getDefault();
         sm.sendTextMessage(phoneNumber, null, message, null, null);
+        return true;
+    }
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity().getBaseContext());
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, getActivity(),
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                return false;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    public boolean validateRegistration(){
+        if(prefs.getString("REG_ID", "").isEmpty()){
+            if(checkPlayServices()){
+                try {
+                    new RegisterGCM().execute();
+                }
+                catch (Exception ex){
+                    Log.i("ERROR", "could not get gcd");
+                }
+                return true;
+            }else{
+                Toast.makeText(getActivity().getBaseContext(),"This device is not supported",Toast.LENGTH_SHORT).show();
+                return  false;
+            }
+        }
         return true;
     }
 
@@ -120,7 +162,8 @@ public class LoginFragment extends Fragment {
                     //sendVerificationSms(v.getContext(), mobno.getText().toString());
                     edit.putString("MOB_NUM_ACTIVE", "true");
                     edit.commit();
-                    new Login().execute();
+                    validateRegistration();
+                    new Register().execute();
                 }
             });
 
@@ -138,6 +181,7 @@ public class LoginFragment extends Fragment {
                     //sendVerificationSms(v.getContext(), mobno.getText().toString());
                     edit.putString("MOB_NUM_ACTIVE", "true");
                     edit.commit();
+                    validateRegistration();
                     new Register().execute();
                 }
             });
@@ -167,6 +211,15 @@ public class LoginFragment extends Fragment {
             params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("name", name.getText().toString()));
             params.add(new BasicNameValuePair("mobno", mobno.getText().toString()));
+            String regidfordebug=prefs.getString("REG_ID","");
+            while(prefs.getString("REG_ID","").equals("")){
+                try {
+                    wait(1000);
+                }
+                catch (Exception e){
+
+                }
+            }
             params.add((new BasicNameValuePair("reg_id",prefs.getString("REG_ID",""))));
 
             JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/register",params);
@@ -197,14 +250,57 @@ public class LoginFragment extends Fragment {
         }
 
     }
+    GoogleCloudMessaging gcm;
+    String SENDER_ID = "681641134962";
+    String regid;
+    private class RegisterGCM extends AsyncTask<String, Void , Void> {
+
+        @Override
+        protected Void doInBackground(String... args) {
+            try {
+                if (gcm == null) {
+                    gcm = GoogleCloudMessaging.getInstance(getActivity().getBaseContext());
+                    regid = gcm.register(SENDER_ID);
+                    Log.e("RegId", regid);
+
+                    SharedPreferences.Editor edit = prefs.edit();
+                    edit.putString("REG_ID", regid);
+                    edit.commit();
+                    //return new JSONObject("{\"REG_ID\": "+regid +"}");
+                }
+                //new JSONObject("{\"REG_ID\": "+regid +"}");
+                //return new String(regid);
+                //return  regid;
+
+            } catch (Exception ex) {
+                Log.e("Error", ex.getMessage());
+                //return new JSONObject();
+
+            }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void unused ) {
+            /////////////////////
+//            Fragment reg = new LoginFragment();
+//            FragmentTransaction ft = getFragmentManager().beginTransaction();
+//            ft.replace(R.id.container_body, reg);
+//            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+//            ft.addToBackStack(null);
+//            ft.commit();
+        }
+    }
+
     private class Login extends AsyncTask<String, String, JSONObject> {
 
         @Override
         protected JSONObject doInBackground(String... args) {
             JSONParser json = new JSONParser();
             params = new ArrayList<NameValuePair>();
+            params.add(new BasicNameValuePair("FROM_NAME", prefs.getString("FROM_NAME", "")));
             params.add(new BasicNameValuePair("mobno", prefs.getString("REG_FROM", "")));
-            JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/getuser", params);
+            params.add(new BasicNameValuePair("reg_id", prefs.getString("reg_id", "")));
+            JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/login", params);
             return jObj;
         }
         @Override

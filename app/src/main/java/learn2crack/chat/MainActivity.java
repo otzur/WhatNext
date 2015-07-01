@@ -264,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
     public boolean validateRegistration(){
-        if(prefs.getString("REG_ID", "").isEmpty()){
+        if(prefs.getString("REG_ID", "").equals("")){
             if(checkPlayServices()){
                 new Register().execute();
                 return true;
@@ -380,17 +380,18 @@ public class MainActivity extends AppCompatActivity {
             JSONParser json = new JSONParser();
             params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("mobno", prefs.getString("REG_FROM", "")));
-            //JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/logout",params);
+            JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/logout",params);
 
             Log.i("WN", "Logout sent");
             //Toast.makeText(getApplicationContext(), "Logout is clicked!", Toast.LENGTH_SHORT).show();
 
             SharedPreferences.Editor edit = prefs.edit();
             edit.putString("REG_FROM", "");
+            edit.putString("REG_ID", "");
             edit.commit();
 
 
-            JSONObject jObj;
+            //JSONObject jObj;
             jObj = new JSONObject();
             try {
                 jObj.put("response", "Removed Sucessfully");
