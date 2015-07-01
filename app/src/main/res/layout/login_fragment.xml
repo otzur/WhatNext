@@ -23,7 +23,14 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Login Now"
+        android:text="Login"
         android:id="@+id/log_btn"
+        android:layout_gravity="center_horizontal" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Register"
+        android:id="@+id/btnRegister"
         android:layout_gravity="center_horizontal" />
 </LinearLayout>

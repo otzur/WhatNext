@@ -1,0 +1,25 @@
+<!-- [ Mirror metadata ] generatedAt: 1434228823498 -->
+<!-- Generated screen file. Fill the id tags below with content with
+which to populate your previewed layout. For a complete specification
+of sample data, please see http://jimulabs.com/sample-data-specifications/ 
+
+Valid attributes on <screen> tag: theme="@style/someTheme" inEditMode="false" overlay="@drawable/mockup" -->
+<screen>
+    <_content layout="@layout/wn_message">
+        <!-- ImageView Examples:
+        <imageView src="@drawable/image_resource" />
+        <imageView src="relative_path/image.jpg" /> -->
+        <imageView />
+        <!-- TextView Examples:
+        <userName text="@string/string_resource" />
+        <userName text="Text literal" textSize="14sp" /> -->
+        <userName />
+        <android-tabcontent>
+            <!-- Replace this FrameLayout with a fragment like so:
+            <_content layout="@layout/my_fragment_layout">
+                <my_text_view>TextView in fragment</my_text_view>
+            </_content>
+            -->
+        </android-tabcontent>
+    </_content>
+</screen>
