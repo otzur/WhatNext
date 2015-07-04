@@ -51,7 +51,7 @@ public class MSGService extends IntentService {
                     MESSAGE_TYPE_MESSAGE.equals(messageType)) {
 
                 if(!prefs.getString("CURRENT_ACTIVE","").equals(extras.getString("fromu"))) {
-                    sendNotification(extras.getString("msg"), extras.getString("fromu"), extras.getString("name"));
+                    sendNotification(extras.getString("fromu"), extras.getString("tab"), extras.getString("selected_options"));
                 }
                 Log.i("TAG", "Received: " + extras.getString("msg"));
             }
@@ -62,17 +62,19 @@ public class MSGService extends IntentService {
 
 
 
-    private void sendNotification(String msg,String mobno,String name) {
+    private void sendNotification(String from,String tab,String selected_options) {
 
         Bundle args = new Bundle();
-        args.putString("mobno", mobno);
-        args.putString("name", name);
-        args.putString("msg", msg);
-        Intent chat = new Intent(this, ChatActivity.class);
+        args.putString("mobno", from);
+        //args.putString("name", name);
+        //args.putString("msg", msg);
+        args.putString("tab", tab);
+        args.putString("selected_options", selected_options);
+        Intent chat = new Intent(this, Message2Activity.class);
         chat.putExtra("INFO", args);
         notification = new NotificationCompat.Builder(this);
-        notification.setContentTitle(name);
-        notification.setContentText(msg);
+        //notification.setContentTitle(name);
+        //notification.setContentText(msg);
         notification.setTicker("New Message !");
         notification.setSmallIcon(R.drawable.ic_launcher);
 

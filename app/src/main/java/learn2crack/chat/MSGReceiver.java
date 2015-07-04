@@ -15,10 +15,11 @@ public class MSGReceiver  extends WakefulBroadcastReceiver {
 
         Bundle extras = intent.getExtras();
         Intent msgrcv = new Intent("Msg");
-        msgrcv.putExtra("msg", extras.getString("msg"));
-        msgrcv.putExtra("fromu", extras.getString("fromu"));
-        msgrcv.putExtra("fromname", extras.getString("name"));
-
+        //msgrcv.putExtra("msg", extras.getString("msg"));
+        msgrcv.putExtra("from", extras.getString("fromu"));
+        //msgrcv.putExtra("fromname", extras.getString("name"));
+        msgrcv.putExtra("tab", extras.getString("tab"));
+        msgrcv.putExtra("selected_options", extras.getString("selected_options"));
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(msgrcv);
         ComponentName comp = new ComponentName(context.getPackageName(),MSGService.class.getName());
