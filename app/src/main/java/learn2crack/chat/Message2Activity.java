@@ -42,7 +42,11 @@ public class Message2Activity extends AppCompatActivity {
     SharedPreferences prefs;
     List<NameValuePair> params;
     static final String TAG = "WN";
-
+    public enum wn_message_status {
+        new_message,
+        new_received,
+        new_response
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,18 +74,14 @@ public class Message2Activity extends AppCompatActivity {
             collapsingToolbar.setTitle(bundle.getString("name"));
         }
 
+        if(bundle.getString("tab") != null && bundle.getString("selected_options") != null){
 
-//        btnSend.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View arg0) {
-//
-//                new Send(viewPager.getCurrentItem()).execute();
-//                Toast.makeText( Message2Activity.this, "send  is clicked!", Toast.LENGTH_SHORT).show();
-//            }
-//
-//        });
+            //tvUserName.setText(bundle.getString("name"));
+            Toast.makeText(getApplicationContext(), "tab:"+bundle.getString("tab")+" ops:"+bundle.getString("selected_options") , Toast.LENGTH_LONG).show();
+        }
 
+
+        //TODO: check- if response we want only 1 option according to first message
         viewPager.setAdapter(new SectionPagerAdapter(getSupportFragmentManager()));
         tabLayout.setupWithViewPager(viewPager);
 
@@ -118,46 +118,6 @@ public class Message2Activity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//                             Bundle savedInstanceState) {
-//        Log.i("WN", "inside on create Freind fregmant");
-//        // Inflate the layout for this fragment
-//
-//
-//        View view =  inflater.inflate(R.layout.message_tab_layout, container, false);
-//
-//        TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
-//        final ViewPager viewPager = (ViewPager) view.findViewById(R.id.pager);
-//        TextView tvUserName = (TextView)view.findViewById(R.id.userName);
-//        btnSend = (ImageButton) view.findViewById(R.id.btnSend);
-//
-//        prefs = getActivity().getSharedPreferences("Chat", 0);
-//        bundle = getActivity().getIntent().getBundleExtra("INFO");
-//
-//        if(bundle.getString("name") != null){
-//            tvUserName.setTextSize(20);
-//            tvUserName.setText(bundle.getString("name"));
-//        }
-//
-//
-//        btnSend.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View arg0) {
-//
-//                new Send(viewPager.getCurrentItem()).execute();
-//                Toast.makeText( getActivity(), "send  is clicked!", Toast.LENGTH_SHORT).show();
-//            }
-//
-//        });
-//
-//        viewPager.setAdapter(new SectionPagerAdapter(getActivity().getSupportFragmentManager()));
-//        tabLayout.setupWithViewPager(viewPager);
-//
-//        return view;
-//    }
-
         private void loadBackdrop() {
         final ImageView imageView = (ImageView) findViewById(R.id.backdrop);
         Glide.with(this).load(Cheeses.getRandomCheeseDrawable()).centerCrop().into(imageView);
@@ -176,18 +136,18 @@ public class Message2Activity extends AppCompatActivity {
             JSONParser json = new JSONParser();
             params = new ArrayList<NameValuePair>();
 
-            params.add(new BasicNameValuePair("from", prefs.getString("REG_FROM","")));
-            params.add(new BasicNameValuePair("fromn", prefs.getString("FROM_NAME", "")));
+            params.add(new BasicNameValuePair("fromu", prefs.getString("REG_FROM","")));
+            //params.add(new BasicNameValuePair("fromn", prefs.getString("FROM_NAME", "")));
             params.add(new BasicNameValuePair("to", bundle.getString("mobno")));
-            params.add((new BasicNameValuePair("msg","This is a test only")));
+            //params.add((new BasicNameValuePair("msg","This is a test only")));
             int selectedTab= itemIndex;
-
+            params.add(new BasicNameValuePair("tab", ""+selectedTab));
             //int selectedTab= actionBar.getSelectedNavigationIndex();
             //if(mAdapter != null)
             //{
                 OptionFragment of = getVisibleFragment(selectedTab);
-                params.add((new BasicNameValuePair("SelectedOptions", of.getSelectedOptions())));
-                Log.i(TAG, "SelectedOptions = " + of.getSelectedOptions());
+                params.add((new BasicNameValuePair("selected_options", of.getSelectedOptions())));
+                Log.i(TAG, "selected_options = " + of.getSelectedOptions());
             //}
             //actionBar.Tab tempTab= actionBar.getTabAt(selectedTab);
             //tempTab

@@ -98,7 +98,7 @@ public class LoginFragment extends Fragment {
     }
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private boolean checkPlayServices() {
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity().getBaseContext());
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity().getApplicationContext());
         if (resultCode != ConnectionResult.SUCCESS) {
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
                 GooglePlayServicesUtil.getErrorDialog(resultCode, getActivity(),
@@ -116,7 +116,7 @@ public class LoginFragment extends Fragment {
         if(prefs.getString("REG_ID", "").isEmpty()){
             if(checkPlayServices()){
                 try {
-                    new RegisterGCM().execute();
+                    new RegisterGCM(getActivity().getApplicationContext()).execute();
                 }
                 catch (Exception ex){
                     Log.i("ERROR", "could not get gcd");
@@ -162,6 +162,7 @@ public class LoginFragment extends Fragment {
                     //sendVerificationSms(v.getContext(), mobno.getText().toString());
                     edit.putString("MOB_NUM_ACTIVE", "true");
                     edit.commit();
+                    String regidfordebug=prefs.getString("REG_ID", "");
                     validateRegistration();
                     new Register().execute();
                 }
@@ -181,6 +182,7 @@ public class LoginFragment extends Fragment {
                     //sendVerificationSms(v.getContext(), mobno.getText().toString());
                     edit.putString("MOB_NUM_ACTIVE", "true");
                     edit.commit();
+                    String regidfordebug=prefs.getString("REG_ID", "");
                     validateRegistration();
                     new Register().execute();
                 }
@@ -211,10 +213,10 @@ public class LoginFragment extends Fragment {
             params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("name", name.getText().toString()));
             params.add(new BasicNameValuePair("mobno", mobno.getText().toString()));
-            String regidfordebug=prefs.getString("REG_ID","");
+            String regidfordebug=prefs.getString("REG_ID", "");
             while(prefs.getString("REG_ID","").equals("")){
                 try {
-                    wait(1000);
+                    Thread.sleep(1000);
                 }
                 catch (Exception e){
 
@@ -252,15 +254,27 @@ public class LoginFragment extends Fragment {
     }
     GoogleCloudMessaging gcm;
     String SENDER_ID = "681641134962";
-    String regid;
+    String regid="";
     private class RegisterGCM extends AsyncTask<String, Void , Void> {
 
+        Context mContext= null;
+
+        public RegisterGCM(Context context){
+            mContext = context;
+        }
+
         @Override
-        protected Void doInBackground(String... args) {
+        protected Void doInBackground(String... args){
             try {
                 if (gcm == null) {
-                    gcm = GoogleCloudMessaging.getInstance(getActivity().getBaseContext());
-                    regid = gcm.register(SENDER_ID);
+                    gcm = GoogleCloudMessaging.getInstance(mContext);
+                    while(regid.equals("")) {
+                        try {
+                            regid = gcm.register(SENDER_ID);
+                        } catch (IOException e) {
+                            Thread.sleep(1000);
+                        }
+                    }
                     Log.e("RegId", regid);
 
                     SharedPreferences.Editor edit = prefs.edit();
@@ -274,8 +288,7 @@ public class LoginFragment extends Fragment {
 
             } catch (Exception ex) {
                 Log.e("Error", ex.getMessage());
-                //return new JSONObject();
-
+                return null;
             }
             return null;
         }
