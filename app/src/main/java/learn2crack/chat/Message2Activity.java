@@ -49,6 +49,7 @@ public class Message2Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.message_tab_layout);
 
+
         Intent intent = getIntent();
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -94,6 +95,8 @@ public class Message2Activity extends AppCompatActivity {
                 new Send(viewPager.getCurrentItem()).execute();
                 Snackbar.make(view, "WN Message Sent", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+
+
 
                 //finish();
             }
@@ -165,11 +168,14 @@ public class Message2Activity extends AppCompatActivity {
 
     private class Send extends AsyncTask<String, String, JSONObject> {
 
+        MessageDB dba=new MessageDB(getApplicationContext());//Create this object in onCreate() method
+
+
         private int itemIndex;
         public Send(int currentItem) {
             Log.i("WN","send current item " + currentItem);
             itemIndex = currentItem;
-        }
+                    }
 
         @Override
         protected JSONObject doInBackground(String... args) {
@@ -204,7 +210,15 @@ public class Message2Activity extends AppCompatActivity {
 //
 //            Log.i(TAG, selected);
 
+            Log.i(TAG, "Going to save in database ");
             JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/send",params);
+
+            dba.open();
+            dba.insert(prefs.getString("REG_FROM", ""));// Insert record in your DB
+            dba.close();
+
+            Log.i(TAG, "saved in databased");
+
             return jObj;
 
         }
