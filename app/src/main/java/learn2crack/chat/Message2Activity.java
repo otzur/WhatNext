@@ -69,6 +69,10 @@ public class Message2Activity extends AppCompatActivity {
         prefs = getSharedPreferences("Chat", 0);
         bundle = getIntent().getBundleExtra("INFO");
 
+        if(bundle.getString("mobno") != null)
+        {
+            Log.i(TAG,"mobno = " + (bundle.getString("mobno")));
+        }
         if(bundle.getString("name") != null){
 
             //tvUserName.setText(bundle.getString("name"));
@@ -128,53 +132,45 @@ public class Message2Activity extends AppCompatActivity {
 
     private class Send extends AsyncTask<String, String, JSONObject> {
 
-        MessageDB dba=new MessageDB(getApplicationContext());//Create this object in onCreate() method
+        MessageDataSource dba=new MessageDataSource(getApplicationContext());//Create this object in onCreate() method
 
 
-        private int itemIndex;
+        private int selectedTab;
+        private String from;
+        private String to;
+
         public Send(int currentItem) {
-            Log.i("WN","send current item " + currentItem);
-            itemIndex = currentItem;
-                    }
+            Log.i(TAG,"Tab selected  = " + currentItem);
+            selectedTab = currentItem;
+            from =  prefs.getString("REG_FROM","");
+            Log.i(TAG,"from user   = " + from);
+            to  = bundle.getString("mobno");
+            Log.i(TAG,"to user = " + to);
+
+        }
 
         @Override
         protected JSONObject doInBackground(String... args) {
             JSONParser json = new JSONParser();
             params = new ArrayList<NameValuePair>();
 
-            params.add(new BasicNameValuePair("fromu", prefs.getString("REG_FROM","")));
-            //params.add(new BasicNameValuePair("fromn", prefs.getString("FROM_NAME", "")));
-            params.add(new BasicNameValuePair("to", bundle.getString("mobno")));
+            params.add(new BasicNameValuePair("fromu",from));
+            params.add(new BasicNameValuePair("to", to));
             //params.add((new BasicNameValuePair("msg","This is a test only")));
-            int selectedTab= itemIndex;
             params.add(new BasicNameValuePair("tab", ""+selectedTab));
-            //int selectedTab= actionBar.getSelectedNavigationIndex();
             //if(mAdapter != null)
             //{
                 OptionFragment of = getVisibleFragment(selectedTab);
-                params.add((new BasicNameValuePair("selected_options", of.getSelectedOptions())));
+                String selected_options = of.getSelectedOptions();
+                params.add((new BasicNameValuePair("selected_options", selected_options)));
                 Log.i(TAG, "selected_options = " + of.getSelectedOptions());
             //}
-            //actionBar.Tab tempTab= actionBar.getTabAt(selectedTab);
-            //tempTab
-            //params.add(new BasicNameValuePair("msgType",getTabHost().getCurrentTabTag()));
-
-            //View view  = getTabHost().getCurrentTab().getCurrentTabView();
 
 
-
-//            String tabTag = getTabHost().getCurrentTabTag();
-//            Option2Activity activity = (Option2Activity)getLocalActivityManager().getActivity(tabTag);
-//            // ArrayList<int> selected = activity.getSelectedOptions();
-//            String selected = activity.getSelectedOptions();
-//
-//            Log.i(TAG, selected);
-
-            Log.i(TAG, "Going to save in database ");
             JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/send",params);
 
             dba.open();
-            dba.insert(prefs.getString("REG_FROM", ""));// Insert record in your DB
+            dba.insert("message", from, to, selected_options ,"HimAndHer" );// Insert record in your DB
             dba.close();
 
             Log.i(TAG, "saved in databased");
@@ -188,6 +184,7 @@ public class Message2Activity extends AppCompatActivity {
 
             String res;
             try {
+
 
                 res = json.getString("response");
                 if(res.equals("Failure")){
@@ -211,21 +208,7 @@ public class Message2Activity extends AppCompatActivity {
             else
             {
                 return (OptionFragment)fragments.get(index + 1);
-//            for(android.support.v4.app.Fragment fragment : fragments){
-//
-//                if(fragment != null && fragment.isVisible())
-//
-//                    Log.i(TAG, "fragment = " + fragment.getText(0).toString());
-//                    return (OptionFragment) fragment;
-//            }
-
             }
-               // return (OptionFragment)fragments.get(index);
-//            for(android.support.v4.app.Fragment fragment : fragments){
-//                if(fragment != null && fragment.isVisible())
-//                    return (OptionFragment) fragment;
-//            }
-            //return null;
         }
     }
 
