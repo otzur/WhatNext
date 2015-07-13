@@ -16,20 +16,24 @@ class MessageDatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     public static final String TABLE_NAME = "userMessages";
     public static final String KEY_ROWID = "_id";
+    public static final String KEY_MESSAGE_ID = "message_id";
     public static final String KEY_MESSAGE = "message";
     public static final String KEY_FROM = "user";
     public static final String KEY_TO = "to_user";
     public static final String KEY_OPTION_SELECTED = "option_selected";
     public static final String KEY_TYPE = "type";
+    public static final String KEY_STATUS = "status";
     public static final String KEY_CREATION_DATE = "delivery_date";
 
     private static final String CREATE_TABLE = "create table userMessages ("
             + "_id integer primary key autoincrement, "
+            + "message_id text not null, "
             + "message text not null, "
             + "user text not null, "
             + "to_user text not null, "
             + "option_selected text not null, "
             + "type text not null, "
+            + "status text not null, "
             + "delivery_date text not null);";
 
     MessageDatabaseHelper(Context context) {

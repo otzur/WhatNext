@@ -16,32 +16,12 @@ import java.util.List;
  * Created by otzur on 7/1/2015.
  */
 public class MessageDataSource {
-    public static final String KEY_ID = "id";
-//    public static final String KEY_ROWID = "_id";
-//    public static final String KEY_MESSAGE = "message";
-//    public static final String KEY_FROM = "user";
-//    public static final String KEY_TO = "to_user";
-//    public static final String KEY_OPTION_SELECTED = "option_selected";
-//    public static final String KEY_TYPE = "type";
-//    public static final String KEY_CREATION_DATE = "delivery_date";
 
     private static final String TAG = "WN";
-//    private static final String TABLE_NAME = "userMessages";
-//    private static final String CREATE_TABLE =
-//            "create table userMessages (id INTEGER primary key autoincrement, name text not null);";
-//
-//    private static final String CREATE_TABLE = "create table userMessages ("
-//            + "_id integer primary key autoincrement, "
-//            + "message text not null, "
-//            + "user text not null, "
-//            + "to_user text not null, "
-//            + "option_selected text not null, "
-//            + "type text not null, "
-//            + "delivery_date text not null);";
-
     private MessageDatabaseHelper DBHelper;
     private SQLiteDatabase db;
-    private String[] allColumns = { DBHelper.KEY_ROWID,  DBHelper.KEY_MESSAGE, DBHelper.KEY_FROM ,DBHelper.KEY_TO, DBHelper.KEY_OPTION_SELECTED, DBHelper.KEY_CREATION_DATE };
+    private String[] allColumns = { DBHelper.KEY_ROWID, DBHelper.KEY_MESSAGE_ID,  DBHelper.KEY_MESSAGE, DBHelper.KEY_FROM
+            ,DBHelper.KEY_TO, DBHelper.KEY_OPTION_SELECTED, DBHelper.KEY_TYPE, DBHelper.KEY_STATUS,  DBHelper.KEY_CREATION_DATE };
 
     public MessageDataSource(Context ctx) {
 
@@ -72,19 +52,21 @@ public class MessageDataSource {
 //        return db.insert(TABLE_NAME, null, initialValues);
 //    }
 
-    public WnMessage insert(String message, String user , String to_user, String selectedOptions, String type) {
+    public WnMessage insert(String message_id , String message, String user , String to_user, String selectedOptions, String type, String status) {
         //Log.i(TAG, "to_user = " + to_user);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
-        String currentDateandTime = sdf.format(new Date());
+        String currentDatedTime = sdf.format(new Date());
 
         ContentValues initialValues = new ContentValues();
-        initialValues.put(DBHelper.KEY_MESSAGE, "message");
+        initialValues.put(DBHelper.KEY_MESSAGE_ID, message_id);
+        initialValues.put(DBHelper.KEY_MESSAGE, message);
         initialValues.put(DBHelper.KEY_FROM, user);
         initialValues.put(DBHelper.KEY_TO, to_user);
         initialValues.put(DBHelper.KEY_OPTION_SELECTED, selectedOptions);
         initialValues.put(DBHelper.KEY_TYPE, type);
-        initialValues.put(DBHelper.KEY_CREATION_DATE, currentDateandTime);
+        initialValues.put(DBHelper.KEY_STATUS, status);
+        initialValues.put(DBHelper.KEY_CREATION_DATE, currentDatedTime);
 
         Log.i(TAG, "Going to insert into database");
 //        Cursor cursor = getAllData();
@@ -116,17 +98,20 @@ public class MessageDataSource {
 
     private WnMessage cursorToMessage(Cursor cursor) {
         WnMessage message = new WnMessage();
-        //message.setId(cursor.getLong(0));
-        message.setMessage(cursor.getString(0));
-        message.setUser(cursor.getString(1));
-        message.setTo(cursor.getString(2));
-        message.setOption_selected(cursor.getString(3));
-        message.setDelivery_date(cursor.getString(4));
+        message.setId(cursor.getLong(0));
+        message.setMessage_id(cursor.getString(1));
+        message.setMessage(cursor.getString(2));
+        message.setUser(cursor.getString(3));
+        message.setTo(cursor.getString(4));
+        message.setOption_selected(cursor.getString(5));
+        message.setType(cursor.getString(6));
+        message.setStatus(cursor.getString(7));
+        message.setDelivery_date(cursor.getString(8));
         return message;
     }
 
     public List<WnMessage> getAllMessages() {
-        List<WnMessage> messages = new ArrayList<WnMessage>();
+        List<WnMessage> messages = new ArrayList<>();
 
         Cursor cursor = db.query(DBHelper.TABLE_NAME,
                 allColumns, null, null, null, null, null);

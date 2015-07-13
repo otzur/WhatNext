@@ -14,12 +14,23 @@
     <!--</ImageView>-->
 
     <TextView
+        android:id="@+id/row_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:lines="1"
+        android:text="ROW_ID"
+        android:textSize="24dp"
+        >
+    </TextView>
+
+    <TextView
         android:id="@+id/message_id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:lines="1"
-        android:text="FROM"
+        android:text="MESSAGE_ID"
         android:textSize="24dp"
         >
     </TextView>
@@ -52,7 +63,31 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:lines="1"
-        android:text="TO"
+        android:text="Options"
+        android:textSize="20dp"
+        >
+    </TextView>
+
+
+
+    <TextView
+        android:id="@+id/type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:lines="1"
+        android:text="Type"
+        android:textSize="20dp"
+        >
+    </TextView>
+
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:lines="1"
+        android:text="Status"
         android:textSize="20dp"
         >
     </TextView>
@@ -63,7 +98,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:lines="1"
-        android:text="TO"
+        android:text="Date"
         android:textSize="20dp"
         >
     </TextView>

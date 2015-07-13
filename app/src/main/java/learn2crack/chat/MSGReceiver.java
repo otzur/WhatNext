@@ -15,7 +15,7 @@ public class MSGReceiver  extends WakefulBroadcastReceiver {
 
         Bundle extras = intent.getExtras();
         Intent msgrcv = new Intent("Msg");
-        //msgrcv.putExtra("msg", extras.getString("msg"));
+        msgrcv.putExtra("msg_id", extras.getString("msg_id"));
         msgrcv.putExtra("from", extras.getString("fromu"));
         //msgrcv.putExtra("fromname", extras.getString("name"));
         msgrcv.putExtra("tab", extras.getString("tab"));

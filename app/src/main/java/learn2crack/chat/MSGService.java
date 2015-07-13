@@ -45,15 +45,20 @@ public class MSGService extends IntentService {
 
             } else if (GoogleCloudMessaging.
                     MESSAGE_TYPE_DELETED.equals(messageType)) {
-                Log.e("L2C","Error");
+                Log.e("L2C", "Error");
 
             } else if (GoogleCloudMessaging.
                     MESSAGE_TYPE_MESSAGE.equals(messageType)) {
 
                 if(!prefs.getString("CURRENT_ACTIVE","").equals(extras.getString("fromu"))) {
-                    sendNotification(extras.getString("fromu"), extras.getString("tab"), extras.getString("selected_options"));
+                    sendNotification(extras.getString("msg_id"),
+                                        extras.getString("fromu"),
+                                        extras.getString("tab"),
+                                        extras.getString("selected_options"),
+                                        extras.getString("status"),
+                                        extras.getString("type"));
                 }
-                Log.i("TAG", "Received: " + extras.getString("msg"));
+                Log.i("WN", "Received: " + extras.getString("msg_id"));
             }
         }
         MSGReceiver.completeWakefulIntent(intent);
@@ -62,21 +67,23 @@ public class MSGService extends IntentService {
 
 
 
-    private void sendNotification(String from,String tab,String selected_options) {
+    private void sendNotification(String msg_id, String from,String tab,String selected_options,
+                                  String status , String type) {
 
         Bundle args = new Bundle();
+        args.putString("msg_id", msg_id);
         args.putString("mobno", from);
-        //args.putString("name", name);
-        //args.putString("msg", msg);
+        args.putString("type", type);
+        args.putString("status", "received");
         args.putString("tab", tab);
         args.putString("selected_options", selected_options);
         Intent chat = new Intent(this, Message2Activity.class);
         chat.putExtra("INFO", args);
         notification = new NotificationCompat.Builder(this);
-        //notification.setContentTitle(name);
+        notification.setContentTitle("New WN message from " + from);
         //notification.setContentText(msg);
-        notification.setTicker("New Message !");
-        notification.setSmallIcon(R.drawable.ic_launcher);
+        notification.setTicker("New WN Message!");
+        notification.setSmallIcon(R.drawable.ic_done);
 
         PendingIntent contentIntent = PendingIntent.getActivity(this, 1000,
                 chat, PendingIntent.FLAG_CANCEL_CURRENT);

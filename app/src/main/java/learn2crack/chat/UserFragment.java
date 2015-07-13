@@ -1,6 +1,5 @@
 package learn2crack.chat;
 
-import android.content.ContentProviderOperation;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -34,10 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static android.provider.ContactsContract.CommonDataKinds;
-import static android.provider.ContactsContract.Data;
 import static android.provider.ContactsContract.RawContacts;
-import static android.provider.ContactsContract.Settings;
 
 //import android.app.FragmentTransaction;
 
@@ -408,6 +404,8 @@ public class UserFragment extends Fragment {
                     Bundle args = new Bundle();
                     args.putString("mobno", (String) text2.getText());
                     args.putString("name", (String) text1.getText());
+                    args.putString("type", "HimAndHer");
+                    args.putString("status", "new");
                     Intent chat = new Intent(context , Message2Activity.class);
                     chat.putExtra("INFO", args);
                     context.startActivity(chat);

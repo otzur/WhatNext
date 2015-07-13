@@ -30,6 +30,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by otzur on 6/18/2015.
@@ -47,6 +48,13 @@ public class Message2Activity extends AppCompatActivity {
         new_received,
         new_response
     }
+
+    private String selectedTab ;
+    private String from;
+    private String to;
+    private String type;
+    private String status;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,8 +89,27 @@ public class Message2Activity extends AppCompatActivity {
 
         if(bundle.getString("tab") != null && bundle.getString("selected_options") != null){
 
-            //tvUserName.setText(bundle.getString("name"));
+            selectedTab = bundle.getString("tab");
             Toast.makeText(getApplicationContext(), "tab:"+bundle.getString("tab")+" ops:"+bundle.getString("selected_options") , Toast.LENGTH_LONG).show();
+        }
+
+        if(bundle.getString("msg_id") != null){
+
+            //tvUserName.setText(bundle.getString("name"));
+            Toast.makeText(getApplicationContext(), "UUID:  "+ bundle.getString("msg_id") , Toast.LENGTH_LONG).show();
+        }
+
+        if(bundle.getString("type") != null){
+
+            //tvUserName.setText(bundle.getString("name"));
+            Toast.makeText(getApplicationContext(), "Type:  "+ bundle.getString("type") , Toast.LENGTH_LONG).show();
+        }
+
+        if(bundle.getString("status") != null){
+
+            //tvUserName.setText(bundle.getString("name"));
+            status = bundle.getString("status");
+            Toast.makeText(getApplicationContext(), "Status:  "+ status , Toast.LENGTH_LONG).show();
         }
 
 
@@ -97,14 +124,27 @@ public class Message2Activity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 new Send(viewPager.getCurrentItem()).execute();
-                Snackbar.make(view, "WN Message Sent", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-
-
-
+                Snackbar.make(view, "WN Message Sent", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 //finish();
             }
         });
+
+        Log.i(TAG, "status = " + status);
+
+        switch (status){
+
+            case "new":
+                break;
+
+            case "received":
+            {
+
+                Log.i(TAG, "selectedTab = " + selectedTab);
+                viewPager.setCurrentItem(Integer.parseInt(selectedTab));
+                tabLayout.setVisibility(View.INVISIBLE);
+                break;
+            }
+        }
 
     }
 
@@ -138,6 +178,9 @@ public class Message2Activity extends AppCompatActivity {
         private int selectedTab;
         private String from;
         private String to;
+        private String type;
+        private String status;
+
 
         public Send(int currentItem) {
             Log.i(TAG,"Tab selected  = " + currentItem);
@@ -147,30 +190,40 @@ public class Message2Activity extends AppCompatActivity {
             to  = bundle.getString("mobno");
             Log.i(TAG,"to user = " + to);
 
+            type  = bundle.getString("type");
+            Log.i(TAG,"type = " + type);
+            status  = bundle.getString("status");
+            Log.i(TAG,"status = " + status);
+
         }
 
         @Override
         protected JSONObject doInBackground(String... args) {
             JSONParser json = new JSONParser();
-            params = new ArrayList<NameValuePair>();
+            UUID uuid = UUID.randomUUID();
 
+            params = new ArrayList<>();
+
+            params.add((new BasicNameValuePair("msg_id",uuid.toString())));
             params.add(new BasicNameValuePair("fromu",from));
             params.add(new BasicNameValuePair("to", to));
-            //params.add((new BasicNameValuePair("msg","This is a test only")));
-            params.add(new BasicNameValuePair("tab", ""+selectedTab));
+            params.add(new BasicNameValuePair("tab", ""+ selectedTab));
+            params.add(new BasicNameValuePair("type", "" + type));
+            params.add(new BasicNameValuePair("status", "" + status));
             //if(mAdapter != null)
             //{
                 OptionFragment of = getVisibleFragment(selectedTab);
                 String selected_options = of.getSelectedOptions();
                 params.add((new BasicNameValuePair("selected_options", selected_options)));
-                Log.i(TAG, "selected_options = " + of.getSelectedOptions());
+            Log.i(TAG, "selected_options = " + of.getSelectedOptions());
             //}
 
 
-            JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/send",params);
+            //MESSAGE SENDING
+            JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/send", params);
 
             dba.open();
-            dba.insert("message", from, to, selected_options ,"HimAndHer" );// Insert record in your DB
+            dba.insert(uuid.toString(), "message", from, to, selected_options ,type, status );// Insert record in your DB
             dba.close();
 
             Log.i(TAG, "saved in databased");
