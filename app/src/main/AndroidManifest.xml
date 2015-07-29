@@ -31,7 +31,7 @@
             android:value="@integer/google_play_services_version" />
 
         <receiver
-            android:name=".MSGReceiver"
+            android:name="learn2crack.gcm.MSGReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
@@ -39,10 +39,10 @@
                 <category android:name="com.example.gcm" />
             </intent-filter>
         </receiver>
-        <service android:name=".MSGService" />
+        <service android:name="learn2crack.gcm.MSGService" />
 
         <activity
-            android:name=".MainActivity"
+            android:name="learn2crack.activities.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -50,22 +50,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ChatActivity"
+        <activity android:name="learn2crack.activities.WnMessageNewActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask" />
-        <activity android:name=".Message2Activity"
-            android:label="@string/app_name"
-            android:launchMode="singleTask" />
-        <activity android:name=".MessageRecvActivity"
+        <activity android:name="learn2crack.activities.WnMessageReceiveActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask" />
         <provider
-            android:name="learn2crack.chat.StubProvider"
-            android:authorities="learn2crack.chat.SyncAdapter"
+            android:name="learn2crack.cotacts.StubProvider"
+            android:authorities="learn2crack.cotacts.SyncAdapter"
             android:exported="false"
             android:syncable="true"/>
-        <service android:name=".SyncService"
+        <service android:name="learn2crack.cotacts.SyncService"
             android:exported="true"><!--com.android.contact -->
             <!--android:process=":sync"-->
             <!-- This intent filter is required. It allows the system to launch our sync service
@@ -77,7 +73,7 @@
             <meta-data android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
-        <service android:name="learn2crack.chat.GenericAccountService" android:exported="true">
+        <service android:name="learn2crack.cotacts.GenericAccountService" android:exported="true">
             <!-- Required filter used by the system to launch our account service. -->
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
