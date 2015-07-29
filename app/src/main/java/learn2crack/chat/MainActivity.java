@@ -148,11 +148,23 @@ public class MainActivity extends AppCompatActivity {
 
         //adapter.addFragment(new LoginFragment(), "Login Fragment");
 
-        String reg_from = prefs.getString("REG_FROM", "");
-        Toast.makeText(getApplicationContext(), "reg_from = " + reg_from, Toast.LENGTH_LONG).show();
-        Log.i(TAG,"reg_from " + reg_from);
+        String reg_from  = prefs.getString("REG_FROM", "");
+        String reg_name  = prefs.getString("FROM_NAME", "");
+        String reg_uuid  = prefs.getString("UUID", "");
+        String reg_phone = prefs.getString("PHONE_NUMBER", "");
+        String reg_id    = prefs.getString("REG_ID", "");
 
-        if (!prefs.getString("REG_FROM", "").isEmpty()) {
+
+        Toast.makeText(getApplicationContext(), "reg_from = " + reg_from, Toast.LENGTH_LONG).show();
+
+        Log.i(TAG, "reg_from " + reg_from);
+        Log.i(TAG,"reg_name " + reg_name);
+        Log.i(TAG,"reg_uuid " + reg_uuid);
+        Log.i(TAG,"reg_phone " + reg_phone);
+        Log.i(TAG,"reg_id " + reg_id);
+
+
+        if (!reg_from.isEmpty()) {
             Toast.makeText(getApplicationContext(), "reg_from is no empty", Toast.LENGTH_LONG).show();
             adapter.addFragment(userFragment, "User Fragment");
         }

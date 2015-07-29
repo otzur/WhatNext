@@ -17,8 +17,9 @@ public class MSGReceiver  extends WakefulBroadcastReceiver {
         Intent msgrcv = new Intent("Msg");
         msgrcv.putExtra("msg_id", extras.getString("msg_id"));
         msgrcv.putExtra("from", extras.getString("fromu"));
-        //msgrcv.putExtra("fromname", extras.getString("name"));
+        msgrcv.putExtra("type", extras.getString("type"));
         msgrcv.putExtra("tab", extras.getString("tab"));
+        msgrcv.putExtra("status", extras.getString("status"));
         msgrcv.putExtra("selected_options", extras.getString("selected_options"));
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(msgrcv);

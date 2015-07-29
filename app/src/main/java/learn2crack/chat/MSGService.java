@@ -59,6 +59,7 @@ public class MSGService extends IntentService {
                                         extras.getString("type"));
                 }
                 Log.i("WN", "Received: " + extras.getString("msg_id"));
+                Log.i("WN", "MSGService type: " + extras.getString("type"));
             }
         }
         MSGReceiver.completeWakefulIntent(intent);
@@ -77,7 +78,7 @@ public class MSGService extends IntentService {
         args.putString("status", "received");
         args.putString("tab", tab);
         args.putString("selected_options", selected_options);
-        Intent chat = new Intent(this, Message2Activity.class);
+        Intent chat = new Intent(this, MessageRecvActivity.class);
         chat.putExtra("INFO", args);
         notification = new NotificationCompat.Builder(this);
         notification.setContentTitle("New WN message from " + from);

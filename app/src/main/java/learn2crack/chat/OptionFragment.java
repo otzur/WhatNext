@@ -1,10 +1,10 @@
 package learn2crack.chat;
 
 
-import android.support.v4.app.ListFragment;
-import android.view.View;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
@@ -17,7 +17,6 @@ import java.util.List;
  */
 public class OptionFragment extends ListFragment {
 
-    private Object selectedOptions;
     private ArrayAdapter<WnOption> adapter;
     private List<WnOption> list;
 
@@ -43,7 +42,7 @@ public class OptionFragment extends ListFragment {
     private List<WnOption> getOption(int numberOfOptions ) {
 
 
-        list = new ArrayList<WnOption>();
+        list = new ArrayList<>();
 
         switch (numberOfOptions)
         {
@@ -79,7 +78,7 @@ public class OptionFragment extends ListFragment {
         //list.add(get("Not Interesting"));
         //list.add(get("Interesting"));
         // Initially select one of the items
-        list.get(1).setSelected(true);
+        //list.get(1).setSelected(true);
         return list;
     }
 

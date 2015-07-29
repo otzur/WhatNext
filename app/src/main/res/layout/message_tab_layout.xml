@@ -69,26 +69,6 @@
                 android:layout_height="wrap_content"/>
 
 
-                <!--<LinearLayout-->
-                <!--android:orientation="horizontal"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_gravity="center_horizontal"-->
-                <!--android:baselineAligned="false"-->
-                <!--android:id="@+id/sample_main_layout"-->
-                <!--android:paddingLeft="10dp">-->
-
-                   <!-- -->
-                    <!--<ImageButton-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:src="@drawable/ic_send"-->
-                    <!--android:id="@+id/btnSend"-->
-                    <!--android:background="@android:color/transparent"-->
-                    <!--android:layout_gravity="center" />-->
-
-                <!--</LinearLayout>-->
-
                 <android.support.v4.view.ViewPager
                 android:id="@+id/pager"
                 android:layout_width="match_parent"
