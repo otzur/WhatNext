@@ -37,6 +37,21 @@
     <item name="android:orientation">vertical</item>
     </style>
 
-    <style name="DefaultButtonText"></style>
+    <style name="searchTextHiglight">
+        <item name="android:textColor">@color/holo_blue</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 
+    <style name="DefaultButtonText"/>
+    <style name="listViewActivatedStyle"/>
+
+    <style name="quickContactBadgeStyle">
+        <item name="android:background">@drawable/quickcontact_badge_small</item>
+    </style>
+
+    <style name="ContactListView">
+        <item name="android:verticalScrollbarPosition">right</item>
+        <item name="android:fastScrollAlwaysVisible">true</item>
+        <item name="android:scrollbarStyle">outsideInset</item>
+    </style>
 </resources>
