@@ -4,8 +4,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -45,7 +48,8 @@ import learn2crack.cheese.CheeseListFragment;
 import learn2crack.utilities.JSONParser;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements
+        ContactsListFragment.OnContactsInteractionListener{
 
     private DrawerLayout mDrawerLayout;
     public ViewPager viewPager;
@@ -64,7 +68,13 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences prefs;
     Context context;
     String regid;
-    UserFragment userFragment ;
+    //UserFragment userFragment ;
+    ContactsListFragment userFragment ;
+
+    // True if this activity instance is a search result view (used on pre-HC devices that load
+    // search results in a separate instance of the activity rather than loading results in-line
+    // as the query is typed.
+    private boolean isSearchResultView = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +82,8 @@ public class MainActivity extends AppCompatActivity {
         try {
             setContentView(R.layout.activity_main);
 
-            userFragment = new UserFragment();
+            //userFragment = new UserFragment();
+            userFragment = new ContactsListFragment();
             Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(mToolbar);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -143,6 +154,97 @@ public class MainActivity extends AppCompatActivity {
         catch (Exception e){
             int num = 5;
         }
+    }
+
+    /**
+     * This interface callback lets the main contacts list fragment notify
+     * this activity that a contact has been selected.
+     *
+     * @param contactUri The contact Uri to the selected contact.
+     */
+    @Override
+    public void onContactSelected(Uri contactUri) {
+        /*if (isTwoPaneLayout && mContactDetailFragment != null) {
+            // If two pane layout then update the detail fragment to show the selected contact
+            mContactDetailFragment.setContact(contactUri);
+        } else {
+            // Otherwise single pane layout, start a new ContactDetailActivity with
+            // the contact Uri
+            Intent intent = new Intent(this, ContactDetailActivity.class);
+            intent.setData(contactUri);
+            startActivity(intent);
+        }*/
+        //TODO: let the user pick the number
+        String[] whereArgs = new String[] { String.valueOf(contactUri) };
+        Log.d(TAG, String.valueOf(contactUri));
+        Cursor cursor2=null;
+        String id="";
+        int idx;
+        try {
+            cursor2 = getContentResolver().query(contactUri, null, null, null, null);
+            if (cursor2.moveToFirst()) {
+                idx = cursor2.getColumnIndex(ContactsContract.Contacts._ID);
+                id = cursor2.getString(idx);
+            }
+                cursor2 = context.getContentResolver().query(
+                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                    null,
+                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = "+id,null, null);
+    }
+        catch (Exception ex){
+            Log.e("wn",ex.getLocalizedMessage());
+        }
+
+        int phoneNumberIndex = cursor2
+                .getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER);
+
+        Log.d(TAG, String.valueOf(cursor2.getCount()));
+        String phoneNumber="";
+        if (cursor2.moveToFirst()) {
+            phoneNumberIndex = cursor2.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+            phoneNumber = cursor2.getString(phoneNumberIndex);
+        }
+        if (cursor2 != null) {
+            Log.v(TAG, "Cursor Not null");
+            try {
+                if (cursor2.moveToNext()) {
+                    Log.v(TAG, "Moved to first");
+                    Log.v(TAG, "Cursor Moved to first and checking");
+                    phoneNumber = cursor2.getString(phoneNumberIndex);
+                }
+            } finally {
+                Log.v(TAG, "In finally");
+                cursor2.close();
+            }
+
+            Bundle args = new Bundle();
+            args.putString("mobno", phoneNumber);
+            //args.putString("name", (String) text1.getText());
+            args.putString("type", "HimAndHer");
+            args.putString("status", "new");
+            Intent chat = new Intent(this , WnMessageNewActivity.class);
+            chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            chat.putExtra("INFO", args);
+            context.startActivity(chat);
+        }
+    }
+
+    /**
+     * This interface callback lets the main contacts list fragment notify
+     * this activity that a contact is no longer selected.
+     */
+    @Override
+    public void onSelectionCleared() {
+        /*if (isTwoPaneLayout && mContactDetailFragment != null) {
+            mContactDetailFragment.setContact(null);
+        }*/
+    }
+
+    @Override
+    public boolean onSearchRequested() {
+        // Don't allow another search if this activity instance is already showing
+        // search results. Only used pre-HC.
+        return !isSearchResultView && super.onSearchRequested();
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -296,6 +398,7 @@ public class MainActivity extends AppCompatActivity {
     public void changeToUserScreen()
     {
         FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager());
+        //fragmentAdapter.addFragment(userFragment, "User");
         fragmentAdapter.addFragment(userFragment, "User");
         viewPager.setAdapter(fragmentAdapter);
 

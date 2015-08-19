@@ -10,7 +10,7 @@
 
     <!--<style name="DefaultButtonText"></style>-->
 
-    <style name="Theme.DesignDemo" parent="Base.Theme.DesignDemo">
+    <style name="Theme.DesignDemo" parent="Theme.AppCompat.DesignDemo">
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>

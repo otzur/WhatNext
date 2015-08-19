@@ -19,10 +19,10 @@
         <!--<item name="android:windowBackground">@color/windowBackground</item>-->
     <!--</style>-->
 
-    <style name="Theme.DesignDemo" parent="Base.Theme.DesignDemo">
+    <style name="Theme.DesignDemo" parent="Theme.AppCompat.DesignDemo">
     </style>
 
-    <style name="Base.Theme.DesignDemo" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme.AppCompat.DesignDemo" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">#673AB7</item>
         <item name="colorPrimaryDark">#512DA8</item>
         <item name="colorAccent">#FF4081</item>
@@ -54,4 +54,18 @@
         <item name="android:fastScrollAlwaysVisible">true</item>
         <item name="android:scrollbarStyle">outsideInset</item>
     </style>
+
+    <style name="addressDetail" parent="@android:style/TextAppearance.Medium">
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textIsSelectable">true</item>
+    </style>
+
+    <style name="addressHeader" parent="@android:style/TextAppearance.Small">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="addressButton"/>
+
+    <style name="AppTheme" parent="@android:style/Theme.Holo.Light.DarkActionBar"/>
 </resources>

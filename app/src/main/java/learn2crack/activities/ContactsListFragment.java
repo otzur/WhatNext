@@ -18,6 +18,17 @@ package learn2crack.activities;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+
+import android.support.v4.app.ListFragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.CursorAdapter;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
@@ -31,11 +42,6 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.Contacts.Photo;
-import android.support.v4.app.ListFragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.CursorAdapter;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.TextAppearanceSpan;
@@ -48,24 +54,26 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.support.v7.widget.*;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AlphabetIndexer;
 import android.widget.ListView;
 import android.widget.QuickContactBadge;
-import android.widget.SearchView;
+
 import android.widget.SectionIndexer;
 import android.widget.TextView;
-
-import learn2crack.chat.BuildConfig;
-import learn2crack.chat.R;
-import learn2crack.utilities.ImageLoader;
-import learn2crack.utilities.Utils;
+import android.widget.Toast;
 
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Locale;
+
+import learn2crack.chat.BuildConfig;
+import learn2crack.chat.R;
+import learn2crack.utilities.ImageLoader;
+import learn2crack.utilities.Utils;
 
 
 public class ContactsListFragment extends ListFragment implements
@@ -261,6 +269,7 @@ public class ContactsListFragment extends ListFragment implements
                 cursor.getLong(ContactsQuery.ID),
                 cursor.getString(ContactsQuery.LOOKUP_KEY));
 
+
         // Notifies the parent activity that the user selected a contact. In a two-pane layout, the
         // parent activity loads a ContactDetailFragment that displays the details for the selected
         // contact. In a single-pane layout, the parent activity starts a new activity that
@@ -295,9 +304,11 @@ public class ContactsListFragment extends ListFragment implements
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
         // Inflate the menu items
-        inflater.inflate(R.menu.contact_list_menu, menu);
+        //inflater.inflate(R.menu.contact_list_menu, menu);
+        //inflater.inflate(R.menu.menu_main, menu);
         // Locate the search item
-        MenuItem searchItem = menu.findItem(R.id.menu_search);
+        //MenuItem searchItem = menu.findItem(R.id.menu_search);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
 
         // In versions prior to Android 3.0, hides the search item to prevent additional
         // searches. In Android 3.0 and later, searching is done via a SearchView in the ActionBar.
@@ -315,7 +326,10 @@ public class ContactsListFragment extends ListFragment implements
                     (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
 
             // Retrieves the SearchView from the search menu item
-            final SearchView searchView = (SearchView) searchItem.getActionView();
+            final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+            //final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            //toolbar.setNavigationContentDescription(new Toolbar.On);
+            //searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
 
             // Assign searchable info to SearchView
             searchView.setSearchableInfo(
@@ -360,7 +374,7 @@ public class ContactsListFragment extends ListFragment implements
 
             if (Utils.hasICS()) {
                 // This listener added in ICS
-                searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                MenuItemCompat.setOnActionExpandListener(searchItem,new MenuItemCompat.OnActionExpandListener() {
                     @Override
                     public boolean onMenuItemActionExpand(MenuItem menuItem) {
                         // Nothing to do when the action item is expanded
@@ -758,7 +772,6 @@ public class ContactsListFragment extends ListFragment implements
 
             // Binds the contact's lookup Uri to the QuickContactBadge
             holder.icon.assignContactUri(contactUri);
-
             holder.icon.setMode(ContactsContract.QuickContact.MODE_SMALL);
 
             // Loads the thumbnail image pointed to by photoUri into the QuickContactBadge in a
