@@ -36,7 +36,7 @@
     <string name="no_messages">NO MESSAGES</string>
 
     <string name="search_match_other">Matches Other Field</string>
-    <string name="alphabet">אבגדהוזחטיכלמנסעפצקרשתABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
+    <string name="alphabet">אבגדהוזחטיכלמנסעפצקרשת</string>
     <string name="no_contacts">No Contacts Found</string>
 
     <string name="menu_search">Search</string>

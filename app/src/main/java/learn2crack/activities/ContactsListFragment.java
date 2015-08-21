@@ -58,6 +58,7 @@ import android.support.v7.widget.*;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AlphabetIndexer;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.QuickContactBadge;
 
@@ -198,6 +199,7 @@ public class ContactsListFragment extends ListFragment implements
         // Set up ListView, assign adapter and set some listeners. The adapter was previously
         // created in onCreate().
         setListAdapter(mAdapter);
+        registerForContextMenu(getListView());
         getListView().setOnItemClickListener(this);
         getListView().setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
@@ -275,6 +277,10 @@ public class ContactsListFragment extends ListFragment implements
         // contact. In a single-pane layout, the parent activity starts a new activity that
         // displays contact details in its own Fragment.
         mOnContactSelectedListener.onContactSelected(uri);
+
+        registerForContextMenu(v);
+        v.showContextMenu();
+        unregisterForContextMenu(v);
 
         // If two-pane layout sets the selected item to checked so it remains highlighted. In a
         // single-pane layout a new activity is started so this is not needed.
@@ -700,8 +706,8 @@ public class ContactsListFragment extends ListFragment implements
             final ViewHolder holder = new ViewHolder();
             holder.text1 = (TextView) itemLayout.findViewById(android.R.id.text1);
             holder.text2 = (TextView) itemLayout.findViewById(android.R.id.text2);
-            holder.icon = (QuickContactBadge) itemLayout.findViewById(android.R.id.icon);
-
+            //holder.icon = (QuickContactBadge) itemLayout.findViewById(android.R.id.icon);
+            holder.icon = (ImageView) itemLayout.findViewById(android.R.id.icon);
             // Stores the resourceHolder instance in itemLayout. This makes resourceHolder
             // available to bindView and other methods that receive a handle to the item view.
             itemLayout.setTag(holder);
@@ -717,6 +723,31 @@ public class ContactsListFragment extends ListFragment implements
         public void bindView(View view, Context context, Cursor cursor) {
             // Gets handles to individual view resources
             final ViewHolder holder = (ViewHolder) view.getTag();
+            String accountType="",accountName="";
+
+            Cursor cursor2 = null;
+            try {
+
+                cursor2 = context.getContentResolver().query(ContactsContract.RawContacts.CONTENT_URI,
+                        new String[]{ContactsContract.RawContacts.ACCOUNT_NAME, ContactsContract.RawContacts.ACCOUNT_TYPE},
+                        ContactsContract.RawContacts.CONTACT_ID + "=? AND "+ContactsContract.RawContacts.ACCOUNT_TYPE + "=?",
+                        new String[]{cursor.getString(ContactsQuery.ID) , "learn2crack.chat.account"},
+                        null);
+
+                if (cursor2 != null) {
+                    int numOfAccounts = cursor2.getCount();
+                    while (numOfAccounts > 0) {
+                        cursor2.moveToFirst();
+                        accountName = cursor2.getString(cursor2.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_NAME));
+                        accountType = cursor2.getString(cursor2.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_TYPE));
+                        numOfAccounts--;
+                    }
+                }
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage());
+            } finally{
+                cursor2.close();
+            }
 
             // For Android 3.0 and later, gets the thumbnail image Uri from the current Cursor row.
             // For platforms earlier than 3.0, this isn't necessary, because the thumbnail is
@@ -771,8 +802,8 @@ public class ContactsListFragment extends ListFragment implements
                     cursor.getString(ContactsQuery.LOOKUP_KEY));
 
             // Binds the contact's lookup Uri to the QuickContactBadge
-            holder.icon.assignContactUri(contactUri);
-            holder.icon.setMode(ContactsContract.QuickContact.MODE_SMALL);
+            //holder.icon.assignContactUri(contactUri);
+            //holder.icon.setMode(ContactsContract.QuickContact.MODE_SMALL);
 
             // Loads the thumbnail image pointed to by photoUri into the QuickContactBadge in a
             // background worker thread
@@ -840,7 +871,8 @@ public class ContactsListFragment extends ListFragment implements
         private class ViewHolder {
             TextView text1;
             TextView text2;
-            QuickContactBadge icon;
+            //QuickContactBadge icon;
+            ImageView icon;
         }
     }
 
@@ -920,6 +952,8 @@ public class ContactsListFragment extends ListFragment implements
                 // android.provider.ContactsContract.Contacts.
                 Utils.hasHoneycomb() ? Contacts.PHOTO_THUMBNAIL_URI : Contacts._ID,
 
+                ContactsContract.RawContacts._ID,
+
                 // The sort order column for the returned Cursor, used by the AlphabetIndexer
                 SORT_ORDER,
         };
@@ -929,6 +963,7 @@ public class ContactsListFragment extends ListFragment implements
         final static int LOOKUP_KEY = 1;
         final static int DISPLAY_NAME = 2;
         final static int PHOTO_THUMBNAIL_DATA = 3;
-        final static int SORT_KEY = 4;
+        final static int RAW_CONTACT_ID = 4;
+        final static int SORT_KEY = 5;
     }
 }

@@ -31,8 +31,12 @@ import android.widget.ImageView;
 
 //import com.example.android.contactslist.BuildConfig;
 
+import com.bumptech.glide.Glide;
+
 import java.io.FileDescriptor;
 import java.lang.ref.WeakReference;
+
+import learn2crack.cheese.Cheeses;
 
 /**
  * This class wraps up completing some arbitrary long running work when loading a bitmap to an
@@ -83,12 +87,20 @@ public abstract class ImageLoader {
 
         if (bitmap != null) {
             // Bitmap found in memory cache
-            imageView.setImageBitmap(bitmap);
+            Glide.with(imageView.getContext())
+                    .load(bitmap)
+                    .fitCenter()
+                    .into(imageView);
+           // imageView.setImageBitmap(bitmap);
         } else if (cancelPotentialWork(data, imageView)) {
             final BitmapWorkerTask task = new BitmapWorkerTask(imageView);
             final AsyncDrawable asyncDrawable =
                     new AsyncDrawable(mResources, mLoadingBitmap, task);
-            imageView.setImageDrawable(asyncDrawable);
+            Glide.with(imageView.getContext())
+                    .load(asyncDrawable)
+                    .fitCenter()
+                    .into(imageView);
+            //imageView.setImageDrawable(asyncDrawable);
             task.execute(data);
         }
     }

@@ -23,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.SmsMessage;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -75,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements
     // search results in a separate instance of the activity rather than loading results in-line
     // as the query is typed.
     private boolean isSearchResultView = false;
+    private Uri mContactUri=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,6 +166,7 @@ public class MainActivity extends AppCompatActivity implements
      */
     @Override
     public void onContactSelected(Uri contactUri) {
+        mContactUri = contactUri;
         /*if (isTwoPaneLayout && mContactDetailFragment != null) {
             // If two pane layout then update the detail fragment to show the selected contact
             mContactDetailFragment.setContact(contactUri);
@@ -175,6 +178,7 @@ public class MainActivity extends AppCompatActivity implements
             startActivity(intent);
         }*/
         //TODO: let the user pick the number
+        /*
         String[] whereArgs = new String[] { String.valueOf(contactUri) };
         Log.d(TAG, String.valueOf(contactUri));
         Cursor cursor2=null;
@@ -217,6 +221,7 @@ public class MainActivity extends AppCompatActivity implements
                 cursor2.close();
             }
 
+
             Bundle args = new Bundle();
             args.putString("mobno", phoneNumber);
             //args.putString("name", (String) text1.getText());
@@ -226,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements
             chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             chat.putExtra("INFO", args);
             context.startActivity(chat);
-        }
+        }*/
     }
 
     /**
@@ -342,7 +347,53 @@ public class MainActivity extends AppCompatActivity implements
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        String[] whereArgs = new String[]{String.valueOf(mContactUri)};
+        Log.d(TAG, String.valueOf(mContactUri));
+        Cursor cursor2 = null;
+        String id = "";
+        int idx;
+        try {
+            cursor2 = getContentResolver().query(mContactUri, null, null, null, null);
+            if (cursor2.moveToFirst()) {
+                idx = cursor2.getColumnIndex(ContactsContract.Contacts._ID);
+                id = cursor2.getString(idx);
+            }
+            cursor2 = context.getContentResolver().query(
+                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                    null,
+                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + id, null, null);
+        } catch (Exception ex) {
+            Log.e("wn", ex.getLocalizedMessage());
+        }
 
+        int phoneNumberIndex = cursor2
+                .getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER);
+
+        Log.d(TAG, String.valueOf(cursor2.getCount()));
+        String phoneNumber = "";
+        if (cursor2.moveToFirst()) {
+            phoneNumberIndex = cursor2.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+            phoneNumber = cursor2.getString(phoneNumberIndex);
+        }
+        if (cursor2 != null) {
+            Log.v(TAG, "Cursor Not null");
+            try {
+                if (cursor2.moveToNext()) {
+                    Log.v(TAG, "Moved to first");
+                    Log.v(TAG, "Cursor Moved to first and checking");
+                    phoneNumber = cursor2.getString(phoneNumberIndex);
+                }
+                menu.add(phoneNumber);
+            } finally {
+                Log.v(TAG, "In finally");
+                cursor2.close();
+            }
+
+        }
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
