@@ -131,6 +131,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 .withValue(ContactsContract.CommonDataKinds.Phone.TYPE,
                         ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE)
                 .build());
+           /* ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, backId)
+                    .withValue(ContactsContract.Data.DATA1,phone).build());*/
 
         /*ContentValues values = new ContentValues();
         values.put(RawContacts.ACCOUNT_TYPE, "learn2crack.chat.account");

@@ -87,20 +87,20 @@ public abstract class ImageLoader {
 
         if (bitmap != null) {
             // Bitmap found in memory cache
-            Glide.with(imageView.getContext())
+            /*Glide.with(imageView.getContext())
                     .load(bitmap)
                     .fitCenter()
-                    .into(imageView);
-           // imageView.setImageBitmap(bitmap);
+                    .into(imageView);*/
+            imageView.setImageBitmap(bitmap);
         } else if (cancelPotentialWork(data, imageView)) {
             final BitmapWorkerTask task = new BitmapWorkerTask(imageView);
             final AsyncDrawable asyncDrawable =
                     new AsyncDrawable(mResources, mLoadingBitmap, task);
-            Glide.with(imageView.getContext())
+            /*Glide.with(imageView.getContext())
                     .load(asyncDrawable)
                     .fitCenter()
-                    .into(imageView);
-            //imageView.setImageDrawable(asyncDrawable);
+                    .into(imageView);*/
+            imageView.setImageDrawable(asyncDrawable);
             task.execute(data);
         }
     }

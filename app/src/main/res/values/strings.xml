@@ -48,4 +48,6 @@
     <string name="search_hint">Find contacts</string>
 
     <string name="menu_edit_contact">Edit Contact</string>
+    <item type="id" name="TAG_CONTACT_ID"/>
+    <item type="id" name="TAG_HAS_WN"/>
 </resources>

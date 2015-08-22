@@ -19,6 +19,7 @@ package learn2crack.activities;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 
+import android.content.ContentResolver;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -69,6 +70,7 @@ import android.widget.Toast;
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 
 import learn2crack.chat.BuildConfig;
@@ -154,8 +156,8 @@ public class ContactsListFragment extends ListFragment implements
             // retrieve previous search term and previously selected search
             // result.
             mSearchTerm = savedInstanceState.getString(SearchManager.QUERY);
-            mPreviouslySelectedSearchItem =
-                    savedInstanceState.getInt(STATE_PREVIOUSLY_SELECTED_KEY, 0);
+            //mPreviouslySelectedSearchItem =
+            //        savedInstanceState.getInt(STATE_PREVIOUSLY_SELECTED_KEY, 0);
         }
 
         /*
@@ -174,13 +176,15 @@ public class ContactsListFragment extends ListFragment implements
             protected Bitmap processBitmap(Object data) {
                 // This gets called in a background thread and passed the data from
                 // ImageLoader.loadImage().
+                if(data instanceof Integer){
+                    return loadContactPhotoThumbnail(String.valueOf(data) , getImageSize());
+                }
                 return loadContactPhotoThumbnail((String) data, getImageSize());
             }
         };
 
         // Set a placeholder loading image for the image loader
         mImageLoader.setLoadingImage(R.drawable.ic_contact_picture_holo_light);
-
         // Add a cache to the image loader
         mImageLoader.addImageCache(getActivity().getSupportFragmentManager(), 0.1f);
     }
@@ -280,13 +284,14 @@ public class ContactsListFragment extends ListFragment implements
 
         registerForContextMenu(v);
         v.showContextMenu();
-        unregisterForContextMenu(v);
+        //unregisterForContextMenu(v);
 
         // If two-pane layout sets the selected item to checked so it remains highlighted. In a
         // single-pane layout a new activity is started so this is not needed.
         if (mIsTwoPaneLayout) {
             getListView().setItemChecked(position, true);
         }
+        //getListView().setItemChecked(position, false);
     }
 
     /**
@@ -708,10 +713,12 @@ public class ContactsListFragment extends ListFragment implements
             holder.text2 = (TextView) itemLayout.findViewById(android.R.id.text2);
             //holder.icon = (QuickContactBadge) itemLayout.findViewById(android.R.id.icon);
             holder.icon = (ImageView) itemLayout.findViewById(android.R.id.icon);
+            //holder.hasWn = (ImageView) itemLayout.findViewById(android.R.id.icon2);
             // Stores the resourceHolder instance in itemLayout. This makes resourceHolder
             // available to bindView and other methods that receive a handle to the item view.
             itemLayout.setTag(holder);
-
+            //itemLayout.setClickable(true);
+            //itemLayout.setFocusable(false);
             // Returns the item layout view
             return itemLayout;
         }
@@ -724,22 +731,35 @@ public class ContactsListFragment extends ListFragment implements
             // Gets handles to individual view resources
             final ViewHolder holder = (ViewHolder) view.getTag();
             String accountType="",accountName="";
-
+            boolean haswn = false;
+            List<String> wnNumbers;
             Cursor cursor2 = null;
+            int tagStartIndex = 3;
+            String phoneNumber="";
             try {
-
+                view.setTag(R.id.TAG_CONTACT_ID,cursor.getString(ContactsQuery.ID));
+                view.setTag(R.id.TAG_HAS_WN,false);
+                String rawAccountID="";
                 cursor2 = context.getContentResolver().query(ContactsContract.RawContacts.CONTENT_URI,
-                        new String[]{ContactsContract.RawContacts.ACCOUNT_NAME, ContactsContract.RawContacts.ACCOUNT_TYPE},
+                        new String[]{ContactsContract.RawContacts.ACCOUNT_NAME, ContactsContract.RawContacts.ACCOUNT_TYPE,ContactsContract.RawContacts._ID},
                         ContactsContract.RawContacts.CONTACT_ID + "=? AND "+ContactsContract.RawContacts.ACCOUNT_TYPE + "=?",
                         new String[]{cursor.getString(ContactsQuery.ID) , "learn2crack.chat.account"},
                         null);
 
                 if (cursor2 != null) {
                     int numOfAccounts = cursor2.getCount();
+                    if(numOfAccounts>0){
+                        view.setTag(R.id.TAG_HAS_WN,true);
+                    }
                     while (numOfAccounts > 0) {
                         cursor2.moveToFirst();
                         accountName = cursor2.getString(cursor2.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_NAME));
                         accountType = cursor2.getString(cursor2.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_TYPE));
+                        rawAccountID = cursor2.getString(cursor2.getColumnIndex(ContactsContract.RawContacts._ID));
+                        haswn =true;
+                        view.setTag(R.id.TAG_CONTACT_ID,rawAccountID);
+                        //phoneNumber = cursor.getString(ContactsQuery.RAW_PHONE);
+
                         numOfAccounts--;
                     }
                 }
@@ -808,6 +828,13 @@ public class ContactsListFragment extends ListFragment implements
             // Loads the thumbnail image pointed to by photoUri into the QuickContactBadge in a
             // background worker thread
             mImageLoader.loadImage(photoUri, holder.icon);
+            //Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getResources().getResourcePackageName(R.drawable.ic_action_add) + '/' + getResources().getResourceTypeName(R.drawable.ic_action_add) + '/' + getResources().getResourceEntryName(R.drawable.ic_action_add) );
+           // if(haswn){
+                //mImageLoader.loadImage(photoUri, holder.hasWn);
+            //}
+            /*else{
+                mImageLoader.loadImage(R.drawable.ic_action_edit, holder.hasWn);
+            }*/
         }
 
         /**
@@ -873,6 +900,8 @@ public class ContactsListFragment extends ListFragment implements
             TextView text2;
             //QuickContactBadge icon;
             ImageView icon;
+            ImageView hasWn;
+            ImageView hasInviteImage;
         }
     }
 
@@ -951,9 +980,6 @@ public class ContactsListFragment extends ListFragment implements
                 // you generate the pointer from the contact's ID value and constants defined in
                 // android.provider.ContactsContract.Contacts.
                 Utils.hasHoneycomb() ? Contacts.PHOTO_THUMBNAIL_URI : Contacts._ID,
-
-                ContactsContract.RawContacts._ID,
-
                 // The sort order column for the returned Cursor, used by the AlphabetIndexer
                 SORT_ORDER,
         };
@@ -963,7 +989,6 @@ public class ContactsListFragment extends ListFragment implements
         final static int LOOKUP_KEY = 1;
         final static int DISPLAY_NAME = 2;
         final static int PHOTO_THUMBNAIL_DATA = 3;
-        final static int RAW_CONTACT_ID = 4;
-        final static int SORT_KEY = 5;
+        final static int SORT_KEY = 4;
     }
 }

@@ -350,7 +350,78 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        String[] whereArgs = new String[]{String.valueOf(mContactUri)};
+        if (v.getTag(R.id.TAG_CONTACT_ID) == null) {
+            // context menu logic
+            return;
+        }
+        Cursor cursor2 = null;
+        String contactID = (String)v.getTag(R.id.TAG_CONTACT_ID);
+       boolean hasWn = (Boolean)(v.getTag(R.id.TAG_HAS_WN));
+        try {
+            if (hasWn) {
+                cursor2 = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                        new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER},
+                        ContactsContract.Data.RAW_CONTACT_ID + "=?",
+                        new String[]{contactID}, null);
+                SharedPreferences prefs = context.getSharedPreferences("Chat", 0);
+                SharedPreferences.Editor edit = prefs.edit();
+                edit.putString("CONTACT_HAS_WN", "1");
+                edit.commit();
+            } else {
+                cursor2 = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                        new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER},
+                        ContactsContract.Data.CONTACT_ID + "=?",
+                        new String[]{contactID}, null);
+                SharedPreferences prefs = context.getSharedPreferences("Chat", 0);
+                SharedPreferences.Editor edit = prefs.edit();
+                edit.putString("CONTACT_HAS_WN", "0");
+                edit.commit();
+            }
+
+
+            int numOfPhones = cursor2.getCount();
+            String phoneNumber = "";
+            if(numOfPhones>1) {
+                while (numOfPhones > 0) {
+                    cursor2.moveToFirst();
+                    phoneNumber = cursor2.getString(cursor2.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    menu.add(phoneNumber);
+                    numOfPhones--;
+                }
+                return;
+            }
+            cursor2.moveToFirst();
+            phoneNumber = cursor2.getString(cursor2.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+            if(hasWn){
+                Bundle args = new Bundle();
+                args.putString("mobno", phoneNumber);
+                args.putString("type", "HimAndHer");
+                args.putString("status", "new");
+                Intent chat = new Intent(context, WnMessageNewActivity.class);
+                chat.putExtra("INFO", args);
+                chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                context.startActivity(chat);
+            }
+            else{
+                Intent intentt = new Intent(Intent.ACTION_VIEW);
+                intentt.setData(Uri.parse("sms:"));
+                intentt.setType("vnd.android-dir/mms-sms");
+                //intentt.putExtra(Intent.EXTRA_TEXT, "invitation to use wn");
+                intentt.putExtra("address",  phoneNumber);
+                intentt.putExtra("sms_body", "invitation to use wn");
+                intentt.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intentt);
+            }
+        }
+        catch (Exception ex) {
+            Log.e(TAG, ex.getLocalizedMessage());
+        }
+        finally {
+            cursor2.close();
+        }
+
+        /*String[] whereArgs = new String[]{String.valueOf(mContactUri)};
         Log.d(TAG, String.valueOf(mContactUri));
         Cursor cursor2 = null;
         String id = "";
@@ -392,7 +463,36 @@ public class MainActivity extends AppCompatActivity implements
                 cursor2.close();
             }
 
+        }*/
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        SharedPreferences prefs = context.getSharedPreferences("Chat", 0);
+        String hasWN = prefs.getString("CONTACT_HAS_WN", "0");
+        String phone = item.getTitle().toString();
+        if(hasWN.equals("1")) {
+
+            Bundle args = new Bundle();
+            args.putString("mobno", phone);
+            args.putString("type", "HimAndHer");
+            args.putString("status", "new");
+            Intent chat = new Intent(context, WnMessageNewActivity.class);
+            chat.putExtra("INFO", args);
+            chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            context.startActivity(chat);
         }
+        else{
+            Intent intentt = new Intent(Intent.ACTION_VIEW);
+            intentt.setData(Uri.parse("sms:"));
+            intentt.setType("vnd.android-dir/mms-sms");
+            intentt.putExtra(Intent.EXTRA_TEXT, "invitation to use wn");
+            intentt.putExtra("address",  phone);
+            intentt.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intentt);
+        }
+        return true;
     }
 
     @Override
