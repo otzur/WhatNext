@@ -158,6 +158,7 @@ public class ContactsListFragment extends ListFragment implements
             mSearchTerm = savedInstanceState.getString(SearchManager.QUERY);
             //mPreviouslySelectedSearchItem =
             //        savedInstanceState.getInt(STATE_PREVIOUSLY_SELECTED_KEY, 0);
+            //getListView().setOnItemClickListener(this);
         }
 
         /*
@@ -203,7 +204,7 @@ public class ContactsListFragment extends ListFragment implements
         // Set up ListView, assign adapter and set some listeners. The adapter was previously
         // created in onCreate().
         setListAdapter(mAdapter);
-        registerForContextMenu(getListView());
+        //registerForContextMenu(getListView());
         getListView().setOnItemClickListener(this);
         getListView().setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
@@ -263,6 +264,12 @@ public class ContactsListFragment extends ListFragment implements
     }
 
     @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l,v,position,id);
+        Toast.makeText(v.getContext(), "onlist item click", Toast.LENGTH_LONG);
+    }
+
+    @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
         // Gets the Cursor object currently bound to the ListView
         final Cursor cursor = mAdapter.getCursor();
@@ -282,9 +289,11 @@ public class ContactsListFragment extends ListFragment implements
         // displays contact details in its own Fragment.
         mOnContactSelectedListener.onContactSelected(uri);
 
-        registerForContextMenu(v);
-        v.showContextMenu();
-        //unregisterForContextMenu(v);
+        registerForContextMenu(parent);
+        parent.setTag(R.id.TAG_HAS_WN,v.getTag(R.id.TAG_HAS_WN));
+        parent.setTag(R.id.TAG_CONTACT_ID,v.getTag(R.id.TAG_CONTACT_ID));
+        parent.showContextMenu();
+        unregisterForContextMenu(parent);
 
         // If two-pane layout sets the selected item to checked so it remains highlighted. In a
         // single-pane layout a new activity is started so this is not needed.
