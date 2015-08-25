@@ -138,7 +138,7 @@ public class WnMessageNewActivity extends AppCompatActivity {
 
         Log.i(TAG, "status = " + status);
 
-        switch (status){
+        /*switch (status){
 
             case "new":
                 break;
@@ -151,7 +151,7 @@ public class WnMessageNewActivity extends AppCompatActivity {
                 tabLayout.setVisibility(View.INVISIBLE);
                 break;
             }
-        }
+        }*/
 
     }
 
@@ -217,6 +217,7 @@ public class WnMessageNewActivity extends AppCompatActivity {
             params.add(new BasicNameValuePair("tab", ""+ selectedTab));
             params.add(new BasicNameValuePair("type", "" + type));
             params.add(new BasicNameValuePair("status", "" + status));
+            params.add(new BasicNameValuePair("associated_to_message_id", ""+null));
             //if(mAdapter != null)
             //{
                 WnMessageRowOptionFragment of = getVisibleFragment(selectedTab);
@@ -231,7 +232,7 @@ public class WnMessageNewActivity extends AppCompatActivity {
             JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/send", params);
 
             dba.open();
-            dba.insert(uuid.toString(), "message", from, to, selected_options ,type, status );// Insert record in your DB
+            dba.insert(uuid.toString(), "message", from, to, selected_options ,type, status, 1, null );// Insert record in your DB
             dba.close();
 
             Log.i(TAG, "saved in databased");

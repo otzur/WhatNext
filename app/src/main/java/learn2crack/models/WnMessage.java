@@ -14,6 +14,8 @@ public class WnMessage {
     private String type;
     private String Status;
     private String delivery_date;
+    private int filled_by_you;
+    private String associated_to_message_id;
 
 
     public long getId() {
@@ -85,6 +87,14 @@ public class WnMessage {
     public void setStatus(String status) {
         Status = status;
     }
+
+    public void setFilled_by_you(int filled_by_you){this.filled_by_you = filled_by_you;}
+
+    public int getFilled_by_you(){ return this.filled_by_you;}
+
+    public void setAssociated_to_message_id(String associated_to_message_id){ this.associated_to_message_id = associated_to_message_id;}
+
+    public String getAssociated_to_message_id(){return this.associated_to_message_id;}
 
     // Will be used by the ArrayAdapter in the ListView
     @Override

@@ -79,7 +79,7 @@
     <!--</android.support.v4.widget.NestedScrollView>-->
     </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton
+   <!-- <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabSend"
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"
@@ -87,7 +87,14 @@
     app:layout_anchorGravity="bottom|right|end"
     android:src="@drawable/ic_discuss"
     android:layout_margin="@dimen/fab_margin"
-    android:clickable="true"/>
+    android:clickable="true"/>-->
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabSend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_discuss" />
 
 </android.support.design.widget.CoordinatorLayout>
 

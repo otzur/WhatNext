@@ -60,6 +60,7 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
     private String to;
     private String type;
     private String status;
+    private String associated_to_msg_id;
 
 
     @Override
@@ -102,6 +103,7 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
         if (bundle.getString("msg_id") != null) {
 
             //tvUserName.setText(bundle.getString("name"));
+            associated_to_msg_id=bundle.getString("msg_id");
             Toast.makeText(getApplicationContext(), "UUID:  " + bundle.getString("msg_id"), Toast.LENGTH_LONG).show();
         }
 
@@ -142,7 +144,7 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
 
         Log.i(TAG, "status = " + status);
 
-        switch (status) {
+        /*switch (status) {
 
             case "new":
                 break;
@@ -154,7 +156,7 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
                 //tabLayout.setVisibility(View.INVISIBLE);
                 break;
             }
-        }
+        }*/
 
     }
 
@@ -235,8 +237,9 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
             params.add(new BasicNameValuePair("tab", "" + selectedTab));
             params.add(new BasicNameValuePair("type", "" + type));
             params.add(new BasicNameValuePair("status", "" + status));
-            //if(mAdapter != null)
-            //{
+            params.add(new BasicNameValuePair("associated_to_message_id", ""+associated_to_msg_id));
+            WnMessageRowOptionFragment of = getVisibleFragment(0);
+            String selected_options = of.getSelectedOptions();
 
             params.add((new BasicNameValuePair("selected", selected)));
             Log.i(TAG, "selected = " + selected);
@@ -250,7 +253,9 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
 //            dba.insert(uuid.toString(), "message", from, to, selected_options ,type, status );// Insert record in your DB
 //            dba.close();
 //            Log.i(TAG, "saved in databased");
-
+            dba.open();
+            dba.insert(uuid.toString(), "message", from, to, selected_options ,type, status, 1, associated_to_msg_id);// Insert record in your DB
+            dba.close();
             return jObj;
 
         }

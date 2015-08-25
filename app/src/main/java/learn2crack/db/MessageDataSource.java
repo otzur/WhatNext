@@ -23,7 +23,8 @@ public class MessageDataSource {
     private MessageDatabaseHelper DBHelper;
     private SQLiteDatabase db;
     private String[] allColumns = { DBHelper.KEY_ROWID, DBHelper.KEY_MESSAGE_ID,  DBHelper.KEY_MESSAGE, DBHelper.KEY_FROM
-            ,DBHelper.KEY_TO, DBHelper.KEY_OPTION_SELECTED, DBHelper.KEY_TYPE, DBHelper.KEY_STATUS,  DBHelper.KEY_CREATION_DATE };
+            ,DBHelper.KEY_TO, DBHelper.KEY_OPTION_SELECTED, DBHelper.KEY_TYPE, DBHelper.KEY_STATUS,  DBHelper.KEY_CREATION_DATE
+            ,DBHelper.KEY_FILLED_BY_YOU,DBHelper.KEY_ASSOCIATED_TO_MESSAGE_ID};
 
     public MessageDataSource(Context ctx) {
 
@@ -35,7 +36,7 @@ public class MessageDataSource {
 
 
         db = DBHelper.getWritableDatabase();
-        //DBHelper.onUpgrade(db, 0, 1);
+        DBHelper.onUpgrade(db, 0, 1);
     }
 
     //---close SQLite DB---
@@ -54,7 +55,8 @@ public class MessageDataSource {
 //        return db.insert(TABLE_NAME, null, initialValues);
 //    }
 
-    public WnMessage insert(String message_id , String message, String user , String to_user, String selectedOptions, String type, String status) {
+    public WnMessage insert(String message_id , String message, String user , String to_user, String selectedOptions, String type, String status,
+                int filled_by_you, String associated_to_message_id) {
         //Log.i(TAG, "to_user = " + to_user);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
@@ -69,6 +71,8 @@ public class MessageDataSource {
         initialValues.put(DBHelper.KEY_TYPE, type);
         initialValues.put(DBHelper.KEY_STATUS, status);
         initialValues.put(DBHelper.KEY_CREATION_DATE, currentDatedTime);
+        initialValues.put(DBHelper.KEY_FILLED_BY_YOU, filled_by_you);
+        initialValues.put(DBHelper.KEY_ASSOCIATED_TO_MESSAGE_ID, associated_to_message_id);
 
         Log.i(TAG, "Going to insert into database");
 //        Cursor cursor = getAllData();
@@ -109,6 +113,8 @@ public class MessageDataSource {
         message.setType(cursor.getString(6));
         message.setStatus(cursor.getString(7));
         message.setDelivery_date(cursor.getString(8));
+        message.setFilled_by_you(cursor.getInt(9));
+        message.setAssociated_to_message_id(cursor.getString(10));
         return message;
     }
 
@@ -127,5 +133,20 @@ public class MessageDataSource {
         // make sure to close the cursor
         cursor.close();
         return messages;
+    }
+
+    public WnMessage getMessage(String message_id) {
+        WnMessage message = null;
+
+        Cursor cursor = db.query(DBHelper.TABLE_NAME,
+                allColumns, DBHelper.KEY_ROWID +"=?", new String[]{message_id}, null, null, null);
+
+        cursor.moveToFirst();
+        if(!cursor.isAfterLast()) {
+            message = cursorToMessage(cursor);
+        }
+        // make sure to close the cursor
+        cursor.close();
+        return message;
     }
 }

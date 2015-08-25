@@ -115,14 +115,14 @@ public class MainActivity extends AppCompatActivity implements
                 setupViewPager(viewPager);
             }
 
-            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+            /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
-            });
+            });*/
 
 //            drawerFragment = (FragmentDrawer)
 //                    getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);

@@ -24,6 +24,8 @@ public class MessageDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_TYPE = "type";
     public static final String KEY_STATUS = "status";
     public static final String KEY_CREATION_DATE = "delivery_date";
+    public static final String KEY_FILLED_BY_YOU = "filled_by_current_user";
+    public static final String KEY_ASSOCIATED_TO_MESSAGE_ID = "associated_to_message_id";
 
     private static final String CREATE_TABLE = "create table userMessages ("
             + "_id integer primary key autoincrement, "
@@ -34,7 +36,21 @@ public class MessageDatabaseHelper extends SQLiteOpenHelper {
             + "option_selected text not null, "
             + "type text not null, "
             + "status text not null, "
-            + "delivery_date text not null);";
+            + "delivery_date text not null, "
+            + "filled_by_current_user integer not null, "
+            + "associated_to_message_id text);";
+
+   /* private static final String CREATE_TABLE_2 = "create table messageResponds ("
+            + "_id integer primary key autoincrement, "
+            + "message_id text not null , "
+            + "message text not null, "
+            + "user text not null, "
+            + "to_user text not null, "
+            + "option_selected text not null, "
+            + "type text not null, "
+            + "status text not null, "
+            + "delivery_date text not null,"
+            + "FOREIGN KEY(message_id) REFERENCES checklist(message_id));";*/
 
     MessageDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

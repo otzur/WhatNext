@@ -264,12 +264,6 @@ public class ContactsListFragment extends ListFragment implements
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l,v,position,id);
-        Toast.makeText(v.getContext(), "onlist item click", Toast.LENGTH_LONG);
-    }
-
-    @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
         // Gets the Cursor object currently bound to the ListView
         final Cursor cursor = mAdapter.getCursor();

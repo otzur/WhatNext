@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import learn2crack.activities.WnMessageReceiveActivity;
+import learn2crack.activities.WnMessageResultActivity;
 import learn2crack.chat.R;
 
 
@@ -58,7 +60,8 @@ public class MSGService extends IntentService {
                                         extras.getString("tab"),
                                         extras.getString("selected_options"),
                                         extras.getString("status"),
-                                        extras.getString("type"));
+                                        extras.getString("type"),
+                                        extras.getString("associated_to_msg_id"));
                 }
                 Log.i("WN", "Received: " + extras.getString("msg_id"));
                 Log.i("WN", "MSGService type: " + extras.getString("type"));
@@ -71,22 +74,36 @@ public class MSGService extends IntentService {
 
 
     private void sendNotification(String msg_id, String from,String tab,String selected_options,
-                                  String status , String type) {
+                                  String status , String type, String associated_to_msg_id) {
 
         Bundle args = new Bundle();
         args.putString("msg_id", msg_id);
         args.putString("mobno", from);
         args.putString("type", type);
-        args.putString("status", "received");
         args.putString("tab", tab);
         args.putString("selected_options", selected_options);
-        Intent chat = new Intent(this, WnMessageReceiveActivity.class);
+        args.putString("associated_to_msg_id",associated_to_msg_id);
+        Intent chat = null;
+        switch (status) {
+            case "new":
+                args.putString("status", "received");
+                chat = new Intent(this, WnMessageReceiveActivity.class);
+                break;
+            case "response":
+                args.putString("status", "response");
+                chat = new Intent(this, WnMessageResultActivity.class);
+                break;
+            default:
+                Log.e("WN","faild to figure message status");
+                return;
+        }
+
         chat.putExtra("INFO", args);
         notification = new NotificationCompat.Builder(this);
         notification.setContentTitle("New WN message from " + from);
         //notification.setContentText(msg);
         notification.setTicker("New WN Message!");
-        notification.setSmallIcon(R.drawable.ic_done);
+        notification.setSmallIcon(R.drawable.ic_discuss);
 
         PendingIntent contentIntent = PendingIntent.getActivity(this, 1000,
                 chat, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -95,6 +112,4 @@ public class MSGService extends IntentService {
         manager =(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(0, notification.build());
     }
-
-
 }
