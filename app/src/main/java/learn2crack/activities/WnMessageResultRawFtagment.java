@@ -32,7 +32,7 @@ public class WnMessageResultRawFtagment extends ListFragment {
 
         super.onCreateView(inflater, container, savedInstanceState);
 
-        Bundle bundle=getArguments();
+        Bundle bundle=getArguments().getBundle("INFO");
         //here is your list array
         int numberOfOptions = bundle.getInt("numberOfOptions");
 

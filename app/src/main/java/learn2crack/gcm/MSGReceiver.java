@@ -21,7 +21,7 @@ public class MSGReceiver  extends WakefulBroadcastReceiver {
         msgrcv.putExtra("tab", extras.getString("tab"));
         msgrcv.putExtra("status", extras.getString("status"));
         msgrcv.putExtra("selected_options", extras.getString("selected_options"));
-        msgrcv.putExtra("associated_to_msg_id", extras.getString("associated_to_msg_id"));
+        msgrcv.putExtra("a_to_msg_id", extras.getString("a_to_msg_id"));
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(msgrcv);
         ComponentName comp = new ComponentName(context.getPackageName(),MSGService.class.getName());

@@ -19,6 +19,7 @@ import org.apache.http.NameValuePair;
 
 import java.util.List;
 
+import learn2crack.adapters.FragmentAdapter;
 import learn2crack.chat.R;
 
 public class WnMessageResultActivity extends AppCompatActivity {
@@ -58,7 +59,11 @@ public class WnMessageResultActivity extends AppCompatActivity {
         if (bundle.getString("status") != null) {
             Toast.makeText(getApplicationContext(), "Status:  " + bundle.getString("status"), Toast.LENGTH_LONG).show();
         }
-        viewPager.setAdapter(new ResultPageAdapter(getSupportFragmentManager()));
+        FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager());
+        ResultFragment resultFragment= new ResultFragment();
+        resultFragment.setArguments(getIntent().getBundleExtra("INFO"));
+        fragmentAdapter.addFragment(resultFragment, "RESULT");
+        viewPager.setAdapter(fragmentAdapter);
     }
 
     @Override

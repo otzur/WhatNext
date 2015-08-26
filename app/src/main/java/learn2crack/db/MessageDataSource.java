@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,6 +14,9 @@ import java.util.Date;
 import java.util.List;
 
 import learn2crack.models.WnMessage;
+import learn2crack.models.WnMessageResult;
+
+import static learn2crack.utilities.Utils.getSelectedOpetions;
 
 /**
  * Created by otzur on 7/1/2015.
@@ -25,6 +29,8 @@ public class MessageDataSource {
     private String[] allColumns = { DBHelper.KEY_ROWID, DBHelper.KEY_MESSAGE_ID,  DBHelper.KEY_MESSAGE, DBHelper.KEY_FROM
             ,DBHelper.KEY_TO, DBHelper.KEY_OPTION_SELECTED, DBHelper.KEY_TYPE, DBHelper.KEY_STATUS,  DBHelper.KEY_CREATION_DATE
             ,DBHelper.KEY_FILLED_BY_YOU,DBHelper.KEY_ASSOCIATED_TO_MESSAGE_ID};
+
+    private String[] resultColumns = { DBHelper.KEY_MESSAGE_ID, DBHelper.KEY_OPTION_SELECTED, DBHelper.KEY_TYPE, DBHelper.KEY_ASSOCIATED_TO_MESSAGE_ID};
 
     public MessageDataSource(Context ctx) {
 
@@ -102,6 +108,28 @@ public class MessageDataSource {
         return cursor;
     }
 
+    public WnMessageResult getResultsForMessageID(String messageID){
+        WnMessageResult result = new WnMessageResult();
+        WnMessage message = getMessage(messageID);
+        if(message == null){
+            return  result;
+        }
+        String options =message.getOption_selected();
+        ArrayList<Integer> selectedOptions = getSelectedOpetions(options);
+        Log.i("WN", "selected first: " + options);
+        message = getMessage (message.getAssociated_to_message_id());
+        options = message.getOption_selected();
+        ArrayList<Integer> selectedOptions2 = getSelectedOpetions(options);
+        ArrayList<String> matched=new ArrayList<>();
+        for(int i = 0 ; i < selectedOptions.size() ; i++){
+            if(selectedOptions2.contains(selectedOptions.get(i))){
+                result.addMatched(""+selectedOptions.get(i));
+            }
+        }
+        Log.i("WN","selected first: " + options);
+        return result;
+    }
+
     private WnMessage cursorToMessage(Cursor cursor) {
         WnMessage message = new WnMessage();
         message.setId(cursor.getLong(0));
@@ -139,7 +167,7 @@ public class MessageDataSource {
         WnMessage message = null;
 
         Cursor cursor = db.query(DBHelper.TABLE_NAME,
-                allColumns, DBHelper.KEY_ROWID +"=?", new String[]{message_id}, null, null, null);
+                allColumns, DBHelper.KEY_MESSAGE_ID +"=?", new String[]{message_id}, null, null, null);
 
         cursor.moveToFirst();
         if(!cursor.isAfterLast()) {
