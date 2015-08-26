@@ -36,7 +36,7 @@ public class MessageDataSource {
 
 
         db = DBHelper.getWritableDatabase();
-        DBHelper.onUpgrade(db, 0, 1);
+        //DBHelper.onUpgrade(db, 0, 1);
     }
 
     //---close SQLite DB---
