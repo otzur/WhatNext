@@ -187,6 +187,7 @@ public class WnMessageNewActivity extends AppCompatActivity {
         private String to;
         private String type;
         private String status;
+        private String selected_options;
 
 
         public Send(int currentItem) {
@@ -217,12 +218,10 @@ public class WnMessageNewActivity extends AppCompatActivity {
             params.add(new BasicNameValuePair("tab", ""+ selectedTab));
             params.add(new BasicNameValuePair("type", "" + type));
             params.add(new BasicNameValuePair("status", "" + status));
-            params.add(new BasicNameValuePair("associated_to_message_id", ""+null));
-            //if(mAdapter != null)
-            //{
-                WnMessageRowOptionFragment of = getVisibleFragment(selectedTab);
-                String selected_options = of.getSelectedOptions();
-                params.add((new BasicNameValuePair("selected_options", selected_options)));
+            params.add(new BasicNameValuePair("a_to_msg_id", "none"));
+            WnMessageRowOptionFragment of = getVisibleFragment(selectedTab);
+            selected_options = of.getSelectedOptions();
+            params.add((new BasicNameValuePair("selected_options", selected_options)));
             Log.i(TAG, "selected_options = " + of.getSelectedOptions());
             Log.i(TAG, "type ==== " +type);
             //}
