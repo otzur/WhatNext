@@ -33,6 +33,7 @@ import java.util.UUID;
 
 import learn2crack.chat.R;
 import learn2crack.cheese.Cheeses;
+import learn2crack.db.ConversationDataSource;
 import learn2crack.db.MessageDataSource;
 import learn2crack.utilities.JSONParser;
 
@@ -60,7 +61,8 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
     private String to;
     private String type;
     private String status;
-    private String a_to_msg_id;
+    private String local_c_id;
+    private String remote_c_id;
 
 
     @Override
@@ -100,11 +102,14 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "tab:" + bundle.getString("tab") + " ops:" + bundle.getString("selected_options"), Toast.LENGTH_LONG).show();
         }
 
-        if (bundle.getString("msg_id") != null) {
+        if (bundle.getString("remote_c_id") != null) {
+            remote_c_id=bundle.getString("remote_c_id");
+            Toast.makeText(getApplicationContext(), "remote_c_id:  " + bundle.getString("remote_c_id"), Toast.LENGTH_LONG).show();
+        }
 
-            //tvUserName.setText(bundle.getString("name"));
-            a_to_msg_id=bundle.getString("msg_id");
-            Toast.makeText(getApplicationContext(), "UUID:  " + bundle.getString("msg_id"), Toast.LENGTH_LONG).show();
+        if (bundle.getString("local_c_id") != null) {
+            local_c_id=bundle.getString("local_c_id");
+            Toast.makeText(getApplicationContext(), "local_c_id:  " + bundle.getString("local_c_id"), Toast.LENGTH_LONG).show();
         }
 
         if (bundle.getString("type") != null) {
@@ -198,7 +203,7 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
     private class Send extends AsyncTask<String, String, JSONObject> {
 
         MessageDataSource dba = new MessageDataSource(getApplicationContext());//Create this object in onCreate() method
-
+        ConversationDataSource dbConversations = new ConversationDataSource(getApplicationContext());
 
         private String selected;
         private String from;
@@ -229,15 +234,15 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
             JSONParser json = new JSONParser();
             UUID uuid = UUID.randomUUID();
 
-            params = new ArrayList<>();
 
+            params = new ArrayList<>();
             params.add((new BasicNameValuePair("msg_id", uuid.toString())));
             params.add(new BasicNameValuePair("fromu", from));
             params.add(new BasicNameValuePair("to", to));
             params.add(new BasicNameValuePair("tab", "" + selectedTab));
             params.add(new BasicNameValuePair("type", "" + type));
             params.add(new BasicNameValuePair("status", "" + status));
-            params.add(new BasicNameValuePair("a_to_msg_id", ""+a_to_msg_id));
+            params.add(new BasicNameValuePair("c_id", ""+remote_c_id));
             WnMessageRowOptionFragment of = getVisibleFragment(0);
             selected_options = of.getSelectedOptions();
 
@@ -254,7 +259,7 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
 //            dba.close();
 //            Log.i(TAG, "saved in databased");
             dba.open();
-            dba.insert(uuid.toString(), "message", from, to, selected_options ,type, status, 1, a_to_msg_id);// Insert record in your DB
+            dba.insert(uuid.toString(), "message", from, to, selected_options ,type, status, 1, Long.valueOf(local_c_id));// Insert record in your DB
             dba.close();
             return jObj;
 

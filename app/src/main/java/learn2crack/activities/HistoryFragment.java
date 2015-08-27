@@ -13,13 +13,13 @@ import java.util.List;
 import learn2crack.chat.R;
 import learn2crack.models.WnMessage;
 import learn2crack.db.MessageDataSource;
-import learn2crack.db.MessageDatabaseHelper;
+import learn2crack.db.DatabaseHelper;
 
 
 public class HistoryFragment extends ListFragment {
 
 
-    private MessageDatabaseHelper DBHelper;
+    private DatabaseHelper DBHelper;
 
     public HistoryFragment() {
         // Required empty public constructor

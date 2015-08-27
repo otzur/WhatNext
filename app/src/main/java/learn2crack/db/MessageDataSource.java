@@ -6,10 +6,10 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -24,17 +24,17 @@ import static learn2crack.utilities.Utils.getSelectedOpetions;
 public class MessageDataSource {
 
     private static final String TAG = "WN";
-    private MessageDatabaseHelper DBHelper;
+    private DatabaseHelper DBHelper;
     private SQLiteDatabase db;
     private String[] allColumns = { DBHelper.KEY_ROWID, DBHelper.KEY_MESSAGE_ID,  DBHelper.KEY_MESSAGE, DBHelper.KEY_FROM
             ,DBHelper.KEY_TO, DBHelper.KEY_OPTION_SELECTED, DBHelper.KEY_TYPE, DBHelper.KEY_STATUS,  DBHelper.KEY_CREATION_DATE
-            ,DBHelper.KEY_FILLED_BY_YOU,DBHelper.KEY_ASSOCIATED_TO_MESSAGE_ID};
+            ,DBHelper.KEY_FILLED_BY_YOU,DBHelper.KEY_CONVERSATION_ID};
 
-    private String[] resultColumns = { DBHelper.KEY_MESSAGE_ID, DBHelper.KEY_OPTION_SELECTED, DBHelper.KEY_TYPE, DBHelper.KEY_ASSOCIATED_TO_MESSAGE_ID};
+    private String[] resultColumns = { DBHelper.KEY_MESSAGE_ID, DBHelper.KEY_OPTION_SELECTED, DBHelper.KEY_TYPE, DBHelper.KEY_CONVERSATION_ID};
 
     public MessageDataSource(Context ctx) {
 
-        DBHelper = new MessageDatabaseHelper(ctx);
+        DBHelper = DatabaseHelper.getInstance(ctx);
     }
 
     //---open SQLite DB---
@@ -58,11 +58,11 @@ public class MessageDataSource {
 //        Log.w(TAG, "Going to insert into database");
 //        Cursor cursor = getAllData();
 //        int count = cursor.getCount();
-//        return db.insert(TABLE_NAME, null, initialValues);
+//        return db.insert(TABLE_MESSAGES_NAME, null, initialValues);
 //    }
 
     public WnMessage insert(String message_id , String message, String user , String to_user, String selectedOptions, String type, String status,
-                int filled_by_you, String associated_to_message_id) {
+                int filled_by_you, long conversationId) {
         //Log.i(TAG, "to_user = " + to_user);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
@@ -78,15 +78,15 @@ public class MessageDataSource {
         initialValues.put(DBHelper.KEY_STATUS, status);
         initialValues.put(DBHelper.KEY_CREATION_DATE, currentDatedTime);
         initialValues.put(DBHelper.KEY_FILLED_BY_YOU, filled_by_you);
-        initialValues.put(DBHelper.KEY_ASSOCIATED_TO_MESSAGE_ID, associated_to_message_id);
+        initialValues.put(DBHelper.KEY_CONVERSATION_ID, conversationId);
 
         Log.i(TAG, "Going to insert into database");
 //        Cursor cursor = getAllData();
 //        int count = cursor.getCount();
 //        Log.w(TAG, "Database size " + count);
-        long insertId = db.insert(DBHelper.TABLE_NAME, null, initialValues);
+        long insertId = db.insert(DBHelper.TABLE_MESSAGES_NAME, null, initialValues);
 
-        Cursor cursor = db.query(DBHelper.TABLE_NAME, allColumns, DBHelper.KEY_ROWID + " = " + insertId, null, null, null, null);
+        Cursor cursor = db.query(DBHelper.TABLE_MESSAGES_NAME, allColumns, DBHelper.KEY_ROWID + " = " + insertId, null, null, null, null);
         cursor.moveToFirst();
         WnMessage newWnMessage = cursorToMessage(cursor);
         cursor.close();
@@ -96,15 +96,15 @@ public class MessageDataSource {
 
     //---Delete All Data from table in SQLite DB---
     public void deleteAll() {
-        db.delete(DBHelper.TABLE_NAME, null, null);
+        db.delete(DBHelper.TABLE_MESSAGES_NAME, null, null);
     }
 
     //---Get All Contacts from table in SQLite DB---
     public Cursor getAllData() {
-//        return db.query(DBHelper.TABLE_NAME, new String[] {DBHelper.KEY_FROM, DBHelper.KEY_OPTION_SELECTED, DBHelper.KEY_TYPE},
+//        return db.query(DBHelper.TABLE_MESSAGES_NAME, new String[] {DBHelper.KEY_FROM, DBHelper.KEY_OPTION_SELECTED, DBHelper.KEY_TYPE},
 //               null, null, null, null, null);
 
-        Cursor cursor = db.query(DBHelper.TABLE_NAME, allColumns, null, null, null, null, null);
+        Cursor cursor = db.query(DBHelper.TABLE_MESSAGES_NAME, allColumns, null, null, null, null, null);
         return cursor;
     }
 
@@ -116,17 +116,19 @@ public class MessageDataSource {
         }
         String options =message.getOption_selected();
         ArrayList<Integer> selectedOptions = getSelectedOpetions(options);
-        Log.i("WN", "selected first: " + options);
-        message = getMessage (message.getAssociated_to_message_id());
-        options = message.getOption_selected();
-        ArrayList<Integer> selectedOptions2 = getSelectedOpetions(options);
-        ArrayList<String> matched=new ArrayList<>();
-        for(int i = 0 ; i < selectedOptions.size() ; i++){
-            if(selectedOptions2.contains(selectedOptions.get(i))){
-                result.addMatched(""+selectedOptions.get(i));
+        ArrayList<WnMessage> relatedMessages = getRelatedMessages(message.getConversation_id()
+                , new ArrayList<String>(Arrays.asList(messageID)));
+        int relatedMessageCount = relatedMessages.size();
+        for(int k=0 ; k < relatedMessageCount ; k++) {
+            message = relatedMessages.get(k);
+            options = message.getOption_selected();
+            ArrayList<Integer> selectedOptions2 = getSelectedOpetions(options);
+            for (int i = 0; i < selectedOptions.size(); i++) {
+                if (selectedOptions2.contains(selectedOptions.get(i))) {
+                    result.addMatched("" + selectedOptions.get(i));
+                }
             }
         }
-        Log.i("WN","selected first: " + options);
         return result;
     }
 
@@ -142,14 +144,14 @@ public class MessageDataSource {
         message.setStatus(cursor.getString(7));
         message.setDelivery_date(cursor.getString(8));
         message.setFilled_by_you(cursor.getInt(9));
-        message.setAssociated_to_message_id(cursor.getString(10));
+        message.setConversation_id(cursor.getLong(10));
         return message;
     }
 
     public List<WnMessage> getAllMessages() {
         List<WnMessage> messages = new ArrayList<>();
 
-        Cursor cursor = db.query(DBHelper.TABLE_NAME,
+        Cursor cursor = db.query(DBHelper.TABLE_MESSAGES_NAME,
                 allColumns, null, null, null, null, null);
 
         cursor.moveToFirst();
@@ -163,10 +165,37 @@ public class MessageDataSource {
         return messages;
     }
 
+    public ArrayList<WnMessage> getRelatedMessages(long conversationID, ArrayList<String> exclude){
+        ArrayList<WnMessage> messages = new ArrayList<>();
+        String excludeString="";
+        int excludeLen = exclude.size();
+        for(int i = 0 ; i < excludeLen ; i++){
+            excludeString+= exclude.get(i);
+            if(i+1!=excludeLen){
+                excludeString+=", ";
+            }
+        }
+        Cursor cursor = db.query(DBHelper.TABLE_MESSAGES_NAME,
+                allColumns,"("+ DBHelper.KEY_CONVERSATION_ID +")=? AND ("+DBHelper.KEY_MESSAGE_ID+" NOT IN (?))"
+        ,new String[]{Long.toString(conversationID), excludeString}, null, null, null);
+        cursor.moveToFirst();
+        int length = cursor.getCount();
+        for(int i = 0 ; i < length ; i++){
+            WnMessage message = cursorToMessage(cursor);
+            if(i != 1 || !messages.get(0).getMessage_id().equals(message.getMessage_id())) {
+                messages.add(message);
+            }
+            cursor.moveToNext();
+        }
+        // make sure to close the cursor
+        cursor.close();
+        return messages;
+    }
+
     public WnMessage getMessage(String message_id) {
         WnMessage message = null;
 
-        Cursor cursor = db.query(DBHelper.TABLE_NAME,
+        Cursor cursor = db.query(DBHelper.TABLE_MESSAGES_NAME,
                 allColumns, DBHelper.KEY_MESSAGE_ID +"=?", new String[]{message_id}, null, null, null);
 
         cursor.moveToFirst();

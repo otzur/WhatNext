@@ -9,9 +9,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -69,8 +67,8 @@ public class MainActivity extends AppCompatActivity implements
     SharedPreferences prefs;
     Context context;
     String regid;
-    //UserFragment userFragment ;
-    ContactsListFragment userFragment ;
+    //UserFragment contactListFragment ;
+    ContactsListFragment contactListFragment;
 
     // True if this activity instance is a search result view (used on pre-HC devices that load
     // search results in a separate instance of the activity rather than loading results in-line
@@ -84,8 +82,8 @@ public class MainActivity extends AppCompatActivity implements
         try {
             setContentView(R.layout.activity_main);
 
-            //userFragment = new UserFragment();
-            userFragment = new ContactsListFragment();
+            //contactListFragment = new UserFragment();
+            contactListFragment = new ContactsListFragment();
             Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(mToolbar);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -278,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements
 
         if (!reg_from.isEmpty()) {
             Toast.makeText(getApplicationContext(), "reg_from is no empty", Toast.LENGTH_LONG).show();
-            fragmentAdapter.addFragment(userFragment, "User Fragment");
+            fragmentAdapter.addFragment(contactListFragment, "User Fragment");
         }
         else
         {
@@ -302,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements
                         {
                             case R.id.nav_home:
                             {
-                                fragmentAdapter.addFragment(userFragment, "User");
+                                fragmentAdapter.addFragment(contactListFragment, "User");
                                 break;
                             }
                             case R.id.nav_friends:
@@ -549,8 +547,8 @@ public class MainActivity extends AppCompatActivity implements
     public void changeToUserScreen()
     {
         FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager());
-        //fragmentAdapter.addFragment(userFragment, "User");
-        fragmentAdapter.addFragment(userFragment, "User");
+        //fragmentAdapter.addFragment(contactListFragment, "User");
+        fragmentAdapter.addFragment(contactListFragment, "User");
         viewPager.setAdapter(fragmentAdapter);
 
     }

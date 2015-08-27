@@ -17,7 +17,9 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import learn2crack.activities.WnMessageReceiveActivity;
 import learn2crack.activities.WnMessageResultActivity;
 import learn2crack.chat.R;
+import learn2crack.db.ConversationDataSource;
 import learn2crack.db.MessageDataSource;
+import learn2crack.models.WnConversation;
 
 
 public class MSGService extends IntentService {
@@ -62,7 +64,7 @@ public class MSGService extends IntentService {
                                         extras.getString("selected_options"),
                                         extras.getString("status"),
                                         extras.getString("type"),
-                                        extras.getString("a_to_msg_id"));
+                                        extras.getString("c_id"));
                 }
                 Log.i("WN", "Received: " + extras.getString("msg_id"));
                 Log.i("WN", "MSGService type: " + extras.getString("type"));
@@ -75,7 +77,7 @@ public class MSGService extends IntentService {
 
 
     private void sendNotification(String msg_id, String from,String tab,String selected_options,
-                                  String status , String type, String a_to_msg_id) {
+                                  String status , String type, String c_id) {
 
         Bundle args = new Bundle();
         args.putString("msg_id", msg_id);
@@ -83,22 +85,30 @@ public class MSGService extends IntentService {
         args.putString("type", type);
         args.putString("tab", tab);
         args.putString("selected_options", selected_options);
-        args.putString("a_to_msg_id", a_to_msg_id);
+
         MessageDataSource dba=new MessageDataSource(getApplicationContext());
-        dba.open();
-        if(a_to_msg_id.equals("none")){
-            a_to_msg_id=null;
-        }
+        ConversationDataSource dbConversations=new ConversationDataSource(getApplicationContext());
         String to = getSharedPreferences("chat",0).getString("REG_FROM","");
-        dba.insert(msg_id, "message", from, to, selected_options ,type, status, 0, a_to_msg_id);
-        dba.close();
         Intent chat = null;
         switch (status) {
             case "new":
+                dbConversations.open();
+                WnConversation conversation = dbConversations.insert(2,
+                        Integer.valueOf(tab)+1, type);
+                dbConversations.close();
+                args.putString("remote_c_id", c_id);
+                args.putString("local_c_id", Long.toString(conversation.getId()));
+                 dba.open();
+                dba.insert(msg_id, "message", from, to, selected_options, type, status, 0, conversation.getId());
+                dba.close();
                 args.putString("status", "received");
                 chat = new Intent(this, WnMessageReceiveActivity.class);
                 break;
             case "response":
+                dba.open();
+                dba.insert(msg_id, "message", from, to, selected_options, type, status, 0, Long.valueOf(c_id));
+                dba.close();
+                args.putString("local_c_id", c_id);
                 args.putString("status", "response");
                 chat = new Intent(this, WnMessageResultActivity.class);
                 break;

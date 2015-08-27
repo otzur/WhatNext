@@ -34,7 +34,9 @@ import java.util.UUID;
 
 import learn2crack.chat.R;
 import learn2crack.cheese.Cheeses;
+import learn2crack.db.ConversationDataSource;
 import learn2crack.db.MessageDataSource;
+import learn2crack.models.WnConversation;
 import learn2crack.utilities.JSONParser;
 
 /**
@@ -180,7 +182,7 @@ public class WnMessageNewActivity extends AppCompatActivity {
     private class Send extends AsyncTask<String, String, JSONObject> {
 
         MessageDataSource dba=new MessageDataSource(getApplicationContext());//Create this object in onCreate() method
-
+        ConversationDataSource dbConversations = new ConversationDataSource(getApplicationContext());
 
         private int selectedTab;
         private String from;
@@ -210,15 +212,17 @@ public class WnMessageNewActivity extends AppCompatActivity {
             JSONParser json = new JSONParser();
             UUID uuid = UUID.randomUUID();
 
+            dbConversations.open();
+            WnConversation wnConversation= dbConversations.insert(2, selectedTab + 1, type);
+            dbConversations.close();
             params = new ArrayList<>();
-
             params.add((new BasicNameValuePair("msg_id",uuid.toString())));
             params.add(new BasicNameValuePair("fromu",from));
             params.add(new BasicNameValuePair("to", to));
             params.add(new BasicNameValuePair("tab", ""+ selectedTab));
             params.add(new BasicNameValuePair("type", "" + type));
             params.add(new BasicNameValuePair("status", "" + status));
-            params.add(new BasicNameValuePair("a_to_msg_id", "none"));
+            params.add(new BasicNameValuePair("c_id", Long.toString(wnConversation.getId())));
             WnMessageRowOptionFragment of = getVisibleFragment(selectedTab);
             selected_options = of.getSelectedOptions();
             params.add((new BasicNameValuePair("selected_options", selected_options)));
@@ -231,7 +235,7 @@ public class WnMessageNewActivity extends AppCompatActivity {
             JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/send", params);
 
             dba.open();
-            dba.insert(uuid.toString(), "message", from, to, selected_options ,type, status, 1, null );// Insert record in your DB
+            dba.insert(uuid.toString(), "message", from, to, selected_options ,type, status, 1, wnConversation.getId() );// Insert record in your DB
             dba.close();
 
             Log.i(TAG, "saved in databased");

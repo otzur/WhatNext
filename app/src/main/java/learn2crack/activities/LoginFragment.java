@@ -237,7 +237,7 @@ public class LoginFragment extends Fragment {
                 String res = json.getString("response");
                 if(res.equals("Sucessfully Registered")) {
 
-                    Fragment reg = new UserFragment();
+                    Fragment reg = new ContactsListFragment();
                     FragmentTransaction ft = getFragmentManager().beginTransaction();
                     ft.replace(R.id.viewpager, reg);
                     ft.setTransition(FragmentTransaction.TRANSIT_NONE);
