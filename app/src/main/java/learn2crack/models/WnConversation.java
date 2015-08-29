@@ -7,9 +7,11 @@ import android.util.Log;
  */
 public class WnConversation {
     private long id;
+    private String conversation_id;
     private String type;
     private int n_users;
     private int options_type;
+    private int tab;
 
     public long getId(){return this.id;}
 
@@ -33,5 +35,21 @@ public class WnConversation {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public void setConversation_id(String conversation_id) {
+        this.conversation_id = conversation_id;
+    }
+
+    public String getConversation_id() {
+        return conversation_id;
+    }
+
+    public int getTab() {
+        return tab;
+    }
+
+    public void setTab(int tab) {
+        this.tab = tab;
     }
 }

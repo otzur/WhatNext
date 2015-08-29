@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import learn2crack.adapters.FragmentAdapter;
 import learn2crack.chat.R;
 import learn2crack.cotacts.SyncUtils;
 import learn2crack.utilities.JSONParser;
@@ -222,7 +223,7 @@ public class LoginFragment extends Fragment {
                     Thread.sleep(1000);
                 }
                 catch (Exception e){
-
+                    Log.e("WN",e.getMessage());
                 }
             }
             params.add((new BasicNameValuePair("reg_id",prefs.getString("REG_ID",""))));
@@ -236,13 +237,16 @@ public class LoginFragment extends Fragment {
             try {
                 String res = json.getString("response");
                 if(res.equals("Sucessfully Registered")) {
-
-                    Fragment reg = new ContactsListFragment();
-                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    /*Fragment reg = new ContactsListFragment();
+                    FragmentTransaction ft = getChildFragmentManager().beginTransaction();
                     ft.replace(R.id.viewpager, reg);
                     ft.setTransition(FragmentTransaction.TRANSIT_NONE);
                     ft.addToBackStack(null);
-                    ft.commit();
+                    ft.commit();*/
+                    Intent chat = new Intent(getActivity(), MainActivity.class);
+                    chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    getActivity().startActivity(chat);
+
                 }else{
                     Toast.makeText(getActivity(),res,Toast.LENGTH_SHORT).show();
 

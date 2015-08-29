@@ -61,8 +61,8 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
     private String to;
     private String type;
     private String status;
-    private String local_c_id;
-    private String remote_c_id;
+    private String c_id;
+    private String conversation_id;
 
 
     @Override
@@ -87,7 +87,7 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
         prefs = getSharedPreferences("Chat", 0);
         bundle = getIntent().getBundleExtra("INFO");
 
-        if (bundle.getString("mobno") != null) {
+        /*if (bundle.getString("mobno") != null) {
             Log.i(TAG, "MSG_RCV;  mobno = " + (bundle.getString("mobno")));
         }
         if (bundle.getString("name") != null) {
@@ -95,24 +95,24 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
             //tvUserName.setText(bundle.getString("name"));
             collapsingToolbar.setTitle(bundle.getString("name"));
         }
-
-        if (bundle.getString("tab") != null && bundle.getString("selected_options") != null) {
+        */
+        if (bundle.getString("tab") != null) {
 
             selectedTab = bundle.getString("tab");
-            Toast.makeText(getApplicationContext(), "tab:" + bundle.getString("tab") + " ops:" + bundle.getString("selected_options"), Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(), "tab:" + bundle.getString("tab") + " ops:" + bundle.getString("selected_options"), Toast.LENGTH_LONG).show();
         }
 
-        if (bundle.getString("remote_c_id") != null) {
-            remote_c_id=bundle.getString("remote_c_id");
-            Toast.makeText(getApplicationContext(), "remote_c_id:  " + bundle.getString("remote_c_id"), Toast.LENGTH_LONG).show();
+        if (bundle.getString("conversation_id") != null) {
+            conversation_id =bundle.getString("conversation_id");
+       //     Toast.makeText(getApplicationContext(), "conversation_id:  " + bundle.getString("conversation_id"), Toast.LENGTH_LONG).show();
         }
 
-        if (bundle.getString("local_c_id") != null) {
-            local_c_id=bundle.getString("local_c_id");
-            Toast.makeText(getApplicationContext(), "local_c_id:  " + bundle.getString("local_c_id"), Toast.LENGTH_LONG).show();
+        if (bundle.getString("c_id") != null) {
+            c_id =bundle.getString("c_id");
+        //    Toast.makeText(getApplicationContext(), "c_id:  " + bundle.getString("c_id"), Toast.LENGTH_LONG).show();
         }
 
-        if (bundle.getString("type") != null) {
+        /*if (bundle.getString("type") != null) {
 
             //tvUserName.setText(bundle.getString("name"));
             Log.i(TAG, "type = " + (bundle.getString("type")));
@@ -123,9 +123,9 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
 
             //tvUserName.setText(bundle.getString("name"));
             status = bundle.getString("status");
-            Toast.makeText(getApplicationContext(), "Status:  " + status, Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(), "Status:  " + status, Toast.LENGTH_LONG).show();
         }
-
+        */
 
         //TODO: check- if response we want only 1 option according to first message
         viewPager.setAdapter(new SectionPagerAdapter(getSupportFragmentManager()));
@@ -147,7 +147,7 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
             }
         });
 
-        Log.i(TAG, "status = " + status);
+        //Log.i(TAG, "status = " + status);
 
         /*switch (status) {
 
@@ -234,7 +234,6 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
             JSONParser json = new JSONParser();
             UUID uuid = UUID.randomUUID();
 
-
             params = new ArrayList<>();
             params.add((new BasicNameValuePair("msg_id", uuid.toString())));
             params.add(new BasicNameValuePair("fromu", from));
@@ -242,24 +241,16 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
             params.add(new BasicNameValuePair("tab", "" + selectedTab));
             params.add(new BasicNameValuePair("type", "" + type));
             params.add(new BasicNameValuePair("status", "" + status));
-            params.add(new BasicNameValuePair("c_id", ""+remote_c_id));
+            params.add(new BasicNameValuePair("c_id", ""+ conversation_id));
             WnMessageRowOptionFragment of = getVisibleFragment(0);
             selected_options = of.getSelectedOptions();
-
             params.add((new BasicNameValuePair("selected_options", selected_options)));
             Log.i(TAG, "selected_options = " + selected_options);
-            //}
 
-
-            //MESSAGE SENDING
             JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/send", params);
 
-//            dba.open();
-//            dba.insert(uuid.toString(), "message", from, to, selected_options ,type, status );// Insert record in your DB
-//            dba.close();
-//            Log.i(TAG, "saved in databased");
             dba.open();
-            dba.insert(uuid.toString(), "message", from, to, selected_options ,type, status, 1, Long.valueOf(local_c_id));// Insert record in your DB
+            dba.insert(uuid.toString(), "message", from, to, selected_options ,type, "response", 1, Long.valueOf(c_id));// Insert record in your DB
             dba.close();
             return jObj;
 

@@ -28,9 +28,9 @@ public class MessageDataSource {
     private SQLiteDatabase db;
     private String[] allColumns = { DBHelper.KEY_ROWID, DBHelper.KEY_MESSAGE_ID,  DBHelper.KEY_MESSAGE, DBHelper.KEY_FROM
             ,DBHelper.KEY_TO, DBHelper.KEY_OPTION_SELECTED, DBHelper.KEY_TYPE, DBHelper.KEY_STATUS,  DBHelper.KEY_CREATION_DATE
-            ,DBHelper.KEY_FILLED_BY_YOU,DBHelper.KEY_CONVERSATION_ID};
+            ,DBHelper.KEY_FILLED_BY_YOU,DBHelper.KEY_CONVERSATION_ROW_ID};
 
-    private String[] resultColumns = { DBHelper.KEY_MESSAGE_ID, DBHelper.KEY_OPTION_SELECTED, DBHelper.KEY_TYPE, DBHelper.KEY_CONVERSATION_ID};
+    private String[] resultColumns = { DBHelper.KEY_MESSAGE_ID, DBHelper.KEY_OPTION_SELECTED, DBHelper.KEY_TYPE, DBHelper.KEY_CONVERSATION_ROW_ID};
 
     public MessageDataSource(Context ctx) {
 
@@ -78,7 +78,7 @@ public class MessageDataSource {
         initialValues.put(DBHelper.KEY_STATUS, status);
         initialValues.put(DBHelper.KEY_CREATION_DATE, currentDatedTime);
         initialValues.put(DBHelper.KEY_FILLED_BY_YOU, filled_by_you);
-        initialValues.put(DBHelper.KEY_CONVERSATION_ID, conversationId);
+        initialValues.put(DBHelper.KEY_CONVERSATION_ROW_ID, conversationId);
 
         Log.i(TAG, "Going to insert into database");
 //        Cursor cursor = getAllData();
@@ -129,6 +129,12 @@ public class MessageDataSource {
                 }
             }
         }
+        if(relatedMessageCount == 0){
+            result.setAllUsersResponded(false);
+        }
+        else {
+            result.setAllUsersResponded(true);
+        }
         return result;
     }
 
@@ -176,7 +182,7 @@ public class MessageDataSource {
             }
         }
         Cursor cursor = db.query(DBHelper.TABLE_MESSAGES_NAME,
-                allColumns,"("+ DBHelper.KEY_CONVERSATION_ID +")=? AND ("+DBHelper.KEY_MESSAGE_ID+" NOT IN (?))"
+                allColumns,"("+ DBHelper.KEY_CONVERSATION_ROW_ID +")=? AND ("+DBHelper.KEY_MESSAGE_ID+" NOT IN (?))"
         ,new String[]{Long.toString(conversationID), excludeString}, null, null, null);
         cursor.moveToFirst();
         int length = cursor.getCount();

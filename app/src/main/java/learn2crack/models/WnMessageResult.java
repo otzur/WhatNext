@@ -12,7 +12,15 @@ public class WnMessageResult {
     List<String> checked_by_you;
     List<String> matched;
     String type;
+    boolean allUsersResponded;
 
+    public boolean isAllUsersResponded() {
+        return allUsersResponded;
+    }
+
+    public void setAllUsersResponded(boolean allUsersResponded) {
+        this.allUsersResponded = allUsersResponded;
+    }
 
     public void setChecked_by_you(List<String> checked_by_you){this.checked_by_you = checked_by_you;}
 

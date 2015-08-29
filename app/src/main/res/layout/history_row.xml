@@ -82,12 +82,34 @@
     </TextView>
 
     <TextView
-        android:id="@+id/status"
+    android:id="@+id/status"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="6dp"
+    android:lines="1"
+    android:text="Status"
+    android:textSize="20dp"
+    >
+</TextView>
+
+    <TextView
+        android:id="@+id/c_id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:lines="1"
-        android:text="Status"
+        android:text="c_id"
+        android:textSize="20dp"
+        >
+    </TextView>
+
+    <TextView
+        android:id="@+id/filled_by_you"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:lines="1"
+        android:text="filled by you"
         android:textSize="20dp"
         >
     </TextView>

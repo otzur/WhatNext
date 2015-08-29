@@ -42,8 +42,12 @@ public class ResultFragment extends Fragment {
         String msg_id= args.getString("msg_id");
         MessageDataSource datasource = new MessageDataSource(rv.getContext());
         datasource.open();
+        int size = 0;
         WnMessageResult wnResult= datasource.getResultsForMessageID(msg_id);
-        int size = wnResult.getMatched().size();
+        datasource.close();
+        if(wnResult.getMatched() != null) {
+            size = wnResult.getMatched().size();
+        }
         if(size > 0) {
             mText.setText("Matched: \n");
             for (int i = 0; i < size; i++) {
@@ -51,8 +55,14 @@ public class ResultFragment extends Fragment {
             }
         }
         else{
-            mText.setText("No match... not at all :( \n");
-            mText.setTextColor(Color.RED);
+            if(wnResult.isAllUsersResponded()) {
+                mText.setText("No match... not at all :( \n");
+                mText.setTextColor(Color.RED);
+            }
+            else{
+                mText.setText("Waiting for other user to respond \n");
+                mText.setTextColor(Color.BLUE);
+            }
 
         }
         return rv;

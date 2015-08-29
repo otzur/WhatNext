@@ -38,27 +38,6 @@ public class WnMessageResultActivity extends AppCompatActivity {
         CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         prefs = getSharedPreferences("Chat", 0);
-        bundle = getIntent().getBundleExtra("INFO");
-
-        if (bundle.getString("mobno") != null) {
-            Log.i(TAG, "MSG_RCV;  mobno = " + (bundle.getString("mobno")));
-        }
-        if (bundle.getString("name") != null) {
-            collapsingToolbar.setTitle(bundle.getString("name"));
-        }
-        if (bundle.getString("tab") != null && bundle.getString("selected_options") != null) {
-            Toast.makeText(getApplicationContext(), "tab:" + bundle.getString("tab") + " ops:" + bundle.getString("selected_options"), Toast.LENGTH_LONG).show();
-        }
-        if (bundle.getString("msg_id") != null) {
-            Toast.makeText(getApplicationContext(), "UUID:  " + bundle.getString("msg_id"), Toast.LENGTH_LONG).show();
-        }
-        if (bundle.getString("type") != null) {
-            Log.i(TAG, "type = " + (bundle.getString("type")));
-            Toast.makeText(getApplicationContext(), "type:  " + bundle.getString("type"), Toast.LENGTH_LONG).show();
-        }
-        if (bundle.getString("status") != null) {
-            Toast.makeText(getApplicationContext(), "Status:  " + bundle.getString("status"), Toast.LENGTH_LONG).show();
-        }
         FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager());
         ResultFragment resultFragment= new ResultFragment();
         resultFragment.setArguments(getIntent().getBundleExtra("INFO"));

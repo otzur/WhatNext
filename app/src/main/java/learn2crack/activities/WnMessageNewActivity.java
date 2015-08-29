@@ -211,9 +211,9 @@ public class WnMessageNewActivity extends AppCompatActivity {
         protected JSONObject doInBackground(String... args) {
             JSONParser json = new JSONParser();
             UUID uuid = UUID.randomUUID();
-
+            UUID c_u_id = UUID.randomUUID();
             dbConversations.open();
-            WnConversation wnConversation= dbConversations.insert(2, selectedTab + 1, type);
+            WnConversation wnConversation= dbConversations.insert(c_u_id.toString(),2, selectedTab + 1, type, Integer.toString(selectedTab));
             dbConversations.close();
             params = new ArrayList<>();
             params.add((new BasicNameValuePair("msg_id",uuid.toString())));
@@ -222,7 +222,7 @@ public class WnMessageNewActivity extends AppCompatActivity {
             params.add(new BasicNameValuePair("tab", ""+ selectedTab));
             params.add(new BasicNameValuePair("type", "" + type));
             params.add(new BasicNameValuePair("status", "" + status));
-            params.add(new BasicNameValuePair("c_id", Long.toString(wnConversation.getId())));
+            params.add(new BasicNameValuePair("c_id", c_u_id.toString()));
             WnMessageRowOptionFragment of = getVisibleFragment(selectedTab);
             selected_options = of.getSelectedOptions();
             params.add((new BasicNameValuePair("selected_options", selected_options)));

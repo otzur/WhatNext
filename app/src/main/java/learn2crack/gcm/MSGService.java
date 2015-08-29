@@ -58,13 +58,15 @@ public class MSGService extends IntentService {
                     MESSAGE_TYPE_MESSAGE.equals(messageType)) {
 
                 if(!prefs.getString("CURRENT_ACTIVE","").equals(extras.getString("fromu"))) {
+                    extras=extras.getBundle("INFO");
                     sendNotification(extras.getString("msg_id"),
-                                        extras.getString("fromu"),
+                                        extras.getString("from"),
                                         extras.getString("tab"),
                                         extras.getString("selected_options"),
                                         extras.getString("status"),
                                         extras.getString("type"),
-                                        extras.getString("c_id"));
+                                        extras.getString("c_id"),
+                                        extras.getString("conversation_id"));
                 }
                 Log.i("WN", "Received: " + extras.getString("msg_id"));
                 Log.i("WN", "MSGService type: " + extras.getString("type"));
@@ -77,7 +79,7 @@ public class MSGService extends IntentService {
 
 
     private void sendNotification(String msg_id, String from,String tab,String selected_options,
-                                  String status , String type, String c_id) {
+                                  String status , String type, String c_id, String conversation_id) {
 
         Bundle args = new Bundle();
         args.putString("msg_id", msg_id);
@@ -86,29 +88,29 @@ public class MSGService extends IntentService {
         args.putString("tab", tab);
         args.putString("selected_options", selected_options);
 
-        MessageDataSource dba=new MessageDataSource(getApplicationContext());
-        ConversationDataSource dbConversations=new ConversationDataSource(getApplicationContext());
+        //MessageDataSource dba=new MessageDataSource(getApplicationContext());
+        //ConversationDataSource dbConversations=new ConversationDataSource(getApplicationContext());
         String to = getSharedPreferences("chat",0).getString("REG_FROM","");
         Intent chat = null;
         switch (status) {
             case "new":
-                dbConversations.open();
-                WnConversation conversation = dbConversations.insert(2,
-                        Integer.valueOf(tab)+1, type);
-                dbConversations.close();
-                args.putString("remote_c_id", c_id);
-                args.putString("local_c_id", Long.toString(conversation.getId()));
-                 dba.open();
-                dba.insert(msg_id, "message", from, to, selected_options, type, status, 0, conversation.getId());
-                dba.close();
+              //  dbConversations.open();
+              //  WnConversation conversation = dbConversations.insert(2,
+               //         Integer.valueOf(tab)+1, type);
+                // dbConversations.close();
+                args.putString("c_id", c_id);
+                args.putString("conversation_id", conversation_id);
+                // dba.open();
+                //dba.insert(msg_id, "message", from, to, selected_options, type, "received", 0, conversation.getId());
+                //dba.close();
                 args.putString("status", "received");
                 chat = new Intent(this, WnMessageReceiveActivity.class);
                 break;
             case "response":
-                dba.open();
-                dba.insert(msg_id, "message", from, to, selected_options, type, status, 0, Long.valueOf(c_id));
-                dba.close();
-                args.putString("local_c_id", c_id);
+                //dba.open();
+               // dba.insert(msg_id, "message", from, to, selected_options, type, status, 0, Long.valueOf(c_id));
+               // dba.close();
+                args.putString("c_id", c_id);
                 args.putString("status", "response");
                 chat = new Intent(this, WnMessageResultActivity.class);
                 break;

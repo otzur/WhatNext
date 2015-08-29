@@ -29,14 +29,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_STATUS = "status";
     public static final String KEY_CREATION_DATE = "delivery_date";
     public static final String KEY_FILLED_BY_YOU = "filled_by_current_user";
-    public static final String KEY_CONVERSATION_ID = "c_id";
+    public static final String KEY_CONVERSATION_ROW_ID = "c_id";
     /*
     * conversation consts
     */
     public static final String TABLE_CONVERSATION_NAME = "conversations";
+    public static final String KEY_CONVERSATION_ID = "conversation_id";
     public static final String KEY_N_USERS = "n_users";
     public static final String KEY_OPTIONS_TYPE ="options_type";
     public static final String KEY_CONVERSATION_TYPE = "type";
+    public static final String KEY_CONVERSATION_TAB = "tab";
 
 
     /*
@@ -59,9 +61,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String CREATE_TABLE_CONVERSATIONS ="create table conversations ("
             + "_id integer primary key autoincrement, "
+            + "conversation_id text not null, "
             + "type text not null, "
             + "n_users integer not null, "
-            + "options_type integer not null);";
+            + "options_type integer not null, "
+            + "tab integer not null);";
 
     private static final String CREATE_TABLE_OPTIONS_DEFAULTED ="create table defaultedOptions ("
             +"_id integer primary key autoincrement, "
