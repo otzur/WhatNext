@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="400dp"
+            android:layout_marginBottom="35dp"
             android:layout_toLeftOf="@+id/chatSendButton"
             android:autoText="true"
             android:hint="type message" />
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="false"
             android:layout_alignParentTop="false"
-            android:layout_marginBottom="50dp"
+            android:layout_marginBottom="45dp"
             android:layout_above="@+id/messageEdit"
             android:layout_below="@+id/meLbl"
             android:layout_marginTop="10dp"
