@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import learn2crack.chat.R;
+import learn2crack.db.ConversationDataSource;
 import learn2crack.db.MessageDataSource;
 import learn2crack.models.WnMessageResult;
 
@@ -39,12 +40,21 @@ public class ResultFragment extends Fragment {
         TextView mText = (TextView)rv.findViewById(R.id.result_text);
         mText.setTextSize(40);
         Bundle args = getArguments();
-        String msg_id= args.getString("msg_id");
-        MessageDataSource datasource = new MessageDataSource(rv.getContext());
-        datasource.open();
+        String msg_id= args.getString("msg_id", "");
+        WnMessageResult wnResult = null;
+        if(!msg_id.equals("")) {
+            MessageDataSource datasource = new MessageDataSource(rv.getContext());
+            datasource.open();
+            wnResult = datasource.getResultsForMessageID(msg_id);
+            datasource.close();
+        }
+        else{
+            ConversationDataSource conversationDataSource = new ConversationDataSource(rv.getContext());
+            conversationDataSource.open();
+            wnResult = conversationDataSource.getResultsForConversation(args.getString("c_id", ""));
+            conversationDataSource.close();
+        }
         int size = 0;
-        WnMessageResult wnResult= datasource.getResultsForMessageID(msg_id);
-        datasource.close();
         if(wnResult.getMatched() != null) {
             size = wnResult.getMatched().size();
         }

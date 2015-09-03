@@ -174,12 +174,17 @@ public class MessageDataSource {
     public ArrayList<WnMessage> getRelatedMessages(long conversationID, ArrayList<String> exclude){
         ArrayList<WnMessage> messages = new ArrayList<>();
         String excludeString="";
-        int excludeLen = exclude.size();
-        for(int i = 0 ; i < excludeLen ; i++){
-            excludeString+= exclude.get(i);
-            if(i+1!=excludeLen){
-                excludeString+=", ";
+        if(exclude != null) {
+            int excludeLen = exclude.size();
+            for (int i = 0; i < excludeLen; i++) {
+                excludeString += exclude.get(i);
+                if (i + 1 != excludeLen) {
+                    excludeString += ", ";
+                }
             }
+        }
+        else{
+            excludeString = "{}";
         }
         Cursor cursor = db.query(DBHelper.TABLE_MESSAGES_NAME,
                 allColumns,"("+ DBHelper.KEY_CONVERSATION_ROW_ID +")=? AND ("+DBHelper.KEY_MESSAGE_ID+" NOT IN (?))"

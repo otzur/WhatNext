@@ -8,6 +8,7 @@ public class WnChatMessage {
     private long conversation_id;
     private String delivery_date;
     private String chat_text;
+    private String from;
 
     public long getConversation_id() {
         return conversation_id;
@@ -16,6 +17,12 @@ public class WnChatMessage {
     public long getId() {
         return id;
     }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
+    public String getFrom() { return from; }
 
     public String getChat_text() {
         return chat_text;

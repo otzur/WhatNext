@@ -15,7 +15,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "MessageDB";
     private static final int DATABASE_VERSION = 2;
 
+    //ID column for all tables
     public static final String KEY_ROWID = "_id";
+
     /*
     * user messages consts
     */
@@ -39,6 +41,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_OPTIONS_TYPE ="options_type";
     public static final String KEY_CONVERSATION_TYPE = "type";
     public static final String KEY_CONVERSATION_TAB = "tab";
+
+    /*
+    * chat consts
+     */
+    public static final String TABLE_CHAT_NAME = "chat";
+    public static final String KEY_CHAT_DELIVERY = "delivery_date";
+    public static final String KEY_CHAT_CONVERSATION_ID = "c_id";
+    public static final String KEY_CHAT_TEXT = "chat_text";
+    public static final String KEY_CHAT_FROM = "fromu";
+
 
 
     /*
@@ -78,6 +90,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     +"delivery_date text not null, "
     +"c_id integer not null, "
     +"chat_text text not null, "
+    +"fromu text not null, "
     +"FOREIGN KEY(c_id) REFERENCES conversations(_id));";
 
    /* private static final String CREATE_TABLE_2 = "create table messageResponds ("

@@ -116,6 +116,10 @@
             android:name="learn2crack.activities.WnMessageResultRawFtagment"
             android:label="@string/title_activity_wn_message_raw" >
         </activity>
+        <activity
+            android:name="learn2crack.activities.ResultActivity"
+            android:label="@string/title_activity_main22" >
+        </activity>
     </application>
 
 </manifest>

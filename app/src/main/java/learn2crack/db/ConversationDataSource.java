@@ -5,9 +5,20 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.ArrayMap;
 import android.util.Log;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import learn2crack.models.WnConversation;
+import learn2crack.models.WnMessage;
+import learn2crack.models.WnMessageResult;
+
+import static learn2crack.utilities.Utils.getSelectedOpetions;
 
 /**
  * Created by samzaleg on 8/27/2015.
@@ -16,12 +27,13 @@ public class ConversationDataSource {
     private static final String TAG = "WN";
     private DatabaseHelper DBHelper;
     private SQLiteDatabase db;
+    private Context context;
 
     private String[] allColumns = { DBHelper.KEY_ROWID, DBHelper.KEY_CONVERSATION_ID, DBHelper.KEY_N_USERS,DBHelper.KEY_OPTIONS_TYPE ,
             DBHelper.KEY_CONVERSATION_TYPE, DBHelper.KEY_CONVERSATION_TAB};
 
     public ConversationDataSource(Context ctx) {
-
+        this.context = ctx;
         DBHelper = DatabaseHelper.getInstance(ctx);
     }
 
@@ -93,5 +105,51 @@ public class ConversationDataSource {
         // make sure to close the cursor
         cursor.close();
         return conversation;
+    }
+
+    public Set getUsersPhones(Long conversationRowID){
+        MessageDataSource messageDataSource = new MessageDataSource(context);
+        messageDataSource.open();
+        Set<String> mSet = new HashSet<>();
+        ArrayList<WnMessage> messages= messageDataSource.getRelatedMessages(conversationRowID, null);
+        String tempUser, tempTo;
+        for(int i = 0; i < messages.size(); i++){
+            tempUser = messages.get(i).getUser();
+            if(tempUser != null) {
+                mSet.add(tempUser);
+            }
+            tempTo = messages.get(i).getTo();
+            if(tempTo != null) {
+                mSet.add(tempTo);
+            }
+        }
+        return mSet;
+    }
+
+    public WnMessageResult getResultsForConversation(String c_id){
+        WnMessageResult result = new WnMessageResult();
+        MessageDataSource messageDataSource = new MessageDataSource(context);
+        messageDataSource.open();
+        ArrayList<WnMessage> relatedMessages = messageDataSource.getRelatedMessages(Long.valueOf(c_id) , null);
+        String options =relatedMessages.get(0).getOption_selected();
+        ArrayList<Integer> selectedOptions = getSelectedOpetions(options);
+        messageDataSource.close();
+        int relatedMessageCount = relatedMessages.size();
+        for(int k=1 ; k < relatedMessageCount ; k++) {
+            selectedOptions.retainAll(getSelectedOpetions(
+                    relatedMessages.get(k).getOption_selected()));
+        }
+        if(relatedMessageCount >= 2) {
+            for (int i = 0; i < selectedOptions.size(); i++) {
+                result.addMatched("" + selectedOptions.get(i));
+            }
+        }
+        if(relatedMessageCount == 1){
+            result.setAllUsersResponded(false);
+        }
+        else {
+            result.setAllUsersResponded(true);
+        }
+        return result;
     }
 }

@@ -47,8 +47,8 @@ public class WnMessageNewActivity extends AppCompatActivity {
 
 
     Bundle bundle;
-    //ImageButton btnSend;
     SharedPreferences prefs;
+    WnConversation wnConversation;
     List<NameValuePair> params;
     static final String TAG = "WN";
     public enum wn_message_status {
@@ -98,27 +98,16 @@ public class WnMessageNewActivity extends AppCompatActivity {
         if(bundle.getString("tab") != null && bundle.getString("selected_options") != null){
 
             selectedTab = bundle.getString("tab");
-            Toast.makeText(getApplicationContext(), "tab:"+bundle.getString("tab")+" ops:"+bundle.getString("selected_options") , Toast.LENGTH_LONG).show();
-        }
-
-        if(bundle.getString("msg_id") != null){
-
-            //tvUserName.setText(bundle.getString("name"));
-            Toast.makeText(getApplicationContext(), "UUID:  "+ bundle.getString("msg_id") , Toast.LENGTH_LONG).show();
         }
 
         if(bundle.getString("type") != null){
 
-            //tvUserName.setText(bundle.getString("name"));
             type = bundle.getString("type");
-            Toast.makeText(getApplicationContext(), "Type:  "+ bundle.getString("type") , Toast.LENGTH_LONG).show();
         }
 
         if(bundle.getString("status") != null){
 
-            //tvUserName.setText(bundle.getString("name"));
             status = bundle.getString("status");
-            Toast.makeText(getApplicationContext(), "Status:  "+ status , Toast.LENGTH_LONG).show();
         }
 
 
@@ -133,7 +122,8 @@ public class WnMessageNewActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 new Send(viewPager.getCurrentItem()).execute();
-                Snackbar.make(view, "WN Message Sent", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+
+                //Snackbar.make(view, "WN Message Sent", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 //finish();
             }
         });
@@ -213,7 +203,7 @@ public class WnMessageNewActivity extends AppCompatActivity {
             UUID uuid = UUID.randomUUID();
             UUID c_u_id = UUID.randomUUID();
             dbConversations.open();
-            WnConversation wnConversation= dbConversations.insert(c_u_id.toString(),2, selectedTab + 1, type, Integer.toString(selectedTab));
+            wnConversation= dbConversations.insert(c_u_id.toString(),2, selectedTab + 1, type, Integer.toString(selectedTab));
             dbConversations.close();
             params = new ArrayList<>();
             params.add((new BasicNameValuePair("msg_id",uuid.toString())));
@@ -257,7 +247,14 @@ public class WnMessageNewActivity extends AppCompatActivity {
                 }
                 else
                 {
-                    //((MainActivity)getActivity()).changeToUserScreen();
+                    Bundle args = new Bundle();
+                    args.putString("c_id", Long.toString(wnConversation.getId()));
+                    Intent chat = new Intent(getApplicationContext(), ResultActivity.class);
+                    chat.putExtra("INFO", args);
+                    chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                    getApplicationContext().startActivity(chat);
+                    finish();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

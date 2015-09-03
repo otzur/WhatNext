@@ -252,40 +252,21 @@ public class MainActivity extends AppCompatActivity implements
 
     private void setupViewPager(ViewPager viewPager) {
         FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager());
-
-
         context = getApplicationContext();
-
-        //adapter.addFragment(new LoginFragment(), "Login Fragment");
-
         String reg_from  = prefs.getString("REG_FROM", "");
         String reg_name  = prefs.getString("FROM_NAME", "");
         String reg_uuid  = prefs.getString("UUID", "");
         String reg_phone = prefs.getString("PHONE_NUMBER", "");
         String reg_id    = prefs.getString("REG_ID", "");
 
-
-        Toast.makeText(getApplicationContext(), "reg_from = " + reg_from, Toast.LENGTH_LONG).show();
-
-        Log.i(TAG, "reg_from " + reg_from);
-        Log.i(TAG,"reg_name " + reg_name);
-        Log.i(TAG,"reg_uuid " + reg_uuid);
-        Log.i(TAG,"reg_phone " + reg_phone);
-        Log.i(TAG,"reg_id " + reg_id);
-
-
         if (!reg_from.isEmpty()) {
-            Toast.makeText(getApplicationContext(), "reg_from is no empty", Toast.LENGTH_LONG).show();
             fragmentAdapter.addFragment(contactListFragment, "User Fragment");
         }
         else
         {
             fragmentAdapter.addFragment(new LoginFragment(), "Login Fragment");
         }
-
         viewPager.setAdapter(fragmentAdapter);
-
-
     }
 
     private void setupDrawerContent(final NavigationView navigationView) {
@@ -305,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements
                             }
                             case R.id.nav_friends:
                             {
-                                fragmentAdapter.addFragment(new EmptyFragment(), "Friends");
+                                fragmentAdapter.addFragment(contactListFragment, "User");
                                 break;
                             }
 
@@ -389,7 +370,9 @@ public class MainActivity extends AppCompatActivity implements
                 return;
             }
             cursor2.moveToFirst();
-            phoneNumber = cursor2.getString(cursor2.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+            if(numOfPhones > 0) {
+                phoneNumber = cursor2.getString(cursor2.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+            }
             if(hasWn){
                 Bundle args = new Bundle();
                 args.putString("mobno", phoneNumber);
@@ -495,41 +478,14 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//
-//        if(id == R.id.action_search){
-//            Toast.makeText(getApplicationContext(), "Search action is selected!", Toast.LENGTH_SHORT).show();
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-
-
         switch (item.getItemId()) {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;
-
         }
-
         return super.onOptionsItemSelected(item);
     }
 
-
-
-
-//    @Override
-//    public void onDrawerItemSelected(View view, int position) {
-//        displayView(position);
-//    }
 
     public boolean validateRegistration(){
         if(prefs.getString("REG_ID", "").equals("")){
@@ -652,7 +608,6 @@ public class MainActivity extends AppCompatActivity implements
             JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/logout",params);
 
             Log.i("WN", "Logout sent");
-            //Toast.makeText(getApplicationContext(), "Logout is clicked!", Toast.LENGTH_SHORT).show();
 
             SharedPreferences.Editor edit = prefs.edit();
             edit.putString("REG_FROM", "");

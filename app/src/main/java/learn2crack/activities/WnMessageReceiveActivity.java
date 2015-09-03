@@ -69,8 +69,6 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.message_receive_layout);
-
-
         Intent intent = getIntent();
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -78,54 +76,23 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-//        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        // TextView tvUserName = (TextView)findViewById(R.id.userName);
-        //btnSend = (ImageButton) findViewById(R.id.btnSend);
 
         prefs = getSharedPreferences("Chat", 0);
         bundle = getIntent().getBundleExtra("INFO");
-
-        /*if (bundle.getString("mobno") != null) {
-            Log.i(TAG, "MSG_RCV;  mobno = " + (bundle.getString("mobno")));
-        }
-        if (bundle.getString("name") != null) {
-
-            //tvUserName.setText(bundle.getString("name"));
-            collapsingToolbar.setTitle(bundle.getString("name"));
-        }
-        */
         if (bundle.getString("tab") != null) {
 
             selectedTab = bundle.getString("tab");
-            //Toast.makeText(getApplicationContext(), "tab:" + bundle.getString("tab") + " ops:" + bundle.getString("selected_options"), Toast.LENGTH_LONG).show();
         }
 
         if (bundle.getString("conversation_id") != null) {
             conversation_id =bundle.getString("conversation_id");
-       //     Toast.makeText(getApplicationContext(), "conversation_id:  " + bundle.getString("conversation_id"), Toast.LENGTH_LONG).show();
         }
 
         if (bundle.getString("c_id") != null) {
             c_id =bundle.getString("c_id");
-        //    Toast.makeText(getApplicationContext(), "c_id:  " + bundle.getString("c_id"), Toast.LENGTH_LONG).show();
         }
-
-        /*if (bundle.getString("type") != null) {
-
-            //tvUserName.setText(bundle.getString("name"));
-            Log.i(TAG, "type = " + (bundle.getString("type")));
-            Toast.makeText(getApplicationContext(), "type:  " + bundle.getString("type"), Toast.LENGTH_LONG).show();
-        }
-
-        if (bundle.getString("status") != null) {
-
-            //tvUserName.setText(bundle.getString("name"));
-            status = bundle.getString("status");
-            //Toast.makeText(getApplicationContext(), "Status:  " + status, Toast.LENGTH_LONG).show();
-        }
-        */
 
         //TODO: check- if response we want only 1 option according to first message
         viewPager.setAdapter(new SectionPagerAdapter(getSupportFragmentManager()));
@@ -146,23 +113,6 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
                 //finish();
             }
         });
-
-        //Log.i(TAG, "status = " + status);
-
-        /*switch (status) {
-
-            case "new":
-                break;
-
-            case "received": {
-
-                Log.i(TAG, "selectedTab = " + selectedTab);
-                viewPager.setCurrentItem(Integer.parseInt(selectedTab));
-                //tabLayout.setVisibility(View.INVISIBLE);
-                break;
-            }
-        }*/
-
     }
 
     @Override
@@ -199,6 +149,7 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
 
         //return fr;
     }
+
 
     private class Send extends AsyncTask<String, String, JSONObject> {
 
@@ -258,17 +209,20 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(JSONObject json) {
-            //chat_msg.setText("");
-
             String res;
             try {
-
-
                 res = json.getString("response");
                 if (res.equals("Failure")) {
                     Toast.makeText(getApplicationContext(), "The user has logged out. You cant send message anymore !", Toast.LENGTH_SHORT).show();
                 } else {
-                    //((MainActivity)getActivity()).changeToUserScreen();
+                    Bundle args = new Bundle();
+                    args.putString("c_id", c_id);
+                    Intent chat = new Intent(getApplicationContext(), ResultActivity.class);
+                    chat.putExtra("INFO", args);
+                    chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                    getApplicationContext().startActivity(chat);
+                    finish();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
