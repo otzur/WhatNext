@@ -109,7 +109,7 @@ public class ChatFragment extends ListFragment {
 
     }
 
-    private void loadChatHistory(Context context){
+    public void loadChatHistory(Context context){
 
         chatHistory = new ArrayList<ChatMessage>();
 

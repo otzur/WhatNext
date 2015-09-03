@@ -52,9 +52,9 @@ public class ResultActivity extends AppCompatActivity {
         Bundle newBundle = intent.getBundleExtra("INFO");
         Bundle currentBundle = getIntent().getBundleExtra("INFO");
         if(newBundle.getString("c_id","").equals(currentBundle.getString("c_id",""))){
-            ((SimpleCursorAdapter)chatFragment.getListAdapter()).notifyDataSetChanged();
+            chatFragment.loadChatHistory(context);
         }
-        else{
+        else {
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             context.startActivity(intent);
         }
@@ -104,18 +104,13 @@ public class ResultActivity extends AppCompatActivity {
             Bundle extra = intent.getBundleExtra("INFO");
             Bundle currentBundle = getIntent().getBundleExtra("INFO");
             if(extra.getString("c_id","").equals(currentBundle.getString("c_id",""))){
-                ChatDataSource dataSource = new ChatDataSource(context);
-                dataSource.open();
-                ((SimpleCursorAdapter) chatFragment.getListAdapter()).changeCursor(dataSource.getAllDataByConversationRowID(extra.getString("c_id","")));
-                dataSource.close();
-                ((SimpleCursorAdapter)chatFragment.getListAdapter()).notifyDataSetChanged();
-            }
-            else{
+                chatFragment.loadChatHistory(context);
+            }/* else{
                 Intent chat = new Intent(getApplicationContext(), ResultActivity.class);
                 chat.putExtra("INFO", extra);
                 chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 getApplicationContext().startActivity(chat);
-            }
+            }*/
         }
     };
 
@@ -127,12 +122,12 @@ public class ResultActivity extends AppCompatActivity {
             if(extra.getString("c_id","").equals(currentBundle.getString("c_id",""))){
                 setupViewPager(viewPager);
             }
-            else{
+            /*else{
                 Intent chat = new Intent(getApplicationContext(), ResultActivity.class);
                 chat.putExtra("INFO", extra);
                 chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 getApplicationContext().startActivity(chat);
-            }
+            }*/
         }
     };
 }
