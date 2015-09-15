@@ -15,7 +15,9 @@ import learn2crack.models.WnMessage;
 
 public class HistoryRVAdapter extends RecyclerView.Adapter<HistoryRVAdapter.HistoryViewHolder> {
 
-    public static class HistoryViewHolder extends RecyclerView.ViewHolder {
+    private static HistoryItemClickListener historyItemClickListener;
+
+    public static class HistoryViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         CardView cv;
         TextView contactName;
@@ -37,9 +39,20 @@ public class HistoryRVAdapter extends RecyclerView.Adapter<HistoryRVAdapter.Hist
             options = (TextView)itemView.findViewById(R.id.options);
             tab = (TextView)itemView.findViewById(R.id.tab);
             //ImageView imageView = (ImageView) findViewById(R.id.img_contact);
-            //imageView.setImageBitmap(photo);
+            //imageView.setImageBitmap(photo);.
+
+            itemView.setOnClickListener(this);
 
         }
+
+        @Override
+        public void onClick(View v) {
+            historyItemClickListener.onItemClick(getAdapterPosition(), v);
+        }
+    }
+
+    public void setOnItemClickListener(HistoryItemClickListener historyItemClickListener){
+        HistoryRVAdapter.historyItemClickListener = historyItemClickListener;
     }
 
     List<WnMessage> messages;
@@ -56,15 +69,14 @@ public class HistoryRVAdapter extends RecyclerView.Adapter<HistoryRVAdapter.Hist
     @Override
     public HistoryViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.message_cradview, viewGroup, false);
-        HistoryViewHolder hvh = new HistoryViewHolder(v);
-        return hvh;
+        return new HistoryViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(HistoryViewHolder historyViewHolder, int i) {
         //personViewHolder.contactName.setText(messages.get(i).getUser());
         String status = messages.get(i).getStatus();
-        String display_status = "";
+        String display_status;
         historyViewHolder.contactName.setText(messages.get(i).getUserName());
         historyViewHolder.datetime.setText(messages.get(i).getDelivery_date());
         historyViewHolder.options.setText("Options: " + messages.get(i).getOption_selected());
@@ -99,5 +111,10 @@ public class HistoryRVAdapter extends RecyclerView.Adapter<HistoryRVAdapter.Hist
     @Override
     public int getItemCount() {
         return messages.size();
+    }
+
+    public interface HistoryItemClickListener{
+        void onItemClick(int position, View v);
+
     }
 }

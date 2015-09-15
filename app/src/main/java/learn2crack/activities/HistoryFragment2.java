@@ -5,6 +5,7 @@ package learn2crack.activities;
  */
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,6 +27,7 @@ public class HistoryFragment2 extends Fragment {
     //private List<Person> persons;
     private List<WnMessage> messages;
     private RecyclerView rv;
+    private RecyclerView.Adapter adapter;
 
     public HistoryFragment2() {
         // Required empty public constructor
@@ -36,6 +38,19 @@ public class HistoryFragment2 extends Fragment {
         super.onCreate(savedInstanceState);
 
     }
+
+    @Override
+    public void onResume (){
+        super.onResume();
+        ((HistoryRVAdapter) adapter).setOnItemClickListener(new HistoryRVAdapter.HistoryItemClickListener() {
+            @Override
+            public void onItemClick(int position, View v) {
+                Log.i("WN", "click  item on position " + position);
+                Snackbar.make(v, "click  item on position " + position, Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            }
+        });
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -81,7 +96,7 @@ public class HistoryFragment2 extends Fragment {
 
     private void initializeAdapter() {
 
-        HistoryRVAdapter adapter = new HistoryRVAdapter(messages);
+        adapter = new HistoryRVAdapter(messages);
         rv.setAdapter(adapter);
     }
 }
