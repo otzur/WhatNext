@@ -37,6 +37,7 @@ public class WnMessageRowOptionFragment extends ListFragment {
 
         // create an array of Strings, that will be put to our ListActivity
         adapter = new WnMessageRowOptionArrayAdapter((android.app.Activity) inflater.getContext(), getOption(numberOfOptions));
+
         setListAdapter(adapter);
 
         return super.onCreateView(inflater, container, savedInstanceState);

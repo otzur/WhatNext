@@ -464,9 +464,9 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         SharedPreferences prefs = context.getSharedPreferences("Chat", 0);
-        String hasWN = prefs.getString("CONTACT_HAS_WN", "0");
+        //String hasWN = prefs.getString("CONTACT_HAS_WN", "0");
         String phone = item.getTitle().toString();
-        if(hasWN.equals("1")) {
+        //if(hasWN.equals("1")) {
 
             Bundle args = new Bundle();
             args.putString("mobno", phone);
@@ -477,7 +477,7 @@ public class MainActivity extends AppCompatActivity implements
             chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
             context.startActivity(chat);
-        }
+        /*}
         else{
             Intent intentt = new Intent(Intent.ACTION_VIEW);
             intentt.setData(Uri.parse("sms:"));
@@ -486,7 +486,7 @@ public class MainActivity extends AppCompatActivity implements
             intentt.putExtra("address",  phone);
             intentt.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intentt);
-        }
+        }*/
         return true;
     }
 

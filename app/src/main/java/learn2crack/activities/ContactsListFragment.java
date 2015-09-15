@@ -20,6 +20,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 
 import android.content.ContentResolver;
+import android.graphics.BitmapFactory;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -92,7 +93,7 @@ public class ContactsListFragment extends ListFragment implements
     private ContactsAdapter mAdapter; // The main query adapter
     private ImageLoader mImageLoader; // Handles loading the contact image in a background thread
     private String mSearchTerm; // Stores the current search query term
-
+    private Bitmap mHasWN;
     // Contact selected listener that allows the activity holding this fragment to be notified of
     // a contact being selected
     private OnContactsInteractionListener mOnContactSelectedListener;
@@ -188,6 +189,8 @@ public class ContactsListFragment extends ListFragment implements
         mImageLoader.setLoadingImage(R.drawable.ic_contact_picture_holo_light);
         // Add a cache to the image loader
         mImageLoader.addImageCache(getActivity().getSupportFragmentManager(), 0.1f);
+        mHasWN = BitmapFactory.decodeResource(getResources(),
+                R.mipmap.ic_launcher);
     }
 
     @Override
@@ -716,6 +719,7 @@ public class ContactsListFragment extends ListFragment implements
             holder.text2 = (TextView) itemLayout.findViewById(android.R.id.text2);
             //holder.icon = (QuickContactBadge) itemLayout.findViewById(android.R.id.icon);
             holder.icon = (ImageView) itemLayout.findViewById(android.R.id.icon);
+            holder.hasWn = (ImageView) itemLayout.findViewById(android.R.id.icon2);
             //holder.hasWn = (ImageView) itemLayout.findViewById(android.R.id.icon2);
             // Stores the resourceHolder instance in itemLayout. This makes resourceHolder
             // available to bindView and other methods that receive a handle to the item view.
@@ -831,13 +835,15 @@ public class ContactsListFragment extends ListFragment implements
             // Loads the thumbnail image pointed to by photoUri into the QuickContactBadge in a
             // background worker thread
             mImageLoader.loadImage(photoUri, holder.icon);
+
             //Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getResources().getResourcePackageName(R.drawable.ic_action_add) + '/' + getResources().getResourceTypeName(R.drawable.ic_action_add) + '/' + getResources().getResourceEntryName(R.drawable.ic_action_add) );
-           // if(haswn){
+            if(haswn){
                 //mImageLoader.loadImage(photoUri, holder.hasWn);
-            //}
-            /*else{
-                mImageLoader.loadImage(R.drawable.ic_action_edit, holder.hasWn);
-            }*/
+                holder.hasWn.setImageBitmap(mHasWN);
+            }
+            else{
+                holder.hasWn.setImageDrawable(null);
+            }
         }
 
         /**
