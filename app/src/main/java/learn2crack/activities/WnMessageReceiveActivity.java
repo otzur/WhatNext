@@ -35,6 +35,7 @@ import learn2crack.chat.R;
 import learn2crack.cheese.Cheeses;
 import learn2crack.db.ConversationDataSource;
 import learn2crack.db.MessageDataSource;
+import learn2crack.utilities.Contacts;
 import learn2crack.utilities.JSONParser;
 
 /**
@@ -158,7 +159,9 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
 
         private String selected;
         private String from;
-        private String to;
+        private String from_name;
+        private String user;
+        private String user_name;
         private String type;
         private String status;
         private String selected_options;
@@ -166,16 +169,22 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
         public Send(String selected_options) {
             Log.i(TAG, "selected_options  = " + selected_options);
             selected = selected_options;
-            from = prefs.getString("REG_FROM", "");
+
+            from =  prefs.getString("REG_FROM","");
             Log.i(TAG, "from user   = " + from);
-            to = bundle.getString("mobno");
-            Log.i(TAG, "to user = " + to);
+            from_name = "Me";
+            Log.i(TAG, "from name  = " + from_name);
+
+            user = bundle.getString("mobno");
+            Log.i(TAG,"user = " + user);
+            user_name =  Contacts.getContactName(getApplicationContext(), user);
+            Log.i(TAG,"user name = " + user_name);
 
             type = bundle.getString("type");
             Log.i(TAG, "type = " + type);
             //status  = bundle.getString("status");
             // if(status == "received")
-            status = "response";
+            status = "Response";
             Log.i(TAG, "status = " + status);
 
         }
@@ -188,7 +197,11 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
             params = new ArrayList<>();
             params.add((new BasicNameValuePair("msg_id", uuid.toString())));
             params.add(new BasicNameValuePair("fromu", from));
-            params.add(new BasicNameValuePair("to", to));
+            params.add(new BasicNameValuePair("from_name",from_name));
+            params.add(new BasicNameValuePair("to", user));
+            params.add(new BasicNameValuePair("user_name", user_name));
+
+
             params.add(new BasicNameValuePair("tab", "" + selectedTab));
             params.add(new BasicNameValuePair("type", "" + type));
             params.add(new BasicNameValuePair("status", "" + status));
@@ -200,8 +213,9 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
 
             JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/send", params);
 
+            Log.i(TAG, "from_name = " + from_name);
             dba.open();
-            dba.insert(uuid.toString(), "message", from, to, selected_options ,type, "response", 1, Long.valueOf(c_id));// Insert record in your DB
+            dba.insert(uuid.toString(), "message", user, user_name, selected_options ,type, "Results", 1, Long.valueOf(c_id));// Insert record in your DB
             dba.close();
             return jObj;
 

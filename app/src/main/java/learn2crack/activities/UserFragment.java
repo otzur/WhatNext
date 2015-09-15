@@ -409,7 +409,7 @@ public class UserFragment extends Fragment {
                     args.putString("mobno", (String) text2.getText());
                     args.putString("name", (String) text1.getText());
                     args.putString("type", "HimAndHer");
-                    args.putString("status", "new");
+                    args.putString("status", "New");
                     Intent chat = new Intent(context , WnMessageNewActivity.class);
                     chat.putExtra("INFO", args);
                     context.startActivity(chat);

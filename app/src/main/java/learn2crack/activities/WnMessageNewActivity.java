@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -37,6 +36,7 @@ import learn2crack.cheese.Cheeses;
 import learn2crack.db.ConversationDataSource;
 import learn2crack.db.MessageDataSource;
 import learn2crack.models.WnConversation;
+import learn2crack.utilities.Contacts;
 import learn2crack.utilities.JSONParser;
 
 /**
@@ -111,7 +111,7 @@ public class WnMessageNewActivity extends AppCompatActivity {
         }
 
 
-        //TODO: check- if response we want only 1 option according to first message
+        //TODO: check- if response we want only 1 option according user first message
         viewPager.setAdapter(new SectionPagerAdapter(getSupportFragmentManager()));
         tabLayout.setupWithViewPager(viewPager);
 
@@ -149,7 +149,7 @@ public class WnMessageNewActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        // Inflate the menu; this adds items user the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -176,7 +176,9 @@ public class WnMessageNewActivity extends AppCompatActivity {
 
         private int selectedTab;
         private String from;
-        private String to;
+        private String from_name;
+        private String user;
+        private String user_name;
         private String type;
         private String status;
         private String selected_options;
@@ -186,9 +188,13 @@ public class WnMessageNewActivity extends AppCompatActivity {
             Log.i(TAG,"Tab selected  = " + currentItem);
             selectedTab = currentItem;
             from =  prefs.getString("REG_FROM","");
+            from_name = "Me";
             Log.i(TAG,"from user   = " + from);
-            to  = bundle.getString("mobno");
-            Log.i(TAG,"to user = " + to);
+
+            user = bundle.getString("mobno");
+            Log.i(TAG,"user user = " + user);
+            user_name =  Contacts.getContactName(getApplicationContext(), user);
+            Log.i(TAG,"user name = " + user_name);
 
             type  = bundle.getString("type");
             Log.i(TAG,"type = " + type);
@@ -208,7 +214,9 @@ public class WnMessageNewActivity extends AppCompatActivity {
             params = new ArrayList<>();
             params.add((new BasicNameValuePair("msg_id",uuid.toString())));
             params.add(new BasicNameValuePair("fromu",from));
-            params.add(new BasicNameValuePair("to", to));
+            params.add(new BasicNameValuePair("from_name",from_name));
+            params.add(new BasicNameValuePair("to", user));
+            params.add(new BasicNameValuePair("user_name", user_name));
             params.add(new BasicNameValuePair("tab", ""+ selectedTab));
             params.add(new BasicNameValuePair("type", "" + type));
             params.add(new BasicNameValuePair("status", "" + status));
@@ -225,7 +233,7 @@ public class WnMessageNewActivity extends AppCompatActivity {
             JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/send", params);
 
             dba.open();
-            dba.insert(uuid.toString(), "message", from, to, selected_options ,type, status, 1, wnConversation.getId() );// Insert record in your DB
+            dba.insert(uuid.toString(), "message", user, user_name, selected_options ,type, "Sent", 1, wnConversation.getId() );// Insert record in your DB
             dba.close();
 
             Log.i(TAG, "saved in databased");

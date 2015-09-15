@@ -24,8 +24,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_MESSAGES_NAME = "userMessages";
     public static final String KEY_MESSAGE_ID = "message_id";
     public static final String KEY_MESSAGE = "message";
-    public static final String KEY_FROM = "user";
-    public static final String KEY_TO = "to_user";
+    public static final String KEY_USER = "user";
+    public static final String KEY_USER_NAME = "user_name";
+//    public static final String KEY_TO = "to_user";
+//    public static final String KEY_TO_NAME = "to_user_name";
     public static final String KEY_OPTION_SELECTED = "option_selected";
     public static final String KEY_TYPE = "type";
     public static final String KEY_STATUS = "status";
@@ -56,12 +58,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /*
     * tables creation consts
     */
-    private static final String CREATE_TABLE = "create table userMessages ("
+    private static final String CREATE_MESSAGE_TABLE = "create table userMessages ("
             + "_id integer primary key autoincrement, "
             + "message_id text not null, "
             + "message text not null, "
             + "user text not null, "
-            + "to_user text not null, "
+            + "user_name text not null, "
+//            + "to_user text not null, "
+//            + "to_user_name text not null, "
             + "option_selected text not null, "
             + "type text not null, "
             + "status text not null, "
@@ -126,7 +130,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.i(TAG, "Create DB tables");
             db.execSQL(CREATE_TABLE_CONVERSATIONS);
             Log.i(TAG, "table conversations created");
-            db.execSQL(CREATE_TABLE);
+            db.execSQL(CREATE_MESSAGE_TABLE);
             Log.i(TAG, "table userMessages created");
             db.execSQL(CREATE_TABLE_OPTIONS_DEFAULTED);
             Log.i(TAG, "table defaultedOptions created");

@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -18,9 +17,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import learn2crack.activities.ResultActivity;
 import learn2crack.activities.WnMessageReceiveActivity;
 import learn2crack.chat.R;
-import learn2crack.db.ConversationDataSource;
-import learn2crack.db.MessageDataSource;
-import learn2crack.models.WnConversation;
+import learn2crack.utilities.Contacts;
 
 
 public class MSGService extends IntentService {
@@ -33,7 +30,6 @@ public class MSGService extends IntentService {
     public MSGService() {
         super("MSGService");
     }
-
 
 
     @Override
@@ -61,7 +57,11 @@ public class MSGService extends IntentService {
                 if(!prefs.getString("CURRENT_ACTIVE","").equals(extras.getString("fromu"))) {
                     extras=extras.getBundle("INFO");
                     if(!extras.getString("status","").equals("chat")) {
+
+                        String from_contact = Contacts.getContactName(this, extras.getString("fromu"));
+
                         sendNotification(extras.getString("msg_id"),
+                                from_contact,
                                 extras.getString("fromu"),
                                 extras.getString("tab"),
                                 extras.getString("selected_options"),
@@ -104,7 +104,7 @@ public class MSGService extends IntentService {
     }
 
 
-    private void sendNotification(String msg_id, String from,String tab,String selected_options,
+    private void sendNotification(String msg_id, String from, String mobno,String tab,String selected_options,
                                   String status , String type, String c_id, String conversation_id) {
 
         Bundle args = new Bundle();
@@ -113,9 +113,9 @@ public class MSGService extends IntentService {
         String to = getSharedPreferences("chat",0).getString("REG_FROM","");
         Intent chat = null;
         switch (status) {
-            case "new":
+            case "New":
                 args.putString("msg_id", msg_id);
-                args.putString("mobno", from);
+                args.putString("mobno", mobno);
                 args.putString("type", type);
                 args.putString("tab", tab);
                 args.putString("selected_options", selected_options);
@@ -124,7 +124,7 @@ public class MSGService extends IntentService {
                 args.putString("status", "received");
                 chat = new Intent(this, WnMessageReceiveActivity.class);
                 break;
-            case "response":
+            case "Response":
                 args.putString("c_id", c_id);
                 args.putString("status", "response");
                 chat = new Intent(this, ResultActivity.class);
@@ -135,8 +135,19 @@ public class MSGService extends IntentService {
                 chat = new Intent(this, ResultActivity.class);
                 break;
             default:
-                Log.e("WN","faild to figure message status");
+                Log.e("WN MSGService","failed to figure message status");
                 return;
+
+//            case "New":
+//                display_status = "New WN arrived- Waiting to your response";
+//                break;
+//            case "Sent":
+//                display_status = "WN Sent- Waiting for other to response";
+//                break;
+//            case "Response":
+//                display_status = "WN response- Waiting for results";
+//                break;
+//            case "Results":
         }
 
         chat.putExtra("INFO", args);
@@ -146,7 +157,10 @@ public class MSGService extends IntentService {
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
         notification = new NotificationCompat.Builder(this);
+
         notification.setContentTitle("New WN message from " + from);
+
+
         notification.setTicker("New WN Message!");
         notification.setSmallIcon(R.drawable.ic_discuss);
 

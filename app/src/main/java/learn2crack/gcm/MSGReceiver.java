@@ -5,7 +5,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
@@ -13,7 +12,7 @@ import learn2crack.db.ChatDataSource;
 import learn2crack.db.ConversationDataSource;
 import learn2crack.db.MessageDataSource;
 import learn2crack.models.WnConversation;
-import learn2crack.models.WnMessageBundle;
+import learn2crack.utilities.Contacts;
 
 public class MSGReceiver  extends WakefulBroadcastReceiver {
 
@@ -37,41 +36,47 @@ public class MSGReceiver  extends WakefulBroadcastReceiver {
     }
 
 
+
+
     private Bundle handleWnMessage(Context context, Intent intent){
 
         MessageDataSource dba=new MessageDataSource(context);
         ConversationDataSource dbConversations=new ConversationDataSource(context);
-        String msg_id="",fromu="",type="",tab="",status="",selected_options="",conversation_id="";
+        String msg_id="",user="",user_name="",type="",tab="",status="",selected_options="",conversation_id="";
         Bundle extras = intent.getExtras();
         WnConversation conversation;
-        String to = context.getSharedPreferences("chat", 0).getString("REG_FROM","");
+//        String to = context.getSharedPreferences("chat", 0).getString("REG_FROM","");
+//        String to_name = "33";
         status = extras.getString("status");
         msg_id = extras.getString("msg_id");
-        fromu = extras.getString("fromu");
+        user = extras.getString("fromu");
+        user_name = Contacts.getContactName(context, user);//extras.getString("from_name");
         type = extras.getString("type");
         tab = extras.getString("tab");
         selected_options = extras.getString("selected_options");
         conversation_id = extras.getString("c_id");
         switch (status) {
-            case "new":
+            case "New":
                 dbConversations.open();
                 conversation = dbConversations.insert(conversation_id, 2,
                         Integer.valueOf(tab) + 1, type, tab);
                 dbConversations.close();
                 dba.open();
-                dba.insert(msg_id, "message", fromu, to, selected_options, type, "received", 0, conversation.getId());
+                dba.insert(msg_id, "message", user, user_name, selected_options, type, "New", 0, conversation.getId());
                 dba.close();
                 break;
-            case "response":
+            case "Results":
+            case "Response":
                 dbConversations.open();
                 conversation = dbConversations.getConversationByUniqeID(conversation_id);
                 dbConversations.close();
                 dba.open();
-                dba.insert(msg_id, "message", fromu, to, selected_options, type, status, 0, conversation.getId());
+                dba.insert(msg_id, "message", user, user_name,selected_options, type, "Results", 0, conversation.getId());
                 dba.close();
                 break;
             default:
-                Log.e("WN", "faild to figure message status");
+                Log.e("WN MSGReceiver", "status = " + status );
+                Log.e("WN MSGReceiver", "failed to figure message status");
                 return null;
         }
         extras.putString("c_id", Long.toString(conversation.getId()));
