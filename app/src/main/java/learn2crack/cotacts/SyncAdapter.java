@@ -66,41 +66,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         mContentResolver = context.getContentResolver();
     }
 
-   // private static void addContact(Account account, String name, String username) {
-        //Log.i(TAG, "Adding contact: " + name);
-        //ArrayList<ContentProviderOperation> operationList = new ArrayList<ContentProviderOperation>();
-
-        //Create our RawContact
-       /* ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(RawContacts.CONTENT_URI);
-        builder.withValue(RawContacts.ACCOUNT_NAME, account.name);
-        builder.withValue(RawContacts.ACCOUNT_TYPE, account.type);
-        builder.withValue(RawContacts.SYNC1, username);
-        operationList.add(builder.build());
-
-        //Create a Data record of common type 'StructuredName' for our RawContact
-        builder = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI);
-        builder.withValueBackReference(ContactsContract.CommonDataKinds.StructuredName.RAW_CONTACT_ID, 0);
-        builder.withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE);
-        builder.withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name);
-        operationList.add(builder.build());
-*/
-        //Create a Data record of custom type "vnd.android.cursor.item/vnd.fm.last.android.profile" to display a link to the Last.fm profile
-     /*   ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI);
-        builder.withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0);
-        builder.withValue(ContactsContract.Data.MIMETYPE, "vnd.android.cursor.item/vnd.fm.last.android.profile");
-        builder.withValue(ContactsContract.Data.DATA1, username);
-        builder.withValue(ContactsContract.Data.DATA2, "Last.fm Profile");
-        builder.withValue(ContactsContract.Data.DATA3, "View profile");
-        operationList.add(builder.build());
-
-        try {
-            mContentResolver.applyBatch(ContactsContract.AUTHORITY, operationList);
-        } catch (Exception e) {
-            Log.e(TAG, "Something went wrong during creation! " + e);
-            e.printStackTrace();
-        }
-    }
-*/
 
     private Uri addCallerIsSyncAdapterParameter(Uri uri){
         return uri.buildUpon().appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build();
@@ -112,7 +77,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         List<NameValuePair> paramsDebug = new ArrayList<NameValuePair>();
         JSONParser json = new JSONParser();
         ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
-        //int rawContactInsertIndex = ops.size();
         int backId = 0;
         try {
         ops.add(ContentProviderOperation.newInsert(RawContacts.CONTENT_URI)
@@ -131,35 +95,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 .withValue(ContactsContract.CommonDataKinds.Phone.TYPE,
                         ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE)
                 .build());
-           /* ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, backId)
-                    .withValue(ContactsContract.Data.DATA1,phone).build());*/
-
-        /*ContentValues values = new ContentValues();
-        values.put(RawContacts.ACCOUNT_TYPE, "learn2crack.chat.account");
-        values.put(RawContacts.ACCOUNT_NAME, "Account");
-        Uri rawContactUri = mContentResolver.insert(RawContacts.CONTENT_URI, values);
-        long rawContactId = ContentUris.parseId(rawContactUri);
-        values.clear();
-        values.put(ContactsContract.Data.RAW_CONTACT_ID, rawContactId);
-        values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE);
-        values.put(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name);
-       mContentResolver.insert(ContactsContract.Data.CONTENT_URI, values);*/
-
-       /* ops.add(ContentProviderOperation.newInsert(addCallerIsSyncAdapterParameter(ContactsContract.Data.CONTENT_URI))
-                .withValueBackReference(RawContacts.Data.RAW_CONTACT_ID, 0)
-                .withValue(RawContacts.Data.MIMETYPE, MIMETYPE)
-                .withValue(RawContacts.Data.DATA1, "fdfdfd")
-                .withValue(RawContacts.Data.DATA2, "sample")
-                .withValue(RawContacts.Data.DATA3, "sample")
-                .build());*/
-
-        /*ops.add(ContentProviderOperation.newInsert(Data.CONTENT_URI).withValueBackReference(Data.RAW_CONTACT_ID, rawContactInsertIndex)
-                .withValue(Data.MIMETYPE, CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                .withValue(CommonDataKinds.StructuredName.DISPLAY_NAME, name)
-                //.withValue(ContactsContract.Data.DATA1, "")//TODO:fill with gcd num
-                .build());*/
-
              ContentProviderResult[] res = mContentResolver.applyBatch(ContactsContract.AUTHORITY, ops);
             for(int i=0; i<res.length; i++){
                 paramsDebug.add(new BasicNameValuePair("msg", res[i].toString()));
@@ -182,7 +117,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         JSONParser json = new JSONParser();
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         List<NameValuePair> paramsDebug = new ArrayList<NameValuePair>();
-        String getres="";
         JSONArray res;
         Cursor test = null;
         ArrayList<String> phones = new ArrayList<String>();
@@ -191,34 +125,21 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         Cursor people = null;
         String id="",name="";
         ArrayList<JSONObject> mContacts = new ArrayList<JSONObject>();
+        HashMap<String, String> originalPhoneMap = new HashMap<String,String>();
         try {
-            //String[] phones = new String[]{};
-
-            paramsDebug.add(new BasicNameValuePair("msg","before cursor"));
-            JSONArray debug1=json.getJSONArray("http://nodejs-whatnext.rhcloud.com/log", paramsDebug);
-            paramsDebug.clear();
             test = mContentResolver.query(ContactsContract.Contacts.CONTENT_URI, null,
                     null, null, ContactsContract.Contacts.DISPLAY_NAME + " ASC");
-            paramsDebug.add(new BasicNameValuePair("msg","after cursor"));
-            JSONArray debug2=json.getJSONArray("http://nodejs-whatnext.rhcloud.com/log", paramsDebug);
-            paramsDebug.clear();
             while (test != null && test.moveToNext()) {
                 try {
                     id = test.getString(test.getColumnIndex(ContactsContract.Contacts._ID));
                     name = test.getString(test.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                 }
                 catch (Exception ex){
-                    paramsDebug.add(new BasicNameValuePair("msg", ex.toString() + "\n stack trace#####:\n " + ex.getStackTrace().toString()));
-                    JSONArray debug6=json.getJSONArray("http://nodejs-whatnext.rhcloud.com/log", paramsDebug);
-                    paramsDebug.clear();
                     continue;
                 }
                 String[] projection = new String[]{
                         ContactsContract.CommonDataKinds.Phone.CONTACT_ID, ContactsContract.CommonDataKinds.Phone.NUMBER, };
                 if(id == null || id.equals("") || name == null || name.equals("")){
-                    paramsDebug.add(new BasicNameValuePair("msg","id or name problem"));
-                    JSONArray debug6=json.getJSONArray("http://nodejs-whatnext.rhcloud.com/log", paramsDebug);
-                    paramsDebug.clear();
                     continue;
                 }
                 peopleTemp = mContentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, RawContacts.CONTACT_ID + "= ?",
@@ -231,6 +152,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     MainNumber = peopleTemp.getString(indexNumber).replaceAll("[^0-9]", "");
                     if(!MainNumber.equals("")) {
                         phones.add(MainNumber);
+                        originalPhoneMap.put(MainNumber,peopleTemp.getString(indexNumber));
                     }
                 }
                 JSONArray jsonArray = new JSONArray(phones);
@@ -239,7 +161,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     JSONObject jsonObj = new JSONObject();
                     jsonObj.put("name", name);
                     jsonObj.put("phones",jsonArray);
-                    //mContacts.add("{\"name\": \"" + name + "\", \"phones\": " + jsonArray.get(0) + "}");
                     mContacts.add(jsonObj);
                     phones.clear();
                 }
@@ -251,10 +172,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             if(test!=null){
                 test.close();
             }
-
-            paramsDebug.add(new BasicNameValuePair("msg", "size is: "+mContacts.size()));
-            JSONArray debug6=json.getJSONArray("http://nodejs-whatnext.rhcloud.com/log", paramsDebug);
-            paramsDebug.clear();
+            //paramsDebug.add(new BasicNameValuePair("msg", "size is: "+mContacts.size()));
+            //JSONArray debug6=json.getJSONArray("http://nodejs-whatnext.rhcloud.com/log", paramsDebug);
+            //paramsDebug.clear();
             params.add(new BasicNameValuePair("contacts",mContacts.toString()));
             res = json.getJSONArray("http://nodejs-whatnext.rhcloud.com/synccontacts", params);
             params.clear();
@@ -282,9 +202,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 while (people.moveToNext()) {
                     MainNumber = people.getString(indexNumber).replaceAll("[^0-9]", "");
                     if (!syncMap.containsKey(MainNumber)) {
-                        paramsDebug.add(new BasicNameValuePair("msg", "delete account for name: "+people.getString(indexNumber)));
-                        JSONArray debug4=json.getJSONArray("http://nodejs-whatnext.rhcloud.com/log", paramsDebug);
-                        paramsDebug.clear();
+                        //paramsDebug.add(new BasicNameValuePair("msg", "delete account for name: "+people.getString(indexNumber)));
+                        //JSONArray debug4=json.getJSONArray("http://nodejs-whatnext.rhcloud.com/log", paramsDebug);
+                        //paramsDebug.clear();
                         id = people.getString(indexRawID);
                         int deletedRawContacts = mContentResolver.delete(RawContacts.CONTENT_URI.buildUpon().appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build(), ContactsContract.RawContacts._ID + " = ?", new String[]{id});
                     } else {
@@ -299,31 +219,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             for (Map.Entry<String,String> contact : syncMap.entrySet()) {
                 String phone = contact.getKey();
                 if(!wnContactsMap.containsKey(phone)){
-                    //paramsDebug.add(new BasicNameValuePair("msg", "add wn contact with number: " + phone + " and name: " + contact.getValue()));
-                    //JSONArray debug3=json.getJSONArray("http://nodejs-whatnext.rhcloud.com/log", paramsDebug);
-                    //paramsDebug.clear();
                     String newWNPhone = contact.getKey();
-                    //boolean debug = true;
                     for(int i=0;i<mContacts.size();i++) {
                         JSONObject json_obj = mContacts.get(i);
                         JSONArray phonesTemp = json_obj.getJSONArray("phones");
                         for(int j=0; j<phonesTemp.length();j++) {
                             if (phonesTemp.getString(j).equals(newWNPhone)){
-                                //paramsDebug.add(new BasicNameValuePair("msg", "found in current contact list- name: " + contact.getValue()));
-                                //JSONArray debug4 = json.getJSONArray("http://nodejs-whatnext.rhcloud.com/log", paramsDebug);
-                                //paramsDebug.clear();
-                                addWNContact(json_obj.getString("name"), phone);
-                                //debug = false;
+                                addWNContact(json_obj.getString("name"), originalPhoneMap.get(phone));
                                 break;
                             }
                         }
                     }
-                   /* if(debug){
-                        paramsDebug.add(new BasicNameValuePair("msg", "NOT found in contact list- name: " + contact.getValue()));
-                        JSONArray debug4=json.getJSONArray("http://nodejs-whatnext.rhcloud.com/log", paramsDebug);
-                        paramsDebug.clear();
-                    }*/
-                    //addWNContact(contact.getValue(), phone);
                 }
             }
         }
@@ -340,19 +246,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             Writer writer = new StringWriter();
             PrintWriter printWriter = new PrintWriter(writer);
             e.printStackTrace(printWriter);
-            paramsDebug.add(new BasicNameValuePair("msg", e.toString() + "\n stack trace#####:\n "+ writer.toString()));
-            JSONArray debug6=json.getJSONArray("http://nodejs-whatnext.rhcloud.com/log", paramsDebug);
-            paramsDebug.clear();
+            //paramsDebug.add(new BasicNameValuePair("msg", e.toString() + "\n stack trace#####:\n "+ writer.toString()));
+            //JSONArray debug6=json.getJSONArray("http://nodejs-whatnext.rhcloud.com/log", paramsDebug);
+            //paramsDebug.clear();
         }
     }
 
-   /* private static void performSync(Context context, Account account, Bundle extras) {
-        HashMap<String, Long> localContacts = new HashMap<String, Long>();
-        Uri rawContactUri = RawContacts.CONTENT_URI.buildUpon().appendQueryParameter(RawContacts.ACCOUNT_NAME, account.name).appendQueryParameter(
-                RawContacts.ACCOUNT_TYPE, account.type).build();
-        Cursor c1 = context.getContentResolver().query(rawContactUri, new String[]{BaseColumns._ID, RawContacts.SYNC1}, null, null, null);
-        while (c1.moveToNext()) {
-            localContacts.put(c1.getString(1), c1.getLong(0));
-        }
-    }*/
 }

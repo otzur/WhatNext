@@ -76,13 +76,14 @@
               android:ellipsize="marquee"
               android:textAppearance="?attr/textAppearanceListItem"
         android:focusable="false"/>
-    <!--<ImageView
+    <ImageView
         android:id="@android:id/icon2"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:paddingLeft="@dimen/listview_item_padding"
         android:layout_alignParentLeft="true"
         android:paddingRight="16dp"
         android:layout_centerVertical="true"
-        android:layout_width="50dp"
-        android:layout_height="50dp" />-->
+         />
 
 </RelativeLayout>

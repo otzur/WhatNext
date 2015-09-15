@@ -8,9 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.TextView;
+import android.widget.Button;
 
 import java.util.List;
 
@@ -31,8 +29,9 @@ public class WnMessageRowOptionArrayAdapter extends ArrayAdapter<WnMessageRowOpt
 
 
     static class ViewHolder {
-        protected TextView text;
-        protected CheckBox checkbox;
+        /*protected TextView text;
+        protected CheckBox checkbox;*/
+        Button button;
     }
 
     @Override
@@ -43,29 +42,31 @@ public class WnMessageRowOptionArrayAdapter extends ArrayAdapter<WnMessageRowOpt
             //view = inflator.inflate(R.layout.activity_listviewexampleactivity, null);
             view = inflator.inflate(R.layout.message_row_option_layout, null);
             final ViewHolder viewHolder = new ViewHolder();
-            viewHolder.text = (TextView) view.findViewById(R.id.label);
-            viewHolder.checkbox = (CheckBox) view.findViewById(R.id.check);
-            viewHolder.checkbox
-                    .setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            viewHolder.button = (Button) view.findViewById(R.id.label);
+            viewHolder.button.setOnClickListener(new Button.OnClickListener() {
 
-                        @Override
-                        public void onCheckedChanged(CompoundButton buttonView,
-                                                     boolean isChecked) {
-                            WnMessageRowOption element = (WnMessageRowOption) viewHolder.checkbox
-                                    .getTag();
-                            element.setSelected(buttonView.isChecked());
+                                                     public void onClick(View button) {
+                                 //Set the button's appearance
+                                 button.setSelected(!button.isSelected());
+                                 WnMessageRowOption element = (WnMessageRowOption) viewHolder.button
+                                         .getTag();
+                                 if (button.isSelected()) {
+                                     element.setSelected(true);
+                                 } else {
+                                     element.setSelected(false);
+                                 }
 
-                        }
-                    });
+                             }
+                         });
             view.setTag(viewHolder);
-            viewHolder.checkbox.setTag(list.get(position));
+            viewHolder.button.setTag(list.get(position));
         } else {
             view = convertView;
-            ((ViewHolder) view.getTag()).checkbox.setTag(list.get(position));
+            ((ViewHolder) view.getTag()).button.setTag(list.get(position));
         }
         ViewHolder holder = (ViewHolder) view.getTag();
-        holder.text.setText(list.get(position).getName());
-        holder.checkbox.setChecked(list.get(position).isSelected());
+        holder.button.setText(list.get(position).getName());
+        holder.button.setSelected(list.get(position).isSelected());
         return view;
     }
 }

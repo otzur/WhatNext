@@ -246,7 +246,7 @@ public class LoginFragment extends Fragment {
                     Intent chat = new Intent(getActivity(), MainActivity.class);
                     chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     getActivity().startActivity(chat);
-
+                    getActivity().finish();
                 }else{
                     Toast.makeText(getActivity(),res,Toast.LENGTH_SHORT).show();
 
