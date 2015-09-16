@@ -51,6 +51,7 @@
     <item type="id" name="TAG_CONTACT_ID"/>
     <item type="id" name="TAG_HAS_WN"/>
     <item type="id" name="TAG_PHONE"/>
+    <item type="id" name="TAG_CONTACT"/>
     <string name="title_activity_wn_message_result">WnMessageResultActivity</string>
     <string name="title_activity_wn_message_raw">WnMessageRawActivity</string>
     <string name="title_activity_main22">Main22Activity</string>

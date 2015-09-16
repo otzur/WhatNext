@@ -305,7 +305,17 @@ public class MainActivity extends AppCompatActivity implements
                                 break;
                             }
 
+<<<<<<< HEAD
                             case R.id.nav_history2: {
+                                fragmentAdapter.addFragment(new HistoryFragment2(), "Person List");
+                                break;
+                            }
+
+                            case R.id.nav_logout: {
+                                new Logout().execute();
+=======
+                            case R.id.nav_history2:
+                            {
                                 fragmentAdapter.addFragment(new HistoryFragment2(), "History List");
                                 break;
                             }
@@ -327,8 +337,10 @@ public class MainActivity extends AppCompatActivity implements
                                 fragmentAdapter.addFragment(new EmptyFragment(), "Empty Example");
                                 break;
                             }
-                            case R.id.nav_logout: {
-                                new Logout().execute();
+                            case R.id.nav_logout:
+                            {
+                                new  Logout().execute();
+>>>>>>> db7b1d59c99ac0e5e5404b870a81f2d719579520
                                 break;
                             }
                         }
