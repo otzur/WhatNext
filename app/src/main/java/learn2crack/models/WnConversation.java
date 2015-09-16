@@ -1,6 +1,6 @@
 package learn2crack.models;
 
-import android.util.Log;
+import android.graphics.Bitmap;
 
 /**
  * Created by samzaleg on 8/27/2015.
@@ -12,6 +12,27 @@ public class WnConversation {
     private int n_users;
     private int options_type;
     private int tab;
+    private Bitmap user_photo;
+    private String user_name;
+    private String contact_phone_number;
+
+    // user name
+    public String getUser_name() {
+        return user_name;
+    }
+
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
+    }
+
+    // user photo
+    public Bitmap getUser_photo() {
+        return user_photo;
+    }
+
+    public void setUser_photo(Bitmap user_photo) {
+        this.user_photo = user_photo;
+    }
 
     public long getId(){return this.id;}
 
@@ -52,4 +73,14 @@ public class WnConversation {
     public void setTab(int tab) {
         this.tab = tab;
     }
+
+    public String getContact_phone_number() {
+        return contact_phone_number;
+    }
+
+    public void setContact_phone_number(String contact_phone_number) {
+        this.contact_phone_number = contact_phone_number;
+    }
+
+
 }

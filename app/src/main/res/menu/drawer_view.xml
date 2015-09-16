@@ -38,6 +38,19 @@
             android:id="@+id/nav_history2"
             android:icon="@drawable/ic_forum"
             android:title="History" />
+        <item
+            android:id="@+id/nav_conversation"
+            android:icon="@drawable/ic_forum"
+            android:title="Conversation" />
+
+        <item
+            android:id="@+id/nav_cardview_example"
+            android:icon="@drawable/ic_forum"
+            android:title="Card View Example" />
+        <item
+            android:id="@+id/nav_empty_example"
+            android:icon="@drawable/ic_forum"
+            android:title="Empty Example" />
     </group>
 
     <item android:title="Sub items">

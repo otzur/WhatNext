@@ -209,7 +209,7 @@ public class WnMessageNewActivity extends AppCompatActivity {
             UUID uuid = UUID.randomUUID();
             UUID c_u_id = UUID.randomUUID();
             dbConversations.open();
-            wnConversation= dbConversations.insert(c_u_id.toString(),2, selectedTab + 1, type, Integer.toString(selectedTab));
+            wnConversation= dbConversations.insert(c_u_id.toString(),2, selectedTab + 1, type, Integer.toString(selectedTab), user, user_name);
             dbConversations.close();
             params = new ArrayList<>();
             params.add((new BasicNameValuePair("msg_id",uuid.toString())));
