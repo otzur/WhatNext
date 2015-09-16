@@ -327,6 +327,7 @@ public class MainActivity extends AppCompatActivity implements
                                 fragmentAdapter.addFragment(new EmptyFragment(), "Empty Example");
                                 break;
                             }
+                            case R.id.nav_logout: {
                                 new Logout().execute();
                                 break;
                             }
