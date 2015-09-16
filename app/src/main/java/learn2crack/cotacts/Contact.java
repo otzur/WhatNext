@@ -13,13 +13,29 @@ public class Contact {
     private long id;
     private Resources res;
     private String name;
-    private Bitmap photo;
+    private String photoURI = "";
     private LongSparseArray<String> phones;
 
-    Contact(long id, String name, Resources res) {
+    public Contact(long id, String name, Resources res) {
         this.id = id;
         this.name = name;
         this.res = res;
+    }
+
+    public LongSparseArray<String> getPhones() {
+        return phones;
+    }
+
+    public int getPhonesSize(){
+        return phones.size();
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -51,12 +67,12 @@ public class Contact {
         return builder.toString();
     }
 
-    public void SetPhoto(Bitmap bitmap) {
-        this.photo = bitmap;
+    public void SetPhotoURI(String uri) {
+        this.photoURI = uri;
     }
 
-    public Bitmap getPhoto() {
-        return photo;
+    public String getPhotoURI() {
+        return photoURI;
     }
 
     public void addPhone(int type, String number) {

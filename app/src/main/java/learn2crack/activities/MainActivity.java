@@ -4,11 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -21,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.SmsMessage;
 import android.util.Log;
+import android.util.LongSparseArray;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,11 +43,12 @@ import java.util.List;
 import learn2crack.adapters.FragmentAdapter;
 import learn2crack.chat.R;
 import learn2crack.cheese.CheeseListFragment;
+import learn2crack.cotacts.Contact;
 import learn2crack.utilities.JSONParser;
 
 
 public class MainActivity extends AppCompatActivity implements
-        WNContactsListFragment.OnContactsInteractionListener{
+        WnContactsListFragment.OnContactsInteractionListener{
 
     private DrawerLayout mDrawerLayout;
     public ViewPager viewPager;
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements
     //private static Context context;
     String regid;
     //UserFragment contactListFragment ;
-    WNContactsListFragment contactListFragment;
+    WnContactsListFragment contactListFragment;
 
     // True if this activity instance is a search result view (used on pre-HC devices that load
     // search results in a separate instance of the activity rather than loading results in-line
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements
             setContentView(R.layout.activity_main);
 
             //contactListFragment = new UserFragment();
-            contactListFragment = new WNContactsListFragment();
+            contactListFragment = new WnContactsListFragment();
             Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(mToolbar);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -285,46 +285,39 @@ public class MainActivity extends AppCompatActivity implements
 
                         FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager());
 
-                        switch (menuItem.getItemId())
-                        {
-                            case R.id.nav_home:
-                            {
+                        switch (menuItem.getItemId()) {
+                            case R.id.nav_home: {
                                 fragmentAdapter.addFragment(contactListFragment, "User");
                                 break;
                             }
-                            case R.id.nav_friends:
-                            {
+                            case R.id.nav_friends: {
                                 fragmentAdapter.addFragment(contactListFragment, "User");
                                 break;
                             }
 
-                            case R.id.nav_history:
-                            {
+                            case R.id.nav_history: {
                                 fragmentAdapter.addFragment(new HistoryFragment(), "Messages");
                                 break;
                             }
 
-                            case R.id.nav_discussion:
-                            {
+                            case R.id.nav_discussion: {
                                 fragmentAdapter.addFragment(new CheeseListFragment(), "Cheese List");
                                 break;
                             }
 
-                            case R.id.nav_history2:
-                            {
+                            case R.id.nav_history2: {
                                 fragmentAdapter.addFragment(new HistoryFragment2(), "Person List");
                                 break;
                             }
 
-                            case R.id.nav_logout:
-                            {
-                                new  Logout().execute();
+                            case R.id.nav_logout: {
+                                new Logout().execute();
                                 break;
                             }
                         }
 
 
-                       //adapter.addFragment(new MessagesFragment(), "MessagesFragment 1");
+                        //adapter.addFragment(new MessagesFragment(), "MessagesFragment 1");
                         viewPager.setAdapter(fragmentAdapter);
 
                         menuItem.setChecked(true);
@@ -347,118 +340,42 @@ public class MainActivity extends AppCompatActivity implements
             // context menu logic
             return;
         }
-        Cursor cursor2 = null;
-        String contactID = (String)v.getTag(R.id.TAG_CONTACT_ID);
-       boolean hasWn = (Boolean)(v.getTag(R.id.TAG_HAS_WN));
+        Contact contact = (Contact)v.getTag(R.id.TAG_CONTACT);
+        if (contact == null) {
+            // context menu logic
+            return;
+        }
         try {
-            if (hasWn) {
-                cursor2 = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                        new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER},
-                        ContactsContract.Data.RAW_CONTACT_ID + "=?",
-                        new String[]{contactID}, null);
-                SharedPreferences prefs = context.getSharedPreferences("Chat", 0);
-                SharedPreferences.Editor edit = prefs.edit();
-                edit.putString("CONTACT_HAS_WN", "1");
-                edit.commit();
-            } else {
-                cursor2 = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                        new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER},
-                        ContactsContract.Data.CONTACT_ID + "=?",
-                        new String[]{contactID}, null);
-                SharedPreferences prefs = context.getSharedPreferences("Chat", 0);
-                SharedPreferences.Editor edit = prefs.edit();
-                edit.putString("CONTACT_HAS_WN", "0");
-                edit.commit();
-            }
-
-
-            int numOfPhones = cursor2.getCount();
+            SharedPreferences prefs = context.getSharedPreferences("Chat", 0);
+            SharedPreferences.Editor edit = prefs.edit();
+            edit.putString("CONTACT_HAS_WN", "1");
+            edit.commit();
+            int numOfPhones = contact.getPhonesSize();//cursor2.getCount();
             String phoneNumber = "";
             if(numOfPhones>1) {
-                while (numOfPhones > 0) {
-                    cursor2.moveToFirst();
-                    phoneNumber = cursor2.getString(cursor2.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                    menu.add(phoneNumber);
-                    numOfPhones--;
+                LongSparseArray<String> phones= contact.getPhones();
+                int phonesSize = phones.size();
+                for(int i = 0 ; i < phonesSize ; i++){
+                    menu.add(phones.valueAt(i));
                 }
-                return;
+                phoneNumber = contact.getPhones().valueAt(0);
             }
-            cursor2.moveToFirst();
-            if(numOfPhones > 0) {
-                phoneNumber = cursor2.getString(cursor2.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+            if(numOfPhones >= 1){
+                phoneNumber = contact.getPhones().valueAt(0);
             }
-            if(hasWn){
-                Bundle args = new Bundle();
-                args.putString("mobno", phoneNumber);
-                args.putString("type", "HimAndHer");
-                args.putString("status", "New");
-                Intent chat = new Intent(context, WnMessageNewActivity.class);
-                chat.putExtra("INFO", args);
-                chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            Bundle args = new Bundle();
+            args.putString("mobno", phoneNumber);
+            args.putString("type", "HimAndHer");
+            args.putString("status", "New");
+            Intent chat = new Intent(context, WnMessageNewActivity.class);
+            chat.putExtra("INFO", args);
+            chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-                context.startActivity(chat);
-            }
-            else{
-                Intent intentt = new Intent(Intent.ACTION_VIEW);
-                intentt.setData(Uri.parse("sms:"));
-                intentt.setType("vnd.android-dir/mms-sms");
-                //intentt.putExtra(Intent.EXTRA_TEXT, "invitation to use wn");
-                intentt.putExtra("address",  phoneNumber);
-                intentt.putExtra("sms_body", "invitation to use wn");
-                intentt.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intentt);
-            }
+            context.startActivity(chat);
         }
         catch (Exception ex) {
             Log.e(TAG, ex.getLocalizedMessage());
         }
-        finally {
-            cursor2.close();
-        }
-
-        /*String[] whereArgs = new String[]{String.valueOf(mContactUri)};
-        Log.d(TAG, String.valueOf(mContactUri));
-        Cursor cursor2 = null;
-        String id = "";
-        int idx;
-        try {
-            cursor2 = getContentResolver().query(mContactUri, null, null, null, null);
-            if (cursor2.moveToFirst()) {
-                idx = cursor2.getColumnIndex(ContactsContract.Contacts._ID);
-                id = cursor2.getString(idx);
-            }
-            cursor2 = context.getContentResolver().query(
-                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                    null,
-                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + id, null, null);
-        } catch (Exception ex) {
-            Log.e("wn", ex.getLocalizedMessage());
-        }
-
-        int phoneNumberIndex = cursor2
-                .getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER);
-
-        Log.d(TAG, String.valueOf(cursor2.getCount()));
-        String phoneNumber = "";
-        if (cursor2.moveToFirst()) {
-            phoneNumberIndex = cursor2.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-            phoneNumber = cursor2.getString(phoneNumberIndex);
-        }
-        if (cursor2 != null) {
-            Log.v(TAG, "Cursor Not null");
-            try {
-                if (cursor2.moveToNext()) {
-                    Log.v(TAG, "Moved to first");
-                    Log.v(TAG, "Cursor Moved to first and checking");
-                    phoneNumber = cursor2.getString(phoneNumberIndex);
-                }
-                menu.add(phoneNumber);
-            } finally {
-                Log.v(TAG, "In finally");
-                cursor2.close();
-            }
-
-        }*/
     }
 
     @Override
