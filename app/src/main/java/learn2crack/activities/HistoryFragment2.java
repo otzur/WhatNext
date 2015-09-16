@@ -1,7 +1,7 @@
 package learn2crack.activities;
 
 /**
- * Created by otzur on 9/8/2015.
+ * Created by ${USER} on ${DATE}.
  */
 
 import android.os.Bundle;
@@ -47,6 +47,7 @@ public class HistoryFragment2 extends Fragment {
             public void onItemClick(int position, View v) {
                 Log.i("WN", "click  item on position " + position);
                 Snackbar.make(v, "click  item on position " + position, Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                Snackbar.make(v, "Delivery_date = " + messages.get(position).getDelivery_date(), Snackbar.LENGTH_LONG).setAction("Action", null).show();
             }
         });
     }

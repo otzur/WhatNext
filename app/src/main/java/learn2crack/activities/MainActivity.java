@@ -312,10 +312,27 @@ public class MainActivity extends AppCompatActivity implements
 
                             case R.id.nav_history2:
                             {
-                                fragmentAdapter.addFragment(new HistoryFragment2(), "Person List");
+                                fragmentAdapter.addFragment(new HistoryFragment2(), "History List");
                                 break;
                             }
 
+                            case R.id.nav_conversation:
+                            {
+                                fragmentAdapter.addFragment(new HistoryFragment2(), "Conversation List");
+                                break;
+                            }
+
+                            case R.id.nav_cardview_example:
+                            {
+                                fragmentAdapter.addFragment(new RecyclerViewActivity(), "Card View Example");
+                                break;
+                            }
+
+                            case R.id.nav_empty_example:
+                            {
+                                fragmentAdapter.addFragment(new EmptyFragment(), "Empty Example");
+                                break;
+                            }
                             case R.id.nav_logout:
                             {
                                 new  Logout().execute();
@@ -643,7 +660,7 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         protected void onPostExecute(JSONObject json) {
 
-            String res = null;
+            String res;
             try {
                 res = json.getString("response");
                 if(res.equals("Removed Sucessfully")) {
