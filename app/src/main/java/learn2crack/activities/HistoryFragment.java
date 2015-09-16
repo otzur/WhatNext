@@ -7,23 +7,17 @@ import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-
-import java.util.List;
+import android.widget.TextView;
 
 import learn2crack.chat.R;
 import learn2crack.db.ConversationDataSource;
+import learn2crack.db.DatabaseHelper;
+import learn2crack.db.MessageDataSource;
 import learn2crack.models.WnConversation;
 import learn2crack.models.WnMessage;
-import learn2crack.db.MessageDataSource;
-import learn2crack.db.DatabaseHelper;
 import learn2crack.models.WnMessageResult;
-
-import android.widget.Adapter;
-import android.widget.TextView;
-import android.widget.Toast;
 
 public class HistoryFragment extends ListFragment {
 
@@ -60,6 +54,7 @@ public class HistoryFragment extends ListFragment {
                     c_DataSource.close();
                     Bundle args = new Bundle();
                     args.putString("mobno", message.getUser());
+                    //args.putString("user_name", message.getUserName());
                     args.putString("type", conversation.getType());
                     args.putString("tab", Integer.toString(conversation.getTab()));
                     args.putString("c_id", Long.toString(conversation.getId()));
@@ -104,9 +99,9 @@ public class HistoryFragment extends ListFragment {
        // ArrayAdapter<WnMessage> adapter = new ArrayAdapter<>(view.getContext(),android.R.layout.simple_list_item_1, values);
        // setListAdapter(adapter);
 
-        String[] from = new String[] { DBHelper.KEY_ROWID, DBHelper.KEY_MESSAGE_ID,  DBHelper.KEY_FROM, DBHelper.KEY_TO ,
+        String[] from = new String[] { DBHelper.KEY_ROWID, DBHelper.KEY_MESSAGE_ID,  DBHelper.KEY_USER,
                 DBHelper.KEY_OPTION_SELECTED,DBHelper.KEY_STATUS, DBHelper.KEY_TYPE, DBHelper.KEY_CREATION_DATE ,DBHelper.KEY_CONVERSATION_ROW_ID, DBHelper.KEY_FILLED_BY_YOU};
-        int[] to = new int[] {R.id.row_id, R.id.message_id,  R.id.from_user, R.id.to_user ,  R.id.selected_options, R.id.status, R.id.type,  R.id.creation_date ,R.id.c_id, R.id.filled_by_you};
+        int[] to = new int[] {R.id.row_id, R.id.message_id,  R.id.from_user,  R.id.selected_options, R.id.status, R.id.type,  R.id.creation_date ,R.id.c_id, R.id.filled_by_you};
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(view.getContext(), R.layout.history_row, cursor, from, to, 0);
         setListAdapter(adapter);
         //setListAdapter(new SimpleCursorAdapter(this, R.layout.note_item, cursor, NotesListActivity.FROM, NotesListActivity.TO));

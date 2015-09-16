@@ -13,8 +13,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import learn2crack.activities.MainActivity;
+import learn2crack.models.WnConversation;
 import learn2crack.models.WnMessage;
 import learn2crack.models.WnMessageResult;
+import learn2crack.utilities.Contacts;
 
 import static learn2crack.utilities.Utils.getSelectedOpetions;
 
@@ -26,8 +29,8 @@ public class MessageDataSource {
     private static final String TAG = "WN";
     private DatabaseHelper DBHelper;
     private SQLiteDatabase db;
-    private String[] allColumns = { DBHelper.KEY_ROWID, DBHelper.KEY_MESSAGE_ID,  DBHelper.KEY_MESSAGE, DBHelper.KEY_FROM
-            ,DBHelper.KEY_TO, DBHelper.KEY_OPTION_SELECTED, DBHelper.KEY_TYPE, DBHelper.KEY_STATUS,  DBHelper.KEY_CREATION_DATE
+    private String[] allColumns = { DBHelper.KEY_ROWID, DBHelper.KEY_MESSAGE_ID,  DBHelper.KEY_MESSAGE, DBHelper.KEY_USER, DBHelper.KEY_USER_NAME
+            ,DBHelper.KEY_OPTION_SELECTED, DBHelper.KEY_TYPE, DBHelper.KEY_STATUS,  DBHelper.KEY_CREATION_DATE
             ,DBHelper.KEY_FILLED_BY_YOU,DBHelper.KEY_CONVERSATION_ROW_ID};
 
     private String[] resultColumns = { DBHelper.KEY_MESSAGE_ID, DBHelper.KEY_OPTION_SELECTED, DBHelper.KEY_TYPE, DBHelper.KEY_CONVERSATION_ROW_ID};
@@ -61,18 +64,22 @@ public class MessageDataSource {
 //        return db.insert(TABLE_MESSAGES_NAME, null, initialValues);
 //    }
 
-    public WnMessage insert(String message_id , String message, String user , String to_user, String selectedOptions, String type, String status,
+    public WnMessage insert(String message_id , String message, String user , String user_name, String selectedOptions, String type, String status,
                 int filled_by_you, long conversationId) {
-        //Log.i(TAG, "to_user = " + to_user);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        Log.i(TAG, "Inside insert : from user = " + user_name);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        //String date = sdf.format(new Date());
         String currentDatedTime = sdf.format(new Date());
 
         ContentValues initialValues = new ContentValues();
         initialValues.put(DBHelper.KEY_MESSAGE_ID, message_id);
         initialValues.put(DBHelper.KEY_MESSAGE, message);
-        initialValues.put(DBHelper.KEY_FROM, user);
-        initialValues.put(DBHelper.KEY_TO, to_user);
+        initialValues.put(DBHelper.KEY_USER, user);
+        initialValues.put(DBHelper.KEY_USER_NAME, user_name);
+//        initialValues.put(DBHelper.KEY_TO, to_user);
+//        initialValues.put(DBHelper.KEY_TO_NAME, to_user_name);
         initialValues.put(DBHelper.KEY_OPTION_SELECTED, selectedOptions);
         initialValues.put(DBHelper.KEY_TYPE, type);
         initialValues.put(DBHelper.KEY_STATUS, status);
@@ -85,6 +92,8 @@ public class MessageDataSource {
 //        int count = cursor.getCount();
 //        Log.w(TAG, "Database size " + count);
         long insertId = db.insert(DBHelper.TABLE_MESSAGES_NAME, null, initialValues);
+
+        Log.i(TAG, "After to insert into database");
 
         Cursor cursor = db.query(DBHelper.TABLE_MESSAGES_NAME, allColumns, DBHelper.KEY_ROWID + " = " + insertId, null, null, null, null);
         cursor.moveToFirst();
@@ -101,7 +110,7 @@ public class MessageDataSource {
 
     //---Get All Contacts from table in SQLite DB---
     public Cursor getAllData() {
-//        return db.query(DBHelper.TABLE_MESSAGES_NAME, new String[] {DBHelper.KEY_FROM, DBHelper.KEY_OPTION_SELECTED, DBHelper.KEY_TYPE},
+//        return db.query(DBHelper.TABLE_MESSAGES_NAME, new String[] {DBHelper.KEY_USER, DBHelper.KEY_OPTION_SELECTED, DBHelper.KEY_TYPE},
 //               null, null, null, null, null);
 
         Cursor cursor = db.query(DBHelper.TABLE_MESSAGES_NAME, allColumns, null, null, null, null, null);
@@ -139,18 +148,35 @@ public class MessageDataSource {
     }
 
     private WnMessage cursorToMessage(Cursor cursor) {
+
         WnMessage message = new WnMessage();
         message.setId(cursor.getLong(0));
         message.setMessage_id(cursor.getString(1));
         message.setMessage(cursor.getString(2));
         message.setUser(cursor.getString(3));
-        message.setTo(cursor.getString(4));
+        message.setUserName(cursor.getString(4));
         message.setOption_selected(cursor.getString(5));
         message.setType(cursor.getString(6));
         message.setStatus(cursor.getString(7));
         message.setDelivery_date(cursor.getString(8));
+        //SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        //String currentDatedTime = sdf.format(cursor.getString(8));
+        //message.setDelivery_date(currentDatedTime);
+
         message.setFilled_by_you(cursor.getInt(9));
+
         message.setConversation_id(cursor.getLong(10));
+
+        //message.getConversation_id
+        ConversationDataSource conversationDataSource = new ConversationDataSource(MainActivity.getAppContext());
+        conversationDataSource.open();
+        WnConversation conversation = conversationDataSource.getConversationByID(Long.toString(message.getConversation_id()));
+        message.setTab(conversation.getTab());
+        conversationDataSource.close();
+
+
+
+
         return message;
     }
 
@@ -163,6 +189,7 @@ public class MessageDataSource {
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             WnMessage message = cursorToMessage(cursor);
+            message.setUser_photo(Contacts.retrieveContactPhoto(MainActivity.getAppContext(), message.getUser()));
             messages.add(message);
             cursor.moveToNext();
         }
@@ -212,6 +239,8 @@ public class MessageDataSource {
         cursor.moveToFirst();
         if(!cursor.isAfterLast()) {
             message = cursorToMessage(cursor);
+            message.setUser_photo(Contacts.retrieveContactPhoto(MainActivity.getAppContext(), message.getUser()));
+
         }
         // make sure to close the cursor
         cursor.close();

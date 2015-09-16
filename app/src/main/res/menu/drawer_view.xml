@@ -33,6 +33,11 @@
             android:id="@+id/nav_discussion"
             android:icon="@drawable/ic_forum"
             android:title="Discussion" />
+
+        <item
+            android:id="@+id/nav_history2"
+            android:icon="@drawable/ic_forum"
+            android:title="History" />
     </group>
 
     <item android:title="Sub items">

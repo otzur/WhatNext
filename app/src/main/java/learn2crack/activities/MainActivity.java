@@ -56,6 +56,9 @@ public class MainActivity extends AppCompatActivity implements
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     String SENDER_ID = "681641134962";
+
+    private static Context context;
+
     Fragment reg = null;
 
     static final String TAG = "WN";
@@ -65,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements
 
     GoogleCloudMessaging gcm;
     SharedPreferences prefs;
-    Context context;
+    //private static Context context;
     String regid;
     //UserFragment contactListFragment ;
     WNContactsListFragment contactListFragment;
@@ -76,9 +79,14 @@ public class MainActivity extends AppCompatActivity implements
     private boolean isSearchResultView = false;
     private Uri mContactUri=null;
 
+    public static Context getAppContext() {
+        return MainActivity.context;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MainActivity.context = getApplicationContext();
         try {
             setContentView(R.layout.activity_main);
 
@@ -302,6 +310,12 @@ public class MainActivity extends AppCompatActivity implements
                                 break;
                             }
 
+                            case R.id.nav_history2:
+                            {
+                                fragmentAdapter.addFragment(new HistoryFragment2(), "Person List");
+                                break;
+                            }
+
                             case R.id.nav_logout:
                             {
                                 new  Logout().execute();
@@ -377,7 +391,7 @@ public class MainActivity extends AppCompatActivity implements
                 Bundle args = new Bundle();
                 args.putString("mobno", phoneNumber);
                 args.putString("type", "HimAndHer");
-                args.putString("status", "new");
+                args.putString("status", "New");
                 Intent chat = new Intent(context, WnMessageNewActivity.class);
                 chat.putExtra("INFO", args);
                 chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -457,7 +471,7 @@ public class MainActivity extends AppCompatActivity implements
             Bundle args = new Bundle();
             args.putString("mobno", phone);
             args.putString("type", "HimAndHer");
-            args.putString("status", "new");
+            args.putString("status", "New");
             Intent chat = new Intent(context, WnMessageNewActivity.class);
             chat.putExtra("INFO", args);
             chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

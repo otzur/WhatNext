@@ -5,12 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.ArrayMap;
 import android.util.Log;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -118,7 +115,7 @@ public class ConversationDataSource {
             if(tempUser != null) {
                 mSet.add(tempUser);
             }
-            tempTo = messages.get(i).getTo();
+            tempTo = messages.get(i).getUser();
             if(tempTo != null) {
                 mSet.add(tempTo);
             }
@@ -131,7 +128,7 @@ public class ConversationDataSource {
         MessageDataSource messageDataSource = new MessageDataSource(context);
         messageDataSource.open();
         ArrayList<WnMessage> relatedMessages = messageDataSource.getRelatedMessages(Long.valueOf(c_id) , null);
-        String options =relatedMessages.get(0).getOption_selected();
+            String options =relatedMessages.get(0).getOption_selected();
         ArrayList<Integer> selectedOptions = getSelectedOpetions(options);
         messageDataSource.close();
         int relatedMessageCount = relatedMessages.size();

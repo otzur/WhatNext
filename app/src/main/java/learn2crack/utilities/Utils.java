@@ -16,11 +16,12 @@
 
 package learn2crack.utilities;
 
-import android.annotation.TargetApi;
 import android.os.Build;
-import android.os.StrictMode;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 //import com.example.android.contactslist.ui.ContactDetailActivity;
 //import com.example.android.contactslist.ui.ContactsListActivity;
@@ -114,6 +115,26 @@ public class Utils {
             } catch (NumberFormatException nfe) {};
         }
         return results;
+    }
+
+    public static String DateFormat(String inputDate){
+        String mytime=  inputDate;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy");
+        Date myDate = null;
+        try {
+            myDate = dateFormat.parse(mytime);
+
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return myDate.toString();
+//        SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd");
+//        String finalDate = timeFormat.format(myDate);
+//
+//        System.out.println(finalDate);
+//        return finalDate;
+
     }
 
 }
