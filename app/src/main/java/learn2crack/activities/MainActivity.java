@@ -48,7 +48,7 @@ import learn2crack.utilities.JSONParser;
 
 
 public class MainActivity extends AppCompatActivity implements
-        ContactsListFragment.OnContactsInteractionListener{
+        WNContactsListFragment.OnContactsInteractionListener{
 
     private DrawerLayout mDrawerLayout;
     public ViewPager viewPager;
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements
     Context context;
     String regid;
     //UserFragment contactListFragment ;
-    ContactsListFragment contactListFragment;
+    WNContactsListFragment contactListFragment;
 
     // True if this activity instance is a search result view (used on pre-HC devices that load
     // search results in a separate instance of the activity rather than loading results in-line
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements
             setContentView(R.layout.activity_main);
 
             //contactListFragment = new UserFragment();
-            contactListFragment = new ContactsListFragment();
+            contactListFragment = new WNContactsListFragment();
             Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(mToolbar);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
