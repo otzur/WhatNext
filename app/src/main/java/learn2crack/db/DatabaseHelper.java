@@ -43,6 +43,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_OPTIONS_TYPE ="options_type";
     public static final String KEY_CONVERSATION_TYPE = "type";
     public static final String KEY_CONVERSATION_TAB = "tab";
+    public static final String KEY_CONTACT_PHONE = "contact_phone";
+    public static final String KEY_CONTACT_NAME = "contact_name";
 
     /*
     * chat consts
@@ -64,8 +66,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + "message text not null, "
             + "user text not null, "
             + "user_name text not null, "
-//            + "to_user text not null, "
-//            + "to_user_name text not null, "
             + "option_selected text not null, "
             + "type text not null, "
             + "status text not null, "
@@ -81,7 +81,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + "type text not null, "
             + "n_users integer not null, "
             + "options_type integer not null, "
-            + "tab integer not null);";
+            + "tab integer not null,"
+            + "contact_phone text not null,"
+            + "contact_name text not null);";
 
     private static final String CREATE_TABLE_OPTIONS_DEFAULTED ="create table defaultedOptions ("
             +"_id integer primary key autoincrement, "

@@ -17,19 +17,19 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-import learn2crack.adapters.HistoryRVAdapter;
+import learn2crack.adapters.ConversationRVAdapter;
 import learn2crack.chat.R;
-import learn2crack.db.MessageDataSource;
-import learn2crack.models.WnMessage;
+import learn2crack.db.ConversationDataSource;
+import learn2crack.models.WnConversation;
 
-public class HistoryFragment2 extends Fragment {
+public class ConversationFragment extends Fragment {
 
-    //private List<Person> persons;
-    private List<WnMessage> messages;
+
+    private List<WnConversation> conversations;
     private RecyclerView rv;
     private RecyclerView.Adapter adapter;
 
-    public HistoryFragment2() {
+    public ConversationFragment() {
         // Required empty public constructor
     }
 
@@ -42,12 +42,12 @@ public class HistoryFragment2 extends Fragment {
     @Override
     public void onResume (){
         super.onResume();
-        ((HistoryRVAdapter) adapter).setOnItemClickListener(new HistoryRVAdapter.HistoryItemClickListener() {
+        ((ConversationRVAdapter) adapter).setOnItemClickListener(new ConversationRVAdapter.ConversationItemClickListener() {
             @Override
             public void onItemClick(int position, View v) {
                 Log.i("WN", "click  item on position " + position);
                 Snackbar.make(v, "click  item on position " + position, Snackbar.LENGTH_LONG).setAction("Action", null).show();
-                Snackbar.make(v, "Delivery_date = " + messages.get(position).getDelivery_date(), Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                Snackbar.make(v, "Delivery_date = " + conversations.get(position).getConversation_id(), Snackbar.LENGTH_LONG).setAction("Action", null).show();
             }
         });
     }
@@ -74,17 +74,17 @@ public class HistoryFragment2 extends Fragment {
 
     private void initializeData(){
 
-        messages = new ArrayList<>();
-        MessageDataSource data_source = new MessageDataSource(rv.getContext());
+        conversations = new ArrayList<>();
+        ConversationDataSource data_source = new ConversationDataSource(rv.getContext());
         data_source.open();
-        messages = data_source.getAllMessages();
+        conversations = data_source.getAllConversations();
         data_source.close();
 
     }
 
     private void initializeAdapter() {
 
-        adapter = new HistoryRVAdapter(messages);
+        adapter = new ConversationRVAdapter(conversations);
         rv.setAdapter(adapter);
     }
 }

@@ -9,11 +9,14 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import learn2crack.activities.MainActivity;
 import learn2crack.models.WnConversation;
 import learn2crack.models.WnMessage;
 import learn2crack.models.WnMessageResult;
+import learn2crack.utilities.Contacts;
 
 import static learn2crack.utilities.Utils.getSelectedOpetions;
 
@@ -27,7 +30,7 @@ public class ConversationDataSource {
     private Context context;
 
     private String[] allColumns = { DBHelper.KEY_ROWID, DBHelper.KEY_CONVERSATION_ID, DBHelper.KEY_N_USERS,DBHelper.KEY_OPTIONS_TYPE ,
-            DBHelper.KEY_CONVERSATION_TYPE, DBHelper.KEY_CONVERSATION_TAB};
+            DBHelper.KEY_CONVERSATION_TYPE, DBHelper.KEY_CONVERSATION_TAB, DBHelper.KEY_CONTACT_PHONE, DBHelper.KEY_CONTACT_NAME };
 
     public ConversationDataSource(Context ctx) {
         this.context = ctx;
@@ -46,13 +49,16 @@ public class ConversationDataSource {
         DBHelper.close();
     }
 
-    public WnConversation insert(String conversation_id, int n_users, int options_type, String type, String tab){
+    public WnConversation insert(String conversation_id, int n_users, int options_type, String type, String tab, String contact_phone,
+                                 String contact_name){
         ContentValues initialValues = new ContentValues();
         initialValues.put(DBHelper.KEY_CONVERSATION_ID, conversation_id);
         initialValues.put(DBHelper.KEY_N_USERS, n_users);
         initialValues.put(DBHelper.KEY_OPTIONS_TYPE, options_type);
         initialValues.put(DBHelper.KEY_CONVERSATION_TYPE, type);
         initialValues.put(DBHelper.KEY_CONVERSATION_TAB, tab);
+        initialValues.put(DBHelper.KEY_CONTACT_PHONE, contact_phone);
+        initialValues.put(DBHelper.KEY_CONTACT_NAME, contact_name);
         Log.i(TAG, "insert conversation into database");
         long insertId = db.insert(DBHelper.TABLE_CONVERSATION_NAME, null, initialValues);
 
@@ -71,9 +77,28 @@ public class ConversationDataSource {
         wnConversation.setOptions_type(cursor.getInt(3));
         wnConversation.setType(cursor.getString(4));
         wnConversation.setTab(cursor.getInt(5));
+        wnConversation.setContact_phone_number(cursor.getString(6));
+        wnConversation.setUser_name(cursor.getString(7));
         return wnConversation;
     }
 
+    public List<WnConversation> getAllConversations() {
+        List<WnConversation> conversations = new ArrayList<>();
+
+        Cursor cursor = db.query(DBHelper.TABLE_CONVERSATION_NAME,
+                allColumns, null, null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            WnConversation conversation = cursorToConversation(cursor);
+            conversation.setUser_photo(Contacts.retrieveContactPhoto(MainActivity.getAppContext(), conversation.getContact_phone_number()));
+            conversations.add(conversation);
+            cursor.moveToNext();
+        }
+        // make sure to close the cursor
+        cursor.close();
+        return conversations;
+    }
     public WnConversation getConversationByUniqeID(String conversation_id) {
         WnConversation conversation = null;
 

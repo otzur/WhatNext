@@ -59,7 +59,7 @@ public class MSGReceiver  extends WakefulBroadcastReceiver {
             case "New":
                 dbConversations.open();
                 conversation = dbConversations.insert(conversation_id, 2,
-                        Integer.valueOf(tab) + 1, type, tab);
+                        Integer.valueOf(tab) + 1, type, tab, user, user_name);
                 dbConversations.close();
                 dba.open();
                 dba.insert(msg_id, "message", user, user_name, selected_options, type, "New", 0, conversation.getId());

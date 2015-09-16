@@ -318,7 +318,7 @@ public class MainActivity extends AppCompatActivity implements
 
                             case R.id.nav_conversation:
                             {
-                                fragmentAdapter.addFragment(new HistoryFragment2(), "Conversation List");
+                                fragmentAdapter.addFragment(new ConversationFragment(), "Conversation List");
                                 break;
                             }
 
