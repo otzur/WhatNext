@@ -121,12 +121,12 @@ public class MSGService extends IntentService {
                 args.putString("selected_options", selected_options);
                 args.putString("c_id", c_id);
                 args.putString("conversation_id", conversation_id);
-                args.putString("status", "received");
+                args.putString("status", "Received");
                 chat = new Intent(this, WnMessageReceiveActivity.class);
                 break;
             case "Response":
                 args.putString("c_id", c_id);
-                args.putString("status", "response");
+                args.putString("status", "Response");
                 chat = new Intent(this, ResultActivity.class);
                 break;
             case "chat":

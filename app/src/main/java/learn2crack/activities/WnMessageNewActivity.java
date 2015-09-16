@@ -192,7 +192,7 @@ public class WnMessageNewActivity extends AppCompatActivity {
             Log.i(TAG,"from user   = " + from);
 
             user = bundle.getString("mobno");
-            Log.i(TAG,"user user = " + user);
+            Log.i(TAG,"user phone = " + user);
             user_name =  Contacts.getContactName(getApplicationContext(), user);
             Log.i(TAG,"user name = " + user_name);
 
@@ -209,7 +209,7 @@ public class WnMessageNewActivity extends AppCompatActivity {
             UUID uuid = UUID.randomUUID();
             UUID c_u_id = UUID.randomUUID();
             dbConversations.open();
-            wnConversation= dbConversations.insert(c_u_id.toString(),2, selectedTab + 1, type, Integer.toString(selectedTab), user, user_name);
+            wnConversation= dbConversations.insert(c_u_id.toString(), 2, selectedTab + 1, type, Integer.toString(selectedTab), user, user_name, "Sent");
             dbConversations.close();
             params = new ArrayList<>();
             params.add((new BasicNameValuePair("msg_id",uuid.toString())));
@@ -233,7 +233,7 @@ public class WnMessageNewActivity extends AppCompatActivity {
             JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/send", params);
 
             dba.open();
-            dba.insert(uuid.toString(), "message", user, user_name, selected_options ,type, "Sent", 1, wnConversation.getId() );// Insert record in your DB
+            dba.insert(uuid.toString(), "message", user, user_name, selected_options ,type, "Sent", 1, Long.valueOf(wnConversation.getId()).toString() );// Insert record in your DB
             dba.close();
 
             Log.i(TAG, "saved in databased");

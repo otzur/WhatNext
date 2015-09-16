@@ -15,6 +15,28 @@ public class WnConversation {
     private Bitmap user_photo;
     private String user_name;
     private String contact_phone_number;
+    private String status;
+
+    public String getUpdate_datetime() {
+        return update_datetime;
+    }
+
+    public void setUpdate_datetime(String update_datetime) {
+        this.update_datetime = update_datetime;
+    }
+
+    private String update_datetime;
+
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+
 
     // user name
     public String getUser_name() {

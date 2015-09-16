@@ -43,13 +43,34 @@ public class ConversationRVAdapter extends RecyclerView.Adapter<ConversationRVAd
 
     @Override
     public void onBindViewHolder(ConversationViewHolder conversationViewHolder, int i) {
+        String display_status;
+        String status = conversations.get(i).getStatus();
         conversationViewHolder.contactName.setText(conversations.get(i).getUser_name());
-//        conversationViewHolder.datetime.setText(conversations.get(i).getDelivery_date());
-//        conversationViewHolder.options.setText("Options: " + conversations.get(i).getOption_selected());
+        //conversationViewHolder.conversation_id.setText(conversations.get(i).getConversation_id());
+        conversationViewHolder.updateDatetime.setText(conversations.get(i).getUpdate_datetime());
 //        conversationViewHolder.tab.setText("Tab = " + conversations.get(i).getTab());
 //        //historyViewHolder.contactPhoto.setScaleType(ImageView.ScaleType.FIT_XY);
         conversationViewHolder.contactPhoto.setImageBitmap(conversations.get(i).getUser_photo());
 
+        switch (status) {
+            case "New":
+                display_status = "New WN received- Waiting to your response";
+                break;
+            case "Sent":
+                display_status = "WN Sent- Waiting for other to response";
+                break;
+            case "Response":
+                display_status = "WN response- Waiting for results";
+                break;
+            case "Results":
+                display_status = "Results inside";
+                break;
+            default :
+                display_status = "default";
+                break;
+
+        }
+        conversationViewHolder.status.setText(display_status);
     }
 
     @Override
@@ -66,21 +87,21 @@ public class ConversationRVAdapter extends RecyclerView.Adapter<ConversationRVAd
 
         CardView cv;
         TextView contactName;
-        //TextView status;
+        TextView status;
         ImageView contactPhoto;
-        //TextView datetime;
-        //TextView options;
+        TextView updateDatetime;
+        TextView conversation_id;
         //TextView tab;
         public ConversationViewHolder(View itemView) {
             super(itemView);
 
             cv = (CardView)itemView.findViewById(R.id.conversation_card_view);
             contactName = (TextView)itemView.findViewById(R.id.contact_name);
-            //status = (TextView)itemView.findViewById(R.id.status);
+            status = (TextView)itemView.findViewById(R.id.status);
             contactPhoto = (ImageView)itemView.findViewById(R.id.contact_photo);
+            updateDatetime = (TextView)itemView.findViewById(R.id.datetime);
             //datetime = (TextView)itemView.findViewById(R.id.datetime);
-            //datetime = (TextView)itemView.findViewById(R.id.datetime);
-            //options = (TextView)itemView.findViewById(R.id.options);
+            conversation_id = (TextView)itemView.findViewById(R.id.conversation_id);
             //tab = (TextView)itemView.findViewById(R.id.tab);
 
             itemView.setOnClickListener(this);

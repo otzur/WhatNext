@@ -65,35 +65,28 @@ public class MessageDataSource {
 //    }
 
     public WnMessage insert(String message_id , String message, String user , String user_name, String selectedOptions, String type, String status,
-                int filled_by_you, long conversationId) {
+                int filled_by_you, String c_id) {
 
-        Log.i(TAG, "Inside insert : from user = " + user_name);
+        Log.i(TAG, "Inside insert message : from user = " + user_name);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         //String date = sdf.format(new Date());
         String currentDatedTime = sdf.format(new Date());
-
         ContentValues initialValues = new ContentValues();
         initialValues.put(DBHelper.KEY_MESSAGE_ID, message_id);
         initialValues.put(DBHelper.KEY_MESSAGE, message);
         initialValues.put(DBHelper.KEY_USER, user);
         initialValues.put(DBHelper.KEY_USER_NAME, user_name);
-//        initialValues.put(DBHelper.KEY_TO, to_user);
-//        initialValues.put(DBHelper.KEY_TO_NAME, to_user_name);
         initialValues.put(DBHelper.KEY_OPTION_SELECTED, selectedOptions);
         initialValues.put(DBHelper.KEY_TYPE, type);
         initialValues.put(DBHelper.KEY_STATUS, status);
         initialValues.put(DBHelper.KEY_CREATION_DATE, currentDatedTime);
         initialValues.put(DBHelper.KEY_FILLED_BY_YOU, filled_by_you);
-        initialValues.put(DBHelper.KEY_CONVERSATION_ROW_ID, conversationId);
+        initialValues.put(DBHelper.KEY_CONVERSATION_ROW_ID, c_id);
 
-        Log.i(TAG, "Going to insert into database");
-//        Cursor cursor = getAllData();
-//        int count = cursor.getCount();
-//        Log.w(TAG, "Database size " + count);
         long insertId = db.insert(DBHelper.TABLE_MESSAGES_NAME, null, initialValues);
 
-        Log.i(TAG, "After to insert into database");
+        Log.i(TAG, "After to insert message into database");
 
         Cursor cursor = db.query(DBHelper.TABLE_MESSAGES_NAME, allColumns, DBHelper.KEY_ROWID + " = " + insertId, null, null, null, null);
         cursor.moveToFirst();
