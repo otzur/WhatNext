@@ -34,34 +34,35 @@
                 android:id="@+id/contact_name"
                 android:layout_toRightOf="@+id/contact_photo"
                 android:layout_alignParentTop="true"
-                android:textSize="25sp"
+                android:textSize="20sp"
                 />
 
-            <!--<TextView-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:id="@+id/status"-->
-                <!--android:layout_toRightOf="@+id/contact_photo"-->
-                <!--android:layout_below="@+id/contact_name"-->
-                <!--/>-->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/status"
+                android:textSize="18sp"
+                android:layout_toRightOf="@+id/contact_photo"
+                android:layout_below="@+id/contact_name"
+                />
 
-            <!--<TextView-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:id="@+id/datetime"-->
-                <!--android:textSize="16sp"-->
-                <!--android:layout_alignParentLeft="false"-->
-                <!--android:layout_alignParentStart="false"-->
-                <!--android:layout_alignParentEnd="true"-->
-                <!--android:layout_alignParentRight="false"-->
-                <!--android:layout_toLeftOf="@+id/contact_name" />-->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/datetime"
+                android:textSize="12sp"
+                android:layout_alignParentLeft="false"
+                android:layout_alignParentStart="false"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="false"
+                android:layout_toLeftOf="@+id/contact_name" />
 
-            <!--<TextView-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:id="@+id/options"-->
-                <!--android:layout_toRightOf="@+id/contact_photo"-->
-                <!--android:layout_below="@+id/status" />-->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/conversation_id"
+                android:layout_toRightOf="@+id/contact_photo"
+                android:layout_below="@+id/status" />
             <!--<TextView-->
                 <!--android:layout_width="wrap_content"-->
                 <!--android:layout_height="wrap_content"-->

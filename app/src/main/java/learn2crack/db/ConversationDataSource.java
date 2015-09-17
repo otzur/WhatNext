@@ -7,7 +7,9 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,7 +32,8 @@ public class ConversationDataSource {
     private Context context;
 
     private String[] allColumns = { DBHelper.KEY_ROWID, DBHelper.KEY_CONVERSATION_ID, DBHelper.KEY_N_USERS,DBHelper.KEY_OPTIONS_TYPE ,
-            DBHelper.KEY_CONVERSATION_TYPE, DBHelper.KEY_CONVERSATION_TAB, DBHelper.KEY_CONTACT_PHONE, DBHelper.KEY_CONTACT_NAME };
+            DBHelper.KEY_CONVERSATION_TYPE, DBHelper.KEY_CONVERSATION_TAB, DBHelper.KEY_CONTACT_PHONE, DBHelper.KEY_CONTACT_NAME,
+            DBHelper.KEY_STATUS, DBHelper.KEY_CONVERSATION_DATE};
 
     public ConversationDataSource(Context ctx) {
         this.context = ctx;
@@ -49,8 +52,39 @@ public class ConversationDataSource {
         DBHelper.close();
     }
 
+    public void update(String conversation_id, int n_users, int options_type, String type, String tab, String contact_phone,
+                                 String contact_name, String status){
+
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        String updateDatedTime = sdf.format(new Date());
+
+        ContentValues initialValues = new ContentValues();
+        //initialValues.put(DBHelper.KEY_CONVERSATION_ID, conversation_id);
+        initialValues.put(DBHelper.KEY_N_USERS, n_users);
+        initialValues.put(DBHelper.KEY_OPTIONS_TYPE, options_type);
+        initialValues.put(DBHelper.KEY_CONVERSATION_TYPE, type);
+        initialValues.put(DBHelper.KEY_CONVERSATION_TAB, tab);
+        initialValues.put(DBHelper.KEY_CONTACT_PHONE, contact_phone);
+        initialValues.put(DBHelper.KEY_CONTACT_NAME, contact_name);
+        initialValues.put(DBHelper.KEY_CONVERSATION_STATUS, status);
+        initialValues.put(DBHelper.KEY_CONVERSATION_DATE, updateDatedTime);
+
+        Log.i(TAG, "update conversation into database");
+        long insertId = db.update(DBHelper.TABLE_CONVERSATION_NAME, initialValues, DBHelper.KEY_CONVERSATION_ID +"=?", new String[]{conversation_id});
+
+        Log.i(TAG, "conversation update status = " + status);
+        Log.i(TAG, "conversation update ID = " + conversation_id);
+        return;
+    }
+
+
     public WnConversation insert(String conversation_id, int n_users, int options_type, String type, String tab, String contact_phone,
-                                 String contact_name){
+                                 String contact_name, String status){
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        String updateDatedTime = sdf.format(new Date());
+
         ContentValues initialValues = new ContentValues();
         initialValues.put(DBHelper.KEY_CONVERSATION_ID, conversation_id);
         initialValues.put(DBHelper.KEY_N_USERS, n_users);
@@ -59,6 +93,8 @@ public class ConversationDataSource {
         initialValues.put(DBHelper.KEY_CONVERSATION_TAB, tab);
         initialValues.put(DBHelper.KEY_CONTACT_PHONE, contact_phone);
         initialValues.put(DBHelper.KEY_CONTACT_NAME, contact_name);
+        initialValues.put(DBHelper.KEY_CONVERSATION_STATUS, status);
+        initialValues.put(DBHelper.KEY_CONVERSATION_DATE, updateDatedTime);
         Log.i(TAG, "insert conversation into database");
         long insertId = db.insert(DBHelper.TABLE_CONVERSATION_NAME, null, initialValues);
 
@@ -66,6 +102,9 @@ public class ConversationDataSource {
         cursor.moveToFirst();
         WnConversation newConversation = cursorToConversation(cursor);
         cursor.close();
+
+        Log.i(TAG, "conversation insert status = " + status);
+        Log.i(TAG, "conversation insert ID = " + conversation_id);
         return newConversation;
     }
 
@@ -79,6 +118,8 @@ public class ConversationDataSource {
         wnConversation.setTab(cursor.getInt(5));
         wnConversation.setContact_phone_number(cursor.getString(6));
         wnConversation.setUser_name(cursor.getString(7));
+        wnConversation.setStatus(cursor.getString(8));
+        wnConversation.setUpdate_datetime(cursor.getString(9));
         return wnConversation;
     }
 

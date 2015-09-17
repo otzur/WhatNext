@@ -211,11 +211,19 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
             params.add((new BasicNameValuePair("selected_options", selected_options)));
             Log.i(TAG, "selected_options = " + selected_options);
 
+            Log.i(TAG + "RecvActivity", "conversation_id = " + conversation_id);
+            Log.i(TAG + "RecvActivity", "c_id = " + Long.valueOf(c_id).toString());
+
             JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/send", params);
 
             Log.i(TAG, "from_name = " + from_name);
+
+            dbConversations.open();
+            dbConversations.update(conversation_id, 2, Integer.valueOf(selectedTab) + 1, type, selectedTab, user, user_name, "Results");
+            dbConversations.close();
+
             dba.open();
-            dba.insert(uuid.toString(), "message", user, user_name, selected_options ,type, "Results", 1, Long.valueOf(c_id));// Insert record in your DB
+            dba.insert(uuid.toString(), "message", user, user_name, selected_options ,type, "Results", 1, c_id);// Insert record in your DB
             dba.close();
             return jObj;
 
