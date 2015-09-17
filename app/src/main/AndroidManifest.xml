@@ -112,10 +112,10 @@
             android:name="learn2crack.activities.WnMessageResultActivity"
             android:label="@string/title_activity_wn_message_result" >
         </activity>
-        <activity
+        <!--<activity
             android:name="learn2crack.activities.WnMessageResultRawFtagment"
             android:label="@string/title_activity_wn_message_raw" >
-        </activity>
+        </activity>-->
         <activity
             android:name="learn2crack.activities.ResultActivity"
             android:label="@string/title_activity_main22" >

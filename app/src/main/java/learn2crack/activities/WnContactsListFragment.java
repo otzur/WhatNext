@@ -241,6 +241,10 @@ public class WnContactsListFragment extends ListFragment implements
             long id = data.getLong(ContactsQuery.idIdx);
             Contact currentContact = array.get(id);
             if (currentContact == null) {
+                if(!(data.getString(ContactsQuery.accountTypeIdx)).equals("learn2crack.chat.account"))
+                {
+                    continue;
+                }
                 currentContact = new Contact(id, data.getString(ContactsQuery.nameIdx), getResources());
                 array.put(id, currentContact);
                 list.add(currentContact);
@@ -392,7 +396,7 @@ public class WnContactsListFragment extends ListFragment implements
         final static int QUERY_ID = 1;
 
         // A content URI for the Contacts table
-        final static Uri CONTENT_URI = ContactsContract.CommonDataKinds.Contactables.CONTENT_URI;
+        final static Uri CONTENT_URI = ContactsContract.Data.CONTENT_URI;
 
         // The selection clause for the CursorLoader query. The search criteria defined here
         // restrict results to contacts that have a display name and are linked to visible groups.
@@ -422,6 +426,7 @@ public class WnContactsListFragment extends ListFragment implements
                 Contacts.DISPLAY_NAME,
                 ContactsContract.CommonDataKinds.Contactables.DATA,
                 ContactsContract.CommonDataKinds.Contactables.TYPE,
+                ContactsContract.CommonDataKinds.Contactables.ACCOUNT_TYPE_AND_DATA_SET,
         };
 
         // The query column numbers which map to each value in the projection
@@ -430,6 +435,7 @@ public class WnContactsListFragment extends ListFragment implements
         final static int nameIdx  = 2;
         final static int dataIdx  = 3;
         final static int typeIdx  = 4;
+        final static int accountTypeIdx = 5;
     }
 
     private class ContactsAdapter extends ArrayAdapter<Contact> implements SectionIndexer {
@@ -554,7 +560,7 @@ public class WnContactsListFragment extends ListFragment implements
          */
         @Override
         public Object[] getSections() {
-            return mAlphabetIndexer.getSections();
+            return null;//mAlphabetIndexer.getSections();
         }
 
         /**
@@ -565,7 +571,7 @@ public class WnContactsListFragment extends ListFragment implements
             if (array == null) {
                 return 0;
             }
-            return mAlphabetIndexer.getPositionForSection(i);
+            return 0;//mAlphabetIndexer.getPositionForSection(i);
         }
 
         /**
@@ -576,7 +582,7 @@ public class WnContactsListFragment extends ListFragment implements
             if (array == null) {
                 return 0;
             }
-            return mAlphabetIndexer.getSectionForPosition(i);
+            return 0;//mAlphabetIndexer.getSectionForPosition(i);
         }
 
         /**
