@@ -1,6 +1,7 @@
 package learn2crack.cotacts;
 
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.provider.ContactsContract;
 import android.text.SpannableStringBuilder;
 import android.util.LongSparseArray;

@@ -21,6 +21,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -35,6 +36,9 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.text.style.TextAppearanceSpan;
 import android.util.DisplayMetrics;
 import android.util.LongSparseArray;
@@ -57,6 +61,9 @@ import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Set;
 
 import learn2crack.chat.R;
 import learn2crack.cotacts.Contact;
@@ -72,6 +79,18 @@ public class WnContactsListFragment extends ListFragment implements
 
     private ArrayAdapter<Contact> mAdapter; // The main query adapter
     private ImageLoader mImageLoader; // Handles loading the contact image in a background thread
+
+    private String mSearchTerm;
+
+    // Whether or not the search query has changed since the last time the loader was refreshed
+    private boolean mSearchQueryChanged;
+
+    private boolean mIsSearchResultView = false;
+
+    private static final String STATE_PREVIOUSLY_SELECTED_KEY =
+            "com.example.android.contactslist.ui.SELECTED_ITEM";
+
+    private int mPreviouslySelectedSearchItem = 0;
     // Contact selected listener that allows the activity holding this fragment to be notified of
     // a contact being selected
     private OnContactsInteractionListener mOnContactSelectedListener;
@@ -80,6 +99,24 @@ public class WnContactsListFragment extends ListFragment implements
      */
     public WnContactsListFragment() {}
 
+    /**
+     * In platform versions prior to Android 3.0, the ActionBar and SearchView are not supported,
+     * and the UI gets the search string from an EditText. However, the fragment doesn't allow
+     * another search when search results are already showing. This would confuse the user, because
+     * the resulting search would re-query the Contacts Provider instead of searching the listed
+     * results. This method sets the search query and also a boolean that tracks if this Fragment
+     * should be displayed as a search result view or not.
+     *
+     * @param query The contacts search query.
+     */
+    public void setSearchQuery(String query) {
+        if (TextUtils.isEmpty(query)) {
+            mIsSearchResultView = false;
+        } else {
+            mSearchTerm = query;
+            mIsSearchResultView = true;
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -132,7 +169,11 @@ public class WnContactsListFragment extends ListFragment implements
             public void onScroll(AbsListView absListView, int i, int i1, int i2) {
             }
         });
-        getLoaderManager().initLoader(ContactsQuery.QUERY_ID, null, this);
+        //getLoaderManager().initLoader(ContactsQuery.QUERY_ID, null, this);
+        if (mPreviouslySelectedSearchItem == 0) {
+            // Initialize the loader, and create a loader identified by ContactsQuery.QUERY_ID
+            getLoaderManager().initLoader(ContactsQuery.QUERY_ID, null, this);
+        }
     }
 
     @Override
@@ -197,6 +238,11 @@ public class WnContactsListFragment extends ListFragment implements
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         MenuItem searchItem = menu.findItem(R.id.action_search);
+
+        if (mIsSearchResultView) {
+            searchItem.setVisible(false);
+        }
+
         // In version 3.0 and later, sets up and configures the ActionBar SearchView
         if (Utils.hasHoneycomb()) {
 
@@ -204,26 +250,164 @@ public class WnContactsListFragment extends ListFragment implements
             final SearchManager searchManager =
                     (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
 
+            // Retrieves the SearchView from the search menu item
+            final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+            //final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            //toolbar.setNavigationContentDescription(new Toolbar.On);
+            //searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+
+            // Assign searchable info to SearchView
+            searchView.setSearchableInfo(
+                    searchManager.getSearchableInfo(getActivity().getComponentName()));
+
+            // Set listeners for SearchView
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String queryText) {
+                    // Nothing needs to happen when the user submits the search string
+                    return true;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    // Called when the action bar search text has changed.  Updates
+                    // the search filter, and restarts the loader to do a new query
+                    // using the new search string.
+                    String newFilter = !TextUtils.isEmpty(newText) ? newText : null;
+
+                    // Don't do anything if the filter is empty
+                    if (mSearchTerm == null && newFilter == null) {
+                        return true;
+                    }
+
+                    // Don't do anything if the new filter is the same as the current filter
+                    if (mSearchTerm != null && mSearchTerm.equals(newFilter)) {
+                        return true;
+                    }
+
+                    // Updates current filter to new filter
+                    mSearchTerm = newFilter;
+
+                    // Restarts the loader. This triggers onCreateLoader(), which builds the
+                    // necessary content Uri from mSearchTerm.
+                    mSearchQueryChanged = true;
+                    getLoaderManager().restartLoader(
+                            ContactsQuery.QUERY_ID, null, WnContactsListFragment.this);
+                    return true;
+                }
+            });
+
+            if (Utils.hasICS()) {
+                // This listener added in ICS
+                MenuItemCompat.setOnActionExpandListener(searchItem,new MenuItemCompat.OnActionExpandListener() {
+                    @Override
+                    public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                        // Nothing to do when the action item is expanded
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                        // When the user collapses the SearchView the current search string is
+                        // cleared and the loader restarted.
+                        if (!TextUtils.isEmpty(mSearchTerm)) {
+                            onSelectionCleared();
+                        }
+                        mSearchTerm = null;
+                        getLoaderManager().restartLoader(
+                                ContactsQuery.QUERY_ID, null, WnContactsListFragment.this);
+                        return true;
+                    }
+                });
+            }
+
+            if (mSearchTerm != null) {
+                // If search term is already set here then this fragment is
+                // being restored from a saved state and the search menu item
+                // needs to be expanded and populated again.
+
+                // Stores the search term (as it will be wiped out by
+                // onQueryTextChange() when the menu item is expanded).
+                final String savedSearchTerm = mSearchTerm;
+
+                // Expands the search menu item
+                if (Utils.hasICS()) {
+                    searchItem.expandActionView();
+                }
+
+                // Sets the SearchView to the previous search string
+                searchView.setQuery(savedSearchTerm, false);
+            }
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (!TextUtils.isEmpty(mSearchTerm)) {
+            // Saves the current search string
+            outState.putString(SearchManager.QUERY, mSearchTerm);
+
+            // Saves the currently selected contact
+            outState.putInt(STATE_PREVIOUSLY_SELECTED_KEY, getListView().getCheckedItemPosition());
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Sends a request to the People app to display the create contact screen
+            case R.id.menu_add_contact:
+                final Intent intent = new Intent(Intent.ACTION_INSERT, Contacts.CONTENT_URI);
+                startActivity(intent);
+                break;
+            // For platforms earlier than Android 3.0, triggers the search activity
+            case R.id.menu_search:
+                if (!Utils.hasHoneycomb()) {
+                    getActivity().onSearchRequested();
+                }
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
+        if (id == ContactsQuery.QUERY_ID) {
+            // There are two types of searches, one which displays all contacts and
+            // one which filters contacts by a search query. If mSearchTerm is set
+            // then a search query has been entered and the latter should be used.
+
+            if (mSearchTerm == null) {
+                return new CursorLoader(getActivity(),
+                        ContactsQuery.CONTENT_URI,
+                        ContactsQuery.PROJECTION,
+                        ContactsQuery.SELECTION,
+                        ContactsQuery.selectionArgs,
+                        ContactsQuery.SORT_ORDER);
+            } else {
+                return new CursorLoader(getActivity(),
+                        ContactsQuery.CONTENT_URI,
+                        ContactsQuery.PROJECTION,
+                        ContactsQuery.SELECTION_FILTERED,
+                        new String[]{ ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE,
+                                 ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
+                                "%"+mSearchTerm+"%"},
+                        ContactsQuery.SORT_ORDER);
+            }
             // Returns a new CursorLoader for querying the Contacts table. No arguments are used
             // for the selection clause. The search string is either encoded onto the content URI,
             // or no contacts search string is used. The other search criteria are constants. See
             // the ContactsQuery interface.
-            return new CursorLoader(getActivity(),
-                    ContactsQuery.CONTENT_URI,
-                    ContactsQuery.PROJECTION,
-                    ContactsQuery.SELECTION,
-                    ContactsQuery.selectionArgs,
-                    ContactsQuery.SORT_ORDER);
+        }
+        return null;
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        array.clear();
+        list.clear();
         // This swaps the new cursor into the adapter.
         while (data.moveToNext()) {
             long id = data.getLong(ContactsQuery.idIdx);
@@ -388,6 +572,8 @@ public class WnContactsListFragment extends ListFragment implements
         // A content URI for the Contacts table
         final static Uri CONTENT_URI = ContactsContract.Data.CONTENT_URI;
 
+        // The search/filter query Uri
+        final static Uri FILTER_URI = Contacts.CONTENT_FILTER_URI;
         // The selection clause for the CursorLoader query. The search criteria defined here
         // restrict results to contacts that have a display name and are linked to visible groups.
         // Notice that the search on the string provided by the user is implemented by appending
@@ -396,7 +582,18 @@ public class WnContactsListFragment extends ListFragment implements
         final static String SELECTION = ContactsContract.Data.MIMETYPE + " in (?, ?)";
 
         @SuppressLint("InlinedApi")
+        final static String SELECTION_FILTERED =ContactsContract.Data.MIMETYPE + " in (?, ?) AND "
+                        + Contacts.DISPLAY_NAME + " LIKE ?";
+
+        @SuppressLint("InlinedApi")
         String[] selectionArgs = {
+                ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE,
+                ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
+        };
+
+
+        @SuppressLint("InlinedApi")
+        String[] selectionArgsFilter = {
                 ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE,
                 ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
         };
@@ -433,9 +630,10 @@ public class WnContactsListFragment extends ListFragment implements
 
     private class ContactsAdapter extends ArrayAdapter<Contact> implements SectionIndexer {
         private LayoutInflater mInflater; // Stores the layout inflater
-        private AlphabetIndexer mAlphabetIndexer; // Stores the AlphabetIndexer instance
+        //private AlphabetIndexer mAlphabetIndexer; // Stores the AlphabetIndexer instance
         private TextAppearanceSpan highlightTextSpan; // Stores the highlight text appearance style
-
+        private String[] sections;
+        private HashMap<String, Integer> alphaIndexer;
         /**
          * Instantiates a new Contacts Adapter.
          * @param context A context that has access to the app's layout.
@@ -451,12 +649,32 @@ public class WnContactsListFragment extends ListFragment implements
             // define a string with android:name="alphabet" and contents set to all of the
             // alphabetic characters in the language in their proper sort order, in upper case if
             // applicable.
-            final String alphabet = context.getString(R.string.alphabet);
+
+            //final String alphabet = context.getString(R.string.alphabet);
+            final String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
             // Instantiates a new AlphabetIndexer bound to the column used to sort contact names.
             // The cursor is left null, because it has not yet been retrieved.
-            //mAlphabetIndexer = new AlphabetIndexer(null, ContactsQuery.SORT_KEY, alphabet);
+            //mAlphabetIndexer = new AlphabetIndexer(null, 0, alphabet);
+            alphaIndexer = new HashMap<String, Integer>();
 
+            for (int i = 0; i < contacts.size(); i++)
+            {
+                String s = contacts.get(i).getName().substring(0, 1).toUpperCase();
+                if (!alphaIndexer.containsKey(s))
+                    alphaIndexer.put(s, i);
+            }
+            //int alphaBetLength = alphabet.length();
+            /*sections = new String[alphaBetLength];
+            for(int i = 0; i < alphaBetLength; i++){
+                sections[i] = ""+alphabet.charAt(i);
+            }*/
+            Set<String> sectionLetters = alphaIndexer.keySet();
+            ArrayList<String> sectionList = new ArrayList<String>(sectionLetters);
+            Collections.sort(sectionList);
+            sections = new String[sectionList.size()];
+            for (int i = 0; i < sectionList.size(); i++)
+                sections[i] = sectionList.get(i);
             // Defines a span for highlighting the part of a display name that matches the search
             // string
             highlightTextSpan = new TextAppearanceSpan(getActivity(), R.style.searchTextHiglight);
@@ -535,7 +753,7 @@ public class WnContactsListFragment extends ListFragment implements
         public Cursor swapCursor(Cursor newCursor) {
             // Update the AlphabetIndexer with new cursor as well
             mAlphabetIndexer.setCursor(newCursor);
-            return super.swapCursor(newCursor);
+            return newCursor; //super.swapCursor(newCursor);
         }*/
 
         /**
@@ -555,7 +773,8 @@ public class WnContactsListFragment extends ListFragment implements
          */
         @Override
         public Object[] getSections() {
-            return null;//mAlphabetIndexer.getSections();
+            //return mAlphabetIndexer.getSections();
+            return sections;
         }
 
         /**
@@ -563,10 +782,14 @@ public class WnContactsListFragment extends ListFragment implements
          */
         @Override
         public int getPositionForSection(int i) {
-            if (array == null) {
+            /*if (array == null) {
                 return 0;
             }
-            return 0;//mAlphabetIndexer.getPositionForSection(i);
+            return mAlphabetIndexer.getPositionForSection(i);*/
+            if(alphaIndexer.get(sections[i])==null){
+                return 0;
+            }
+            return alphaIndexer.get(sections[i]);
         }
 
         /**
@@ -574,10 +797,11 @@ public class WnContactsListFragment extends ListFragment implements
          */
         @Override
         public int getSectionForPosition(int i) {
-            if (array == null) {
+            /*if (array == null) {
                 return 0;
             }
-            return 0;//mAlphabetIndexer.getSectionForPosition(i);
+            return mAlphabetIndexer.getSectionForPosition(i);*/
+            return 1;
         }
 
         /**
