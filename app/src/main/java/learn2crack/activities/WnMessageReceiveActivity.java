@@ -58,10 +58,6 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
     }
 
     private String selectedTab;
-    private String from;
-    private String to;
-    private String type;
-    private String status;
     private String c_id;
     private String conversation_id;
 
@@ -219,11 +215,11 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
             Log.i(TAG, "from_name = " + from_name);
 
             dbConversations.open();
-            dbConversations.update(conversation_id, 2, Integer.valueOf(selectedTab) + 1, type, selectedTab, user, user_name, "Results");
+            dbConversations.update(conversation_id, 0, type, selectedTab, user, user_name, "Results");
             dbConversations.close();
 
             dba.open();
-            dba.insert(uuid.toString(), "message", user, user_name, selected_options ,type, "Results", 1, c_id);// Insert record in your DB
+            dba.insert(uuid.toString(), "message", user, selected_options ,"Results", 1, c_id);// Insert record in your DB
             dba.close();
             return jObj;
 

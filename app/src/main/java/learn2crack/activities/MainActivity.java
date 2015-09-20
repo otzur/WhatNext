@@ -41,9 +41,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import learn2crack.adapters.FragmentAdapter;
+import learn2crack.bl.ObjectManager;
 import learn2crack.chat.R;
 import learn2crack.cheese.CheeseListFragment;
 import learn2crack.cotacts.Contact;
+import learn2crack.models.WnConversation;
 import learn2crack.utilities.JSONParser;
 
 
@@ -380,10 +382,22 @@ public class MainActivity extends AppCompatActivity implements
             if(numOfPhones >= 1){
                 phoneNumber = contact.getPhones().valueAt(0);
             }
+
+            String name = "";
+            //String mobno = phone;
+            String type = "HimAndHer";
+            String status = "New";
+
+            Log.i(TAG, "Start new activity");
+            WnConversation wnConversation =  ObjectManager.createNewConversation(name, phoneNumber, type, status);
             Bundle args = new Bundle();
-            args.putString("mobno", phoneNumber);
-            args.putString("type", "HimAndHer");
-            args.putString("status", "New");
+            args.putSerializable("conversation", wnConversation);
+
+
+//            Bundle args = new Bundle();
+//            args.putString("mobno", phoneNumber);
+//            args.putString("type", "HimAndHer");
+//            args.putString("status", "New");
             Intent chat = new Intent(context, WnMessageNewActivity.class);
             chat.putExtra("INFO", args);
             chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -402,10 +416,19 @@ public class MainActivity extends AppCompatActivity implements
         String phone = item.getTitle().toString();
         //if(hasWN.equals("1")) {
 
-            Bundle args = new Bundle();
-            args.putString("mobno", phone);
-            args.putString("type", "HimAndHer");
-            args.putString("status", "New");
+        String name = "";
+        String mobno = phone;
+        String type = "HimAndHer";
+        String status = "New";
+
+        WnConversation wnConversation =  ObjectManager.createNewConversation(name, mobno, type, status);
+        Bundle args = new Bundle();
+        args.putSerializable("conversation", wnConversation);
+
+//            Bundle args = new Bundle();
+//            args.putString("mobno", phone);
+//            args.putString("type", "HimAndHer");
+//            args.putString("status", "New");
             Intent chat = new Intent(context, WnMessageNewActivity.class);
             chat.putExtra("INFO", args);
             chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

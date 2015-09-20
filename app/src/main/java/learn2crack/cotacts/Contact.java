@@ -1,7 +1,6 @@
 package learn2crack.cotacts;
 
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.provider.ContactsContract;
 import android.text.SpannableStringBuilder;
 import android.util.LongSparseArray;
@@ -85,9 +84,7 @@ public class Contact {
     }
 
     public void addPhone(int type, String number) {
-        if (phones == null) {
-            phones = new LongSparseArray<String>();
-        }
+        if (phones == null) phones = new LongSparseArray<String>();
         phones.put(type, number);
     }
 }
