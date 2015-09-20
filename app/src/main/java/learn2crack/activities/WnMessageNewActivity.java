@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -31,12 +32,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import learn2crack.bl.ObjectManager;
 import learn2crack.chat.R;
 import learn2crack.cheese.Cheeses;
-import learn2crack.db.ConversationDataSource;
-import learn2crack.db.MessageDataSource;
 import learn2crack.models.WnConversation;
-import learn2crack.utilities.Contacts;
+import learn2crack.models.WnMessage;
 import learn2crack.utilities.JSONParser;
 
 /**
@@ -51,26 +51,11 @@ public class WnMessageNewActivity extends AppCompatActivity {
     WnConversation wnConversation;
     List<NameValuePair> params;
     static final String TAG = "WN";
-    public enum wn_message_status {
-        new_message,
-        new_received,
-        new_response
-    }
-
-    private String selectedTab ;
-    private String from;
-    private String to;
-    private String type;
-    private String status;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.message_new_layout);
-
-
-        Intent intent = getIntent();
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -79,35 +64,43 @@ public class WnMessageNewActivity extends AppCompatActivity {
         CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-       // TextView tvUserName = (TextView)findViewById(R.id.userName);
+        TextView tvUserName = (TextView)findViewById(R.id.userName);
         //btnSend = (ImageButton) findViewById(R.id.btnSend);
 
         prefs = getSharedPreferences("Chat", 0);
         bundle = getIntent().getBundleExtra("INFO");
 
-        if(bundle.getString("mobno") != null)
-        {
-            Log.i(TAG,"mobno = " + (bundle.getString("mobno")));
-        }
-        if(bundle.getString("name") != null){
+//        if(bundle.getString("mobno") != null)
+//        {
+//            Log.i(TAG,"mobno = " + (bundle.getString("mobno")));
+//        }
+//        if(bundle.getString("name") != null){
+//
+//            tvUserName.setText(bundle.getString("name"));
+//            collapsingToolbar.setTitle(bundle.getString("name"));
+//        }
+//
+//        if(bundle.getString("tab") != null && bundle.getString("selected_options") != null){
+//
+//            selectedTab = bundle.getString("tab");
+//        }
+//
+//        if(bundle.getString("type") != null){
+//
+//            type = bundle.getString("type");
+//        }
+//
+//        if(bundle.getString("status") != null){
+//
+//            status = bundle.getString("status");
+//        }
 
-            //tvUserName.setText(bundle.getString("name"));
-            collapsingToolbar.setTitle(bundle.getString("name"));
-        }
+        if(bundle.getSerializable("conversation") != null){
 
-        if(bundle.getString("tab") != null && bundle.getString("selected_options") != null){
-
-            selectedTab = bundle.getString("tab");
-        }
-
-        if(bundle.getString("type") != null){
-
-            type = bundle.getString("type");
-        }
-
-        if(bundle.getString("status") != null){
-
-            status = bundle.getString("status");
+            wnConversation = (WnConversation) bundle.getSerializable("conversation");
+            //tvUserName.setText(wnConversation.getContacts().get(0).name);
+            Log.i(TAG,"got conversation Serializable" );
+            Log.i(TAG, "status = " + wnConversation.getStatus());
         }
 
 
@@ -127,24 +120,6 @@ public class WnMessageNewActivity extends AppCompatActivity {
                 //finish();
             }
         });
-
-        Log.i(TAG, "status = " + status);
-
-        /*switch (status){
-
-            case "new":
-                break;
-
-            case "received":
-            {
-
-                Log.i(TAG, "selectedTab = " + selectedTab);
-                viewPager.setCurrentItem(Integer.parseInt(selectedTab));
-                tabLayout.setVisibility(View.INVISIBLE);
-                break;
-            }
-        }*/
-
     }
 
     @Override
@@ -171,80 +146,61 @@ public class WnMessageNewActivity extends AppCompatActivity {
 
     private class Send extends AsyncTask<String, String, JSONObject> {
 
-        MessageDataSource dba=new MessageDataSource(getApplicationContext());//Create this object in onCreate() method
-        ConversationDataSource dbConversations = new ConversationDataSource(getApplicationContext());
-
-        private int selectedTab;
         private String from;
-        private String from_name;
-        private String user;
-        private String user_name;
-        private String type;
-        private String status;
         private String selected_options;
 
 
         public Send(int currentItem) {
-            Log.i(TAG,"Tab selected  = " + currentItem);
-            selectedTab = currentItem;
-            from =  prefs.getString("REG_FROM","");
-            from_name = "Me";
+
+            from =  prefs.getString("REG_FROM", "");
             Log.i(TAG,"from user   = " + from);
 
-            user = bundle.getString("mobno");
-            Log.i(TAG,"user phone = " + user);
-            user_name =  Contacts.getContactName(getApplicationContext(), user);
-            Log.i(TAG,"user name = " + user_name);
-
-            type  = bundle.getString("type");
-            Log.i(TAG,"type = " + type);
-            status  = bundle.getString("status");
-            Log.i(TAG,"status = " + status);
+            Log.i(TAG,"Tab selected  = " + currentItem);
+            //selectedTab = currentItem;
+            wnConversation.setTab(currentItem);
 
         }
 
         @Override
         protected JSONObject doInBackground(String... args) {
             JSONParser json = new JSONParser();
-            UUID uuid = UUID.randomUUID();
-            UUID c_u_id = UUID.randomUUID();
-            dbConversations.open();
-            wnConversation= dbConversations.insert(c_u_id.toString(), 2, selectedTab + 1, type, Integer.toString(selectedTab), user, user_name, "Sent");
-            dbConversations.close();
-            params = new ArrayList<>();
-            params.add((new BasicNameValuePair("msg_id",uuid.toString())));
-            params.add(new BasicNameValuePair("fromu",from));
-            params.add(new BasicNameValuePair("from_name",from_name));
-            params.add(new BasicNameValuePair("to", user));
-            params.add(new BasicNameValuePair("user_name", user_name));
-            params.add(new BasicNameValuePair("tab", ""+ selectedTab));
-            params.add(new BasicNameValuePair("type", "" + type));
-            params.add(new BasicNameValuePair("status", "" + status));
-            params.add(new BasicNameValuePair("c_id", c_u_id.toString()));
-            WnMessageRowOptionFragment of = getVisibleFragment(selectedTab);
+            UUID messageGuid = UUID.randomUUID();
+            UUID convGuid = UUID.randomUUID();
+            wnConversation.setConversation_id(convGuid.toString());
+
+            WnMessageRowOptionFragment of = getVisibleFragment(wnConversation.getTab());
             selected_options = of.getSelectedOptions();
-            params.add((new BasicNameValuePair("selected_options", selected_options)));
             Log.i(TAG, "selected_options = " + of.getSelectedOptions());
-            Log.i(TAG, "type ==== " +type);
-            //}
 
 
+            WnMessage wnMessage = ObjectManager.createNewMessage(messageGuid.toString(), "message", from,
+                    selected_options, wnConversation.getStatus(), wnConversation.getUpdate_datetime(), 1, convGuid.toString()) ;
+
+            wnConversation.addMessage(wnMessage);
+
+            /// fill parameters to the cloud gcm
+            params = new ArrayList<>();
+            params.add(new BasicNameValuePair("msg_id",messageGuid.toString()));
+            params.add(new BasicNameValuePair("fromu",from));
+            params.add(new BasicNameValuePair("from_name","Me"));
+            params.add(new BasicNameValuePair("to", wnConversation.getContacts().get(0).getPhoneNumber()));
+            params.add(new BasicNameValuePair("user_name", wnConversation.getContacts().get(0).getName()));
+            params.add(new BasicNameValuePair("tab", ""+ wnConversation.getTab()));
+            params.add(new BasicNameValuePair("type", "" + wnConversation.getType()));
+            params.add(new BasicNameValuePair("status", "" + wnConversation.getStatus()));
+            params.add(new BasicNameValuePair("c_id", convGuid.toString()));
+            params.add(new BasicNameValuePair("selected_options", selected_options));
             //MESSAGE SENDING
             JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/send", params);
 
-            dba.open();
-            dba.insert(uuid.toString(), "message", user, user_name, selected_options ,type, "Sent", 1, Long.valueOf(wnConversation.getId()).toString() );// Insert record in your DB
-            dba.close();
-
-            Log.i(TAG, "saved in databased");
+            Long conversationId = ObjectManager.saveConversation(wnConversation);
+            wnConversation.setId(conversationId);
 
             return jObj;
 
         }
         @Override
         protected void onPostExecute(JSONObject json) {
-            //chat_msg.setText("");
-
             String res;
             try {
 

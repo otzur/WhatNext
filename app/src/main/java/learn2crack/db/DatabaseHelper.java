@@ -37,7 +37,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     */
     public static final String TABLE_CONVERSATION_NAME = "conversations";
     public static final String KEY_CONVERSATION_ID = "conversation_id";
-    public static final String KEY_N_USERS = "n_users";
+    //public static final String KEY_N_USERS = "n_users";
     public static final String KEY_OPTIONS_TYPE ="options_type";
     public static final String KEY_CONVERSATION_TYPE = "type";
     public static final String KEY_CONVERSATION_TAB = "tab";
@@ -64,9 +64,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + "message_id text not null, "
             + "message text not null, "
             + "user text not null, "
-            + "user_name text not null, "
+            //+ "user_name text not null, "
             + "option_selected text not null, "
-            + "type text not null, "
+            //+ "type text not null, "
             + "status text not null, "
             + "delivery_date text not null, "
             + "filled_by_current_user integer not null, "
@@ -78,7 +78,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + "_id integer primary key autoincrement, "
             + "conversation_id text not null, "
             + "type text not null, "
-            + "n_users integer not null, "
+            //+ "n_users integer not null, "
             + "options_type integer not null, "
             + "tab integer not null,"
             + "contact_phone text not null,"

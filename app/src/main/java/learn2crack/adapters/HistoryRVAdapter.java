@@ -77,10 +77,10 @@ public class HistoryRVAdapter extends RecyclerView.Adapter<HistoryRVAdapter.Hist
         //personViewHolder.contactName.setText(messages.get(i).getUser());
         String status = messages.get(i).getStatus();
         String display_status;
-        historyViewHolder.contactName.setText(messages.get(i).getUserName());
+        historyViewHolder.contactName.setText("Move to conversation");
         historyViewHolder.datetime.setText(messages.get(i).getDelivery_date());
         historyViewHolder.options.setText("Options: " + messages.get(i).getOption_selected());
-        historyViewHolder.tab.setText("Tab = " + messages.get(i).getTab());
+        historyViewHolder.tab.setText("Tab = Move to conversation");
         //historyViewHolder.contactPhoto.setScaleType(ImageView.ScaleType.FIT_XY);
         historyViewHolder.contactPhoto.setImageBitmap(messages.get(i).getUser_photo());
 

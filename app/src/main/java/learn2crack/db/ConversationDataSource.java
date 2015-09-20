@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import learn2crack.activities.MainActivity;
+import learn2crack.models.WnContact;
 import learn2crack.models.WnConversation;
 import learn2crack.models.WnMessage;
 import learn2crack.models.WnMessageResult;
@@ -31,7 +32,7 @@ public class ConversationDataSource {
     private SQLiteDatabase db;
     private Context context;
 
-    private String[] allColumns = { DBHelper.KEY_ROWID, DBHelper.KEY_CONVERSATION_ID, DBHelper.KEY_N_USERS,DBHelper.KEY_OPTIONS_TYPE ,
+    private String[] allColumns = { DBHelper.KEY_ROWID, DBHelper.KEY_CONVERSATION_ID, DBHelper.KEY_OPTIONS_TYPE ,
             DBHelper.KEY_CONVERSATION_TYPE, DBHelper.KEY_CONVERSATION_TAB, DBHelper.KEY_CONTACT_PHONE, DBHelper.KEY_CONTACT_NAME,
             DBHelper.KEY_STATUS, DBHelper.KEY_CONVERSATION_DATE};
 
@@ -52,7 +53,7 @@ public class ConversationDataSource {
         DBHelper.close();
     }
 
-    public void update(String conversation_id, int n_users, int options_type, String type, String tab, String contact_phone,
+    public void update(String conversation_id, int options_type, String type, String tab, String contact_phone,
                                  String contact_name, String status){
 
 
@@ -61,7 +62,6 @@ public class ConversationDataSource {
 
         ContentValues initialValues = new ContentValues();
         //initialValues.put(DBHelper.KEY_CONVERSATION_ID, conversation_id);
-        initialValues.put(DBHelper.KEY_N_USERS, n_users);
         initialValues.put(DBHelper.KEY_OPTIONS_TYPE, options_type);
         initialValues.put(DBHelper.KEY_CONVERSATION_TYPE, type);
         initialValues.put(DBHelper.KEY_CONVERSATION_TAB, tab);
@@ -79,15 +79,15 @@ public class ConversationDataSource {
     }
 
 
-    public WnConversation insert(String conversation_id, int n_users, int options_type, String type, String tab, String contact_phone,
-                                 String contact_name, String status){
+    public WnConversation insert(String conversation_id, int options_type, String type, String tab,
+                                 String contact_phone, String contact_name, String status){
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String updateDatedTime = sdf.format(new Date());
-
         ContentValues initialValues = new ContentValues();
+
         initialValues.put(DBHelper.KEY_CONVERSATION_ID, conversation_id);
-        initialValues.put(DBHelper.KEY_N_USERS, n_users);
+        //initialValues.put(DBHelper.KEY_N_USERS, n_users);
         initialValues.put(DBHelper.KEY_OPTIONS_TYPE, options_type);
         initialValues.put(DBHelper.KEY_CONVERSATION_TYPE, type);
         initialValues.put(DBHelper.KEY_CONVERSATION_TAB, tab);
@@ -95,6 +95,7 @@ public class ConversationDataSource {
         initialValues.put(DBHelper.KEY_CONTACT_NAME, contact_name);
         initialValues.put(DBHelper.KEY_CONVERSATION_STATUS, status);
         initialValues.put(DBHelper.KEY_CONVERSATION_DATE, updateDatedTime);
+
         Log.i(TAG, "insert conversation into database");
         long insertId = db.insert(DBHelper.TABLE_CONVERSATION_NAME, null, initialValues);
 
@@ -112,14 +113,18 @@ public class ConversationDataSource {
         WnConversation wnConversation = new WnConversation();
         wnConversation.setId(cursor.getLong(0));
         wnConversation.setConversation_id(cursor.getString(1));
-        wnConversation.setN_users(cursor.getInt(2));
-        wnConversation.setOptions_type(cursor.getInt(3));
-        wnConversation.setType(cursor.getString(4));
-        wnConversation.setTab(cursor.getInt(5));
-        wnConversation.setContact_phone_number(cursor.getString(6));
-        wnConversation.setUser_name(cursor.getString(7));
-        wnConversation.setStatus(cursor.getString(8));
-        wnConversation.setUpdate_datetime(cursor.getString(9));
+        //wnConversation.setN_users(cursor.getInt(2));
+        wnConversation.setOptions_type(cursor.getInt(2));
+        wnConversation.setType(cursor.getString(3));
+        wnConversation.setTab(cursor.getInt(4));
+
+        WnContact contact = new WnContact(cursor.getString(6), cursor.getString(5));
+        wnConversation.addContact(contact);
+
+//        wnConversation.setContact_phone_number(cursor.getString(5));
+//        wnConversation.setUser_name(cursor.getString(6));
+        wnConversation.setStatus(cursor.getString(7));
+        wnConversation.setUpdate_datetime(cursor.getString(8));
         return wnConversation;
     }
 
@@ -132,7 +137,7 @@ public class ConversationDataSource {
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             WnConversation conversation = cursorToConversation(cursor);
-            conversation.setUser_photo(Contacts.retrieveContactPhoto(MainActivity.getAppContext(), conversation.getContact_phone_number()));
+            conversation.getContacts().get(0).setPhoto(Contacts.retrieveContactPhoto(MainActivity.getAppContext(), conversation.getContacts().get(0).getPhoneNumber()));
             conversations.add(conversation);
             cursor.moveToNext();
         }
@@ -172,24 +177,33 @@ public class ConversationDataSource {
 
     public Set getUsersPhones(Long conversationRowID){
         MessageDataSource messageDataSource = new MessageDataSource(context);
-        messageDataSource.open();
+        ConversationDataSource conversationDataSource = new ConversationDataSource(context);
+        conversationDataSource.open();
         Set<String> mSet = new HashSet<>();
-        ArrayList<WnMessage> messages= messageDataSource.getRelatedMessages(conversationRowID, null);
-        String tempUser, tempTo;
-        for(int i = 0; i < messages.size(); i++){
-            tempUser = messages.get(i).getUser();
-            if(tempUser != null) {
-                mSet.add(tempUser);
-            }
-            tempTo = messages.get(i).getUser();
-            if(tempTo != null) {
-                mSet.add(tempTo);
-            }
-        }
+        WnConversation wnConversation =  conversationDataSource.getConversationByID(Long.valueOf(conversationRowID).toString());
+        mSet.add(wnConversation.getContacts().get(0).getPhoneNumber());
         return mSet;
+//
+//        messageDataSource.open();
+//        Set<String> mSet = new HashSet<>();
+//        ArrayList<WnMessage> messages= messageDataSource.getRelatedMessages(conversationRowID, null);
+//        String tempUser, tempTo;
+//        for(int i = 0; i < messages.size(); i++){
+//            tempUser = messages.get(i).getUser();
+//            if(tempUser != null) {
+//                mSet.add(tempUser);
+//            }
+//            tempTo = messages.get(i).getUser();
+//            if(tempTo != null) {
+//                mSet.add(tempTo);
+//            }
+//        }
+//        return mSet;
     }
 
     public WnMessageResult getResultsForConversation(String c_id){
+
+        Log.i(TAG, "getResultsForConversation c_id=" + c_id);
         WnMessageResult result = new WnMessageResult();
         MessageDataSource messageDataSource = new MessageDataSource(context);
         messageDataSource.open();

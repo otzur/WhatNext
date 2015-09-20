@@ -11,25 +11,15 @@ public class WnMessage {
     private String message_id;
     private String message;
     private String user;
-    private String user_name;
-    //private String to;
-    //private String to_name;
+
     private String option_selected;
-    private String type;
+
     private String Status;
     private String delivery_date;
     private int filled_by_you;
-    private long conversation_id;
+    private String conversation_id;
     private Bitmap user_photo;
-    private int tab;
 
-    public int getTab() {
-        return tab;
-    }
-
-    public void setTab(int tab) {
-        this.tab = tab;
-    }
 
     public long getId() {
         return id;
@@ -56,15 +46,15 @@ public class WnMessage {
         this.user = user;
     }
 
-    // user name
-    public String getUserName() {
-        return user_name;
-    }
-
-    public void setUserName(String user_name)
-    {
-        this.user_name = user_name;
-    }
+//    // user name
+//    public String getUserName() {
+//        return user_name;
+//    }
+//
+//    public void setUserName(String user_name)
+//    {
+//        this.user_name = user_name;
+//    }
     // user photto
     public Bitmap getUser_photo() {
         return user_photo;
@@ -82,13 +72,13 @@ public class WnMessage {
         this.option_selected = option_selected;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
+//    public String getType() {
+//        return type;
+//    }
+//
+//    public void setType(String type) {
+//        this.type = type;
+//    }
 
     public String getDelivery_date() {
         return delivery_date;
@@ -116,9 +106,9 @@ public class WnMessage {
 
     public int getFilled_by_you(){ return this.filled_by_you;}
 
-    public void setConversation_id(long conversation_id) {this.conversation_id = conversation_id;}
+    public void setConversation_id(String conversation_id) {this.conversation_id = conversation_id;}
 
-    public long getConversation_id(){return this.conversation_id;}
+    public String getConversation_id(){return this.conversation_id;}
 
     // Will be used by the ArrayAdapter in the ListView
     @Override

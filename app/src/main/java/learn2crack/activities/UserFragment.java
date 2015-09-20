@@ -33,8 +33,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import learn2crack.bl.ObjectManager;
 import learn2crack.chat.R;
 import learn2crack.cheese.Cheeses;
+import learn2crack.models.WnConversation;
 import learn2crack.utilities.JSONParser;
 
 import static android.provider.ContactsContract.RawContacts;
@@ -405,14 +407,22 @@ public class UserFragment extends Fragment {
                     //intent.putExtra(CheeseDetailActivity.EXTRA_NAME, holder.mBoundString);
 
 //                    if(users.get(position).get("wn").equals("true")) {
+                    String name = (String) text1.getText();
+                    String mobno = (String) text2.getText();
+                    String type = "HimAndHer";
+                    String status = "New";
+
+                    WnConversation wnConversation =  ObjectManager.createNewConversation(name,mobno,type, status);
                     Bundle args = new Bundle();
-                    args.putString("mobno", (String) text2.getText());
-                    args.putString("name", (String) text1.getText());
-                    args.putString("type", "HimAndHer");
-                    args.putString("status", "New");
-                    Intent chat = new Intent(context , WnMessageNewActivity.class);
-                    chat.putExtra("INFO", args);
-                    context.startActivity(chat);
+                    args.putSerializable("conversation", wnConversation);
+
+//                    args.putString("mobno", (String) text2.getText());
+//                    args.putString("name", (String) text1.getText());
+//                    args.putString("type", "HimAndHer");
+//                    args.putString("status", "New");
+                    Intent newMessageIntent = new Intent(context , WnMessageNewActivity.class);
+                    newMessageIntent.putExtra("INFO", args);
+                    context.startActivity(newMessageIntent);
 
 //                        Adapter adapter = new Adapter(getActivity().getSupportFragmentManager());
 //                        adapter.addFragment(new Message2Activity(), "Message");

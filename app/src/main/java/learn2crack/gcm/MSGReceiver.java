@@ -62,21 +62,21 @@ public class MSGReceiver  extends WakefulBroadcastReceiver {
         switch (status) {
             case "New":
                 dbConversations.open();
-                conversation = dbConversations.insert(conversation_id, 2,
-                        Integer.valueOf(tab) + 1, type, tab, user, user_name, "New");
+                conversation = dbConversations.insert(conversation_id,
+                        0, type, tab, user, user_name, "New");
                 dbConversations.close();
                 dba.open();
-                dba.insert(msg_id, "message", user, user_name, selected_options, type, "New", 0, Long.valueOf(conversation.getId()).toString());
+                dba.insert(msg_id, "message", user, selected_options, "New", 0, Long.valueOf(conversation.getId()).toString());
                 dba.close();
                 break;
             case "Results":
             case "Response":
                 dbConversations.open();
                 conversation = dbConversations.getConversationByUniqeID(conversation_id);
-                dbConversations.update(conversation_id, 2, Integer.valueOf(tab) + 1, type, tab, user, user_name,"Results");
+                dbConversations.update(conversation_id, 0, type, tab, user, user_name,"Results");
                 dbConversations.close();
                 dba.open();
-                dba.insert(msg_id, "message", user, user_name,selected_options, type, "Results", 0, Long.valueOf(conversation.getId()).toString());
+                dba.insert(msg_id, "message", user, selected_options, "Results", 0, Long.valueOf(conversation.getId()).toString());
                 dba.close();
                 break;
             default:

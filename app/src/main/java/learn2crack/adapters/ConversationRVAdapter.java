@@ -45,12 +45,12 @@ public class ConversationRVAdapter extends RecyclerView.Adapter<ConversationRVAd
     public void onBindViewHolder(ConversationViewHolder conversationViewHolder, int i) {
         String display_status;
         String status = conversations.get(i).getStatus();
-        conversationViewHolder.contactName.setText(conversations.get(i).getUser_name());
+        conversationViewHolder.contactName.setText(conversations.get(i).getContacts().get(0).getName());
         //conversationViewHolder.conversation_id.setText(conversations.get(i).getConversation_id());
         conversationViewHolder.updateDatetime.setText(conversations.get(i).getUpdate_datetime());
 //        conversationViewHolder.tab.setText("Tab = " + conversations.get(i).getTab());
 //        //historyViewHolder.contactPhoto.setScaleType(ImageView.ScaleType.FIT_XY);
-        conversationViewHolder.contactPhoto.setImageBitmap(conversations.get(i).getUser_photo());
+        conversationViewHolder.contactPhoto.setImageBitmap(conversations.get(i).getContacts().get(0).getPhoto());
 
         switch (status) {
             case "New":

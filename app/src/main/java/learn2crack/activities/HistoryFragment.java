@@ -42,15 +42,15 @@ public class HistoryFragment extends ListFragment {
         if(filled_by_you.equals("0")){
             String status =(String) ((TextView) v.findViewById(R.id.status)).getText();
             if(status.equals("received")){
-                MessageDataSource datasource = new MessageDataSource(getActivity().getApplicationContext());
-                datasource.open();
-                WnMessageResult wnResult= datasource.getResultsForMessageID(msg_id);
+                MessageDataSource data_source = new MessageDataSource(getActivity().getApplicationContext());
+                data_source.open();
+                WnMessageResult wnResult= data_source.getResultsForMessageID(msg_id);
                 if(!wnResult.isAllUsersResponded()){
-                    WnMessage message = datasource.getMessage(msg_id);
-                    datasource.close();
+                    WnMessage message = data_source.getMessage(msg_id);
+                    data_source.close();
                     ConversationDataSource c_DataSource = new ConversationDataSource(getActivity().getApplicationContext());
                     c_DataSource.open();
-                    WnConversation conversation = c_DataSource.getConversationByID(Long.toString(message.getConversation_id()));
+                    WnConversation conversation = c_DataSource.getConversationByID(message.getConversation_id());
                     c_DataSource.close();
                     Bundle args = new Bundle();
                     args.putString("mobno", message.getUser());
@@ -66,7 +66,7 @@ public class HistoryFragment extends ListFragment {
                     getActivity().startActivity(chat);
                     return;
                 }
-                datasource.close();
+                data_source.close();
             }
         }
         Bundle args = new Bundle();
@@ -100,8 +100,8 @@ public class HistoryFragment extends ListFragment {
        // setListAdapter(adapter);
 
         String[] from = new String[] { DBHelper.KEY_ROWID, DBHelper.KEY_MESSAGE_ID,  DBHelper.KEY_USER,
-                DBHelper.KEY_OPTION_SELECTED,DBHelper.KEY_STATUS, DBHelper.KEY_TYPE, DBHelper.KEY_CREATION_DATE ,DBHelper.KEY_CONVERSATION_ROW_ID, DBHelper.KEY_FILLED_BY_YOU};
-        int[] to = new int[] {R.id.row_id, R.id.message_id,  R.id.from_user,  R.id.selected_options, R.id.status, R.id.type,  R.id.creation_date ,R.id.c_id, R.id.filled_by_you};
+                DBHelper.KEY_OPTION_SELECTED,DBHelper.KEY_STATUS, DBHelper.KEY_CREATION_DATE ,DBHelper.KEY_CONVERSATION_ROW_ID, DBHelper.KEY_FILLED_BY_YOU};
+        int[] to = new int[] {R.id.row_id, R.id.message_id,  R.id.from_user,  R.id.selected_options, R.id.status, R.id.creation_date ,R.id.c_id, R.id.filled_by_you};
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(view.getContext(), R.layout.history_row, cursor, from, to, 0);
         setListAdapter(adapter);
         //setListAdapter(new SimpleCursorAdapter(this, R.layout.note_item, cursor, NotesListActivity.FROM, NotesListActivity.TO));
