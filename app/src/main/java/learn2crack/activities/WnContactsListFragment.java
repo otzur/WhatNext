@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -239,13 +240,15 @@ public class WnContactsListFragment extends ListFragment implements
             int type = data.getInt(ContactsQuery.typeIdx);
             String mimeType = data.getString(ContactsQuery.mimeTypeIdx);
             if (mimeType.equals(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)) {
-                // mimeType == ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE
                 String phone = data.getString(ContactsQuery.dataIdx);
                 currentContact.addPhone(type, phone);
             } else {
                 // mimeType == ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE
-                String photo = data.getString(ContactsQuery.dataIdx);
-                //currentContact.SetPhoto(BitmapFactory.decodeByteArray(photo,0,photo.length));
+                //String photo = data.getString(ContactsQuery.dataIdx);
+                byte[] photo = data.getBlob(ContactsQuery.photoIdx);
+                if(photo != null) {
+                    currentContact.setPhoto(BitmapFactory.decodeByteArray(photo, 0, photo.length));
+                }
             }
         }
         data.close();
@@ -414,6 +417,8 @@ public class WnContactsListFragment extends ListFragment implements
                 ContactsContract.CommonDataKinds.Contactables.DATA,
                 ContactsContract.CommonDataKinds.Contactables.TYPE,
                 ContactsContract.CommonDataKinds.Contactables.ACCOUNT_TYPE_AND_DATA_SET,
+                ContactsContract.CommonDataKinds.Contactables.DATA15,
+                //Contacts.PHOTO_THUMBNAIL_URI,
         };
 
         // The query column numbers which map to each value in the projection
@@ -423,6 +428,7 @@ public class WnContactsListFragment extends ListFragment implements
         final static int dataIdx  = 3;
         final static int typeIdx  = 4;
         final static int accountTypeIdx = 5;
+        final static int photoIdx = 6;
     }
 
     private class ContactsAdapter extends ArrayAdapter<Contact> implements SectionIndexer {
@@ -512,10 +518,12 @@ public class WnContactsListFragment extends ListFragment implements
 
             // Loads the thumbnail image pointed to by photoUri into the QuickContactBadge in a
             // background worker thread
-            if(photoUri.equals("")){
-                photoUri= "android.resource://learn2crack.activities" + R.mipmap.ic_launcher;
+            if(photoUri.equals("") && contact.getPhoto() != null){
+                holder.icon.setImageBitmap(contact.getPhoto());
             }
-            mImageLoader.loadImage(photoUri, holder.icon);
+            else {
+                mImageLoader.loadImage(photoUri, holder.icon);
+            }
 
         }
 

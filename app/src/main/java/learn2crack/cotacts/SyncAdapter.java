@@ -6,9 +6,12 @@ import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.SyncResult;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -19,6 +22,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -73,24 +78,60 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
    // private static String MIMETYPE = "wnMimeType";
 
-    private void addWNContact(String name, String phone){
+    public static InputStream loadContactPhoto(ContentResolver cr, long  id) {
+        Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, id);
+        InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
+        /*if (input == null) {
+            return null;
+        }*/
+        return input;
+        //return BitmapFactory.decodeStream(input);
+    }
+
+    private void addWNContact(String name, String phone, String photoUri, String contactID){
         List<NameValuePair> paramsDebug = new ArrayList<NameValuePair>();
         JSONParser json = new JSONParser();
         ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
         int backId = 0;
+        InputStream input = loadContactPhoto(getContext().getContentResolver(), Long.valueOf(contactID));
         try {
-        ops.add(ContentProviderOperation.newInsert(RawContacts.CONTENT_URI)
+            //final Cursor cursor =getContext().getContentResolver().query(ContactsContract.Data.PCONTENT_URI,
+             //       null, SELECTION, selectionArgs, null);
+            //cursor.moveToFirst();
+            //byte[] photo = cursor.getBlob(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Photo.PHOTO));
+            ops.add(ContentProviderOperation.newInsert(RawContacts.CONTENT_URI)
                 .withValue(RawContacts.ACCOUNT_NAME, "Account")
                 .withValue(RawContacts.ACCOUNT_TYPE, "learn2crack.chat.account")
                 .build());//.withValue(ContactsContract.Settings.UNGROUPED_VISIBLE, true)
+
         ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, backId)
                 .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
                 .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name).build());
+        if(input != null) {
+            ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+            // this is storage overwritten on each iteration with bytes
+            int bufferSize = 1024;
+            byte[] buffer = new byte[bufferSize];
+
+            // we need to know how may bytes were read to write them to the byteBuffer
+            int len = 0;
+            while ((len = input.read(buffer)) != -1) {
+                byteBuffer.write(buffer, 0, len);
+            }
+            byte[] photo = byteBuffer.toByteArray();
+            ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, backId)
+                    .withValue(ContactsContract.Data.MIMETYPE,
+                            ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.CommonDataKinds.Photo.PHOTO, photo)
+                    .build());
+        }
         ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, backId)
                 .withValue(ContactsContract.Data.MIMETYPE,
                         ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                .withValue(ContactsContract.Data.IS_SUPER_PRIMARY, 1)
                 .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phone)
                 .withValue(ContactsContract.CommonDataKinds.Phone.TYPE,
                         ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE)
@@ -123,7 +164,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         String MainNumber;
         Cursor peopleTemp = null;
         Cursor people = null;
-        String id="",name="";
+        String id="",name="", photoUri="";
         ArrayList<JSONObject> mContacts = new ArrayList<JSONObject>();
         HashMap<String, String> originalPhoneMap = new HashMap<String,String>();
         try {
@@ -133,6 +174,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 try {
                     id = test.getString(test.getColumnIndex(ContactsContract.Contacts._ID));
                     name = test.getString(test.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                    photoUri = test.getString(test.getColumnIndex(ContactsContract.Contacts.PHOTO_URI));
                 }
                 catch (Exception ex){
                     continue;
@@ -159,8 +201,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
                 if(jsonArray!= null && jsonArray.length()>0 && phones.size()>0 && (!name.equals(""))) {
                     JSONObject jsonObj = new JSONObject();
+                    jsonObj.put("id", id);
                     jsonObj.put("name", name);
                     jsonObj.put("phones",jsonArray);
+                    jsonObj.put("photoUri",photoUri);
                     mContacts.add(jsonObj);
                     phones.clear();
                 }
@@ -218,14 +262,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             //adds new wn contacts
             for (Map.Entry<String,String> contact : syncMap.entrySet()) {
                 String phone = contact.getKey();
-                if(!wnContactsMap.containsKey(phone)){
+                if(!wnContactsMap.containsKey(phone)){//need to update when photo changed
                     String newWNPhone = contact.getKey();
                     for(int i=0;i<mContacts.size();i++) {
                         JSONObject json_obj = mContacts.get(i);
                         JSONArray phonesTemp = json_obj.getJSONArray("phones");
                         for(int j=0; j<phonesTemp.length();j++) {
                             if (phonesTemp.getString(j).equals(newWNPhone)){
-                                addWNContact(json_obj.getString("name"), originalPhoneMap.get(phone));
+                                addWNContact(json_obj.getString("name"), originalPhoneMap.get(phone), json_obj.getString("photoUri"), json_obj.getString("id"));
                                 break;
                             }
                         }
