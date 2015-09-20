@@ -175,6 +175,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     id = test.getString(test.getColumnIndex(ContactsContract.Contacts._ID));
                     name = test.getString(test.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                     photoUri = test.getString(test.getColumnIndex(ContactsContract.Contacts.PHOTO_URI));
+                    if(photoUri == null){
+                        photoUri = "";
+                    }
                 }
                 catch (Exception ex){
                     continue;
