@@ -183,9 +183,9 @@ public class WnMessageNewActivity extends AppCompatActivity {
             params.add(new BasicNameValuePair("msg_id",messageGuid.toString()));
             params.add(new BasicNameValuePair("fromu",from));
             params.add(new BasicNameValuePair("from_name","Me"));
-            params.add(new BasicNameValuePair("to", wnConversation.getContacts().get(0).getPhoneNumber()));
+            params.add(new BasicNameValuePair("to", (wnConversation.getContacts().get(0).getPhoneNumber()).replaceAll("[^0-9]", "")));
             params.add(new BasicNameValuePair("user_name", wnConversation.getContacts().get(0).getName()));
-            params.add(new BasicNameValuePair("tab", ""+ wnConversation.getTab()));
+            params.add(new BasicNameValuePair("tab", "" + wnConversation.getTab()));
             params.add(new BasicNameValuePair("type", "" + wnConversation.getType()));
             params.add(new BasicNameValuePair("status", "" + wnConversation.getStatus()));
             params.add(new BasicNameValuePair("c_id", convGuid.toString()));
