@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -29,12 +28,12 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
+import learn2crack.bl.ObjectManager;
 import learn2crack.chat.R;
 import learn2crack.cheese.Cheeses;
-import learn2crack.db.ConversationDataSource;
-import learn2crack.db.MessageDataSource;
+import learn2crack.models.WnConversation;
+import learn2crack.models.WnMessage;
 import learn2crack.utilities.Contacts;
 import learn2crack.utilities.JSONParser;
 
@@ -51,15 +50,11 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
     List<NameValuePair> params;
     static final String TAG = "WN";
 
-    public enum wn_message_status {
-        new_message,
-        new_received,
-        new_response
-    }
-
-    private String selectedTab;
-    private String c_id;
-    private String conversation_id;
+    //private String selectedTab;
+    //private String c_id;
+    //private String conversation_guid;
+    private  WnConversation wnConversation;
+    private String msg_id="";
 
 
     @Override
@@ -72,24 +67,40 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        //CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
 
         prefs = getSharedPreferences("Chat", 0);
         bundle = getIntent().getBundleExtra("INFO");
-        if (bundle.getString("tab") != null) {
 
-            selectedTab = bundle.getString("tab");
+
+//        if (bundle.getString("tab") != null) {
+//
+//            selectedTab = bundle.getString("tab");
+//        }
+
+//        if (bundle.getString("conversation_guid") != null) {
+//            conversation_guid =bundle.getString("conversation_guid");
+//        }
+
+//        if (bundle.getString("c_id") != null) {
+//            c_id =bundle.getString("c_id");
+//        }
+
+        if(bundle.getSerializable("conversation") != null){
+
+            wnConversation = (WnConversation) bundle.getSerializable("conversation");
+            if(wnConversation.getMessages().size() > 0)
+                msg_id = wnConversation.getMessages().get(0).getMessage_guid();
+            //tvUserName.setText(wnConversation.getContacts().get(0).name);
+            Log.i(TAG,"Inside Recv Activity" );
+            Log.i(TAG,"got conversation Serializable" );
+            Log.i(TAG, "status = " + wnConversation.getStatus());
+            Log.i(TAG, "Conversation_guid = " + wnConversation.getConversation_guid());
+            Log.i(TAG, "Contact phone = " + wnConversation.getContacts().get(0).getPhoneNumber());
         }
 
-        if (bundle.getString("conversation_id") != null) {
-            conversation_id =bundle.getString("conversation_id");
-        }
-
-        if (bundle.getString("c_id") != null) {
-            c_id =bundle.getString("c_id");
-        }
 
         //TODO: check- if response we want only 1 option according to first message
         viewPager.setAdapter(new SectionPagerAdapter(getSupportFragmentManager()));
@@ -105,7 +116,6 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
                 WnMessageRowOptionFragment of = getVisibleFragment();
                 String selected_options = of.getSelectedOptions();
                 new Send(selected_options).execute();
-                //Snackbar.make(view, "WN Message Sent", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 Snackbar.make(view, selected_options, Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 //finish();
             }
@@ -150,13 +160,11 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
 
     private class Send extends AsyncTask<String, String, JSONObject> {
 
-        MessageDataSource dba = new MessageDataSource(getApplicationContext());//Create this object in onCreate() method
-        ConversationDataSource dbConversations = new ConversationDataSource(getApplicationContext());
 
         private String selected;
         private String from;
-        private String from_name;
-        private String user;
+        //private String from_name;
+        private String user_phone;
         private String user_name;
         private String type;
         private String status;
@@ -167,20 +175,22 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
             selected = selected_options;
 
             from =  prefs.getString("REG_FROM","");
-            Log.i(TAG, "from user   = " + from);
-            from_name = "Me";
-            Log.i(TAG, "from name  = " + from_name);
+            Log.i(TAG, "from user_phone   = " + from);
+            //from_name = "Me";
+            //Log.i(TAG, "from name  = " + from_name);
 
-            user = bundle.getString("mobno");
-            Log.i(TAG,"user = " + user);
-            user_name =  Contacts.getContactName(getApplicationContext(), user);
-            Log.i(TAG,"user name = " + user_name);
+            user_phone = wnConversation.getContacts().get(0).getPhoneNumber();
+            //user_phone = bundle.getString("mobno");
+            Log.i(TAG,"user_phone = " + user_phone);
+            user_name =  Contacts.getContactName(getApplicationContext(), user_phone);
+            Log.i(TAG,"user_phone name = " + user_name);
 
-            type = bundle.getString("type");
+            //type = bundle.getString("type");
+            type = wnConversation.getType();
             Log.i(TAG, "type = " + type);
-            //status  = bundle.getString("status");
-            // if(status == "received")
-            status = "Response";
+
+            //status = "Response";
+            wnConversation.setStatus("Response");
             Log.i(TAG, "status = " + status);
 
         }
@@ -188,39 +198,44 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
         @Override
         protected JSONObject doInBackground(String... args) {
             JSONParser json = new JSONParser();
-            UUID uuid = UUID.randomUUID();
+            //UUID uuid = UUID.randomUUID();
 
             params = new ArrayList<>();
-            params.add((new BasicNameValuePair("msg_id", uuid.toString())));
+            params.add((new BasicNameValuePair("msg_id", msg_id)));
             params.add(new BasicNameValuePair("fromu", from));
-            params.add(new BasicNameValuePair("from_name",from_name));
-            params.add(new BasicNameValuePair("to", user));
+            //params.add(new BasicNameValuePair("from_name",from_name));
+            params.add(new BasicNameValuePair("to", user_phone));
             params.add(new BasicNameValuePair("user_name", user_name));
 
 
-            params.add(new BasicNameValuePair("tab", "" + selectedTab));
-            params.add(new BasicNameValuePair("type", "" + type));
-            params.add(new BasicNameValuePair("status", "" + status));
-            params.add(new BasicNameValuePair("c_id", ""+ conversation_id));
+            params.add(new BasicNameValuePair("tab", "" + wnConversation.getTab()));
+            params.add(new BasicNameValuePair("type", "" + wnConversation.getType()));
+            params.add(new BasicNameValuePair("status", "" + wnConversation.getStatus()));
+            params.add(new BasicNameValuePair("c_id", ""+ wnConversation.getConversation_guid()));
             WnMessageRowOptionFragment of = getVisibleFragment(0);
             selected_options = of.getSelectedOptions();
             params.add((new BasicNameValuePair("selected_options", selected_options)));
             Log.i(TAG, "selected_options = " + selected_options);
 
-            Log.i(TAG + "RecvActivity", "conversation_id = " + conversation_id);
-            Log.i(TAG + "RecvActivity", "c_id = " + Long.valueOf(c_id).toString());
+            Log.i(TAG + "RecvActivity", "conversation_guid = " + wnConversation.getConversation_guid());
+            Log.i(TAG + "RecvActivity", "c_id = " + wnConversation.getRowId());
 
             JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/send", params);
 
-            Log.i(TAG, "from_name = " + from_name);
+            //Log.i(TAG, "from_name = " + from_name);
 
-            dbConversations.open();
-            dbConversations.update(conversation_id, 0, type, selectedTab, user, user_name, "Results");
-            dbConversations.close();
-
-            dba.open();
-            dba.insert(uuid.toString(), "message", user, selected_options ,"Results", 1, c_id);// Insert record in your DB
-            dba.close();
+//            WnConversation wnConversation = null;
+            wnConversation.setStatus("Results");
+            WnMessage wnMessage  =  ObjectManager.createNewMessage(msg_id,user_phone, selected_options, "Results", 1);
+            wnConversation.addMessage(wnMessage);
+            ObjectManager.updateConversation(wnConversation);
+//            dbConversations.open();
+//            dbConversations.update(conversation_guid, 0, type, selectedTab, user_phone, user_name, "Results");
+//            dbConversations.close();
+//
+//            dba.open();
+//            dba.insert(uuid.toString(), "message", user_phone, selected_options ,"Results", 1, c_id);// Insert record in your DB
+//            dba.close();
             return jObj;
 
         }
@@ -231,10 +246,10 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
             try {
                 res = json.getString("response");
                 if (res.equals("Failure")) {
-                    Toast.makeText(getApplicationContext(), "The user has logged out. You cant send message anymore !", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "The user_phone has logged out. You cant send message anymore !", Toast.LENGTH_SHORT).show();
                 } else {
                     Bundle args = new Bundle();
-                    args.putString("c_id", c_id);
+                    args.putString("c_id", Long.valueOf(wnConversation.getRowId()).toString());
                     Intent chat = new Intent(getApplicationContext(), ResultActivity.class);
                     chat.putExtra("INFO", args);
                     chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -271,7 +286,7 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
 
             WnMessageRowOptionFragment wnMessageRowOptionFragment = new WnMessageRowOptionFragment();
             Bundle bundl = new Bundle();
-            switch (Integer.parseInt(selectedTab)) {
+            switch (wnConversation.getTab()) {
                 case 0: {
                     bundl.putInt("numberOfOptions", 2);
                     //return new HomeFragment();

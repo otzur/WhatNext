@@ -52,7 +52,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:lines="1"
-        android:text="TO"
         android:textSize="20dp"
         >
     </TextView>
@@ -76,7 +75,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:lines="1"
-        android:text="Type"
         android:textSize="20dp"
         >
     </TextView>

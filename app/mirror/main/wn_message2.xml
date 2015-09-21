@@ -1,11 +1,11 @@
 <!-- [ Mirror metadata ] generatedAt: 1434228823513 -->
-<!-- Generated screen file. Fill the id tags below with content with
+<!-- Generated screen file. Fill the rowId tags below with content with
 which to populate your previewed layout. For a complete specification
 of sample data, please see http://jimulabs.com/sample-data-specifications/ 
 
 Valid attributes on <screen> tag: theme="@style/someTheme" inEditMode="false" overlay="@drawable/mockup" -->
 <screen>
-    <actionbar showTabsFor="@id/pager"/>
+    <actionbar showTabsFor="@rowId/pager"/>
     <_content layout="@layout/wn_message2">
         <!-- ImageView Examples:
         <imageView src="@drawable/image_resource" />

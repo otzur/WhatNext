@@ -7,8 +7,8 @@ import java.util.ArrayList;
  * Created by samzaleg on 8/27/2015.
  */
 public class WnConversation implements Serializable {
-    private long id;
-    private String conversation_id;
+    private long rowId;
+    private String conversation_guid;
     private String type;
     private int options_type;
     private int tab;
@@ -56,14 +56,14 @@ public class WnConversation implements Serializable {
         this.status = status;
     }
 
-    public long getId(){return this.id;}
+    public long getRowId(){return this.rowId;}
 
     public String getType(){return this.type;}
 
     public int getOptions_type(){return this.options_type;}
 
-    public void setId(long id) {
-        this.id = id;
+    public void setRowId(long rowId) {
+        this.rowId = rowId;
     }
 
     public void setOptions_type(int options_type) {
@@ -74,12 +74,12 @@ public class WnConversation implements Serializable {
         this.type = type;
     }
 
-    public void setConversation_id(String conversation_id) {
-        this.conversation_id = conversation_id;
+    public void setConversation_guid(String conversation_guid) {
+        this.conversation_guid = conversation_guid;
     }
 
-    public String getConversation_id() {
-        return conversation_id;
+    public String getConversation_guid() {
+        return conversation_guid;
     }
 
     public int getTab() {
@@ -95,5 +95,9 @@ public class WnConversation implements Serializable {
             messages = new ArrayList<>();
         }
         messages.add(wnMessage);
+    }
+
+    public void clearMessages() {
+        this.messages.clear();
     }
 }

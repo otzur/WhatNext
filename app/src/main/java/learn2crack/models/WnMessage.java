@@ -1,32 +1,31 @@
 package learn2crack.models;
 
-import android.graphics.Bitmap;
+import java.io.Serializable;
 
 /**
  * Created by otzur on 7/12/2015.
  */
-public class WnMessage {
+public class WnMessage implements Serializable {
 
-    private long id;
-    private String message_id;
+    private long rowId;
+    private String message_guid;
     private String message;
     private String user;
-
     private String option_selected;
-
     private String Status;
     private String delivery_date;
     private int filled_by_you;
-    private String conversation_id;
-    private Bitmap user_photo;
+    private String conversation_rowId;
+    //private Bitmap user_photo;
+    private static final long serialVersionUID = -7060210544600464481L;
 
 
-    public long getId() {
-        return id;
+    public long getRowId() {
+        return rowId;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setRowId(long rowId) {
+        this.rowId = rowId;
     }
 
     public String getMessage() {
@@ -46,23 +45,14 @@ public class WnMessage {
         this.user = user;
     }
 
-//    // user name
-//    public String getUserName() {
-//        return user_name;
+//    // user photto
+//    public Bitmap getUser_photo() {
+//        return user_photo;
 //    }
 //
-//    public void setUserName(String user_name)
-//    {
-//        this.user_name = user_name;
+//    public void setUser_photo(Bitmap user_photo) {
+//        this.user_photo = user_photo;
 //    }
-    // user photto
-    public Bitmap getUser_photo() {
-        return user_photo;
-    }
-
-    public void setUser_photo(Bitmap user_photo) {
-        this.user_photo = user_photo;
-    }
 
     public String getOption_selected() {
         return option_selected;
@@ -90,8 +80,8 @@ public class WnMessage {
     }
 
 
-    public void setMessage_id(String message_id) {
-        this.message_id = message_id;
+    public void setMessage_guid(String message_guid) {
+        this.message_guid = message_guid;
     }
 
     public String getStatus() {
@@ -106,9 +96,9 @@ public class WnMessage {
 
     public int getFilled_by_you(){ return this.filled_by_you;}
 
-    public void setConversation_id(String conversation_id) {this.conversation_id = conversation_id;}
+    public void setConversation_rowId(String conversation_rowId) {this.conversation_rowId = conversation_rowId;}
 
-    public String getConversation_id(){return this.conversation_id;}
+    public String getConversation_rowId(){return this.conversation_rowId;}
 
     // Will be used by the ArrayAdapter in the ListView
     @Override
@@ -116,8 +106,8 @@ public class WnMessage {
         return message;
     }
 
-    public String getMessage_id() {
-        return message_id;
+    public String getMessage_guid() {
+        return message_guid;
     }
 
 

@@ -67,8 +67,8 @@ public class ChatDataSource {
         return message;
     }
 
-    public Cursor getAllDataByConversationRowID(String c_id) {
-        Cursor cursor = db.query(DBHelper.TABLE_CHAT_NAME, allColumns, DBHelper.KEY_CHAT_CONVERSATION_ID +"=?", new String[]{c_id}, null, null, null);
+    public Cursor getAllDataByConversationRowID(String rowId) {
+        Cursor cursor = db.query(DBHelper.TABLE_CHAT_NAME, allColumns, DBHelper.KEY_CHAT_CONVERSATION_ID +"=?", new String[]{rowId}, null, null, null);
         return cursor;
     }
 

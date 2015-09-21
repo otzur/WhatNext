@@ -13,10 +13,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import learn2crack.activities.MainActivity;
 import learn2crack.models.WnMessage;
 import learn2crack.models.WnMessageResult;
-import learn2crack.utilities.Contacts;
 
 import static learn2crack.utilities.Utils.getSelectedOpetions;
 
@@ -28,11 +26,11 @@ public class MessageDataSource {
     private static final String TAG = "WN";
     private DatabaseHelper DBHelper;
     private SQLiteDatabase db;
-    private String[] allColumns = { DBHelper.KEY_ROWID, DBHelper.KEY_MESSAGE_ID,  DBHelper.KEY_MESSAGE, DBHelper.KEY_USER
+    private String[] allColumns = { DBHelper.KEY_ROWID, DBHelper.KEY_MESSAGE_GUID,  DBHelper.KEY_MESSAGE, DBHelper.KEY_USER
             ,DBHelper.KEY_OPTION_SELECTED, DBHelper.KEY_STATUS,  DBHelper.KEY_CREATION_DATE
             ,DBHelper.KEY_FILLED_BY_YOU,DBHelper.KEY_CONVERSATION_ROW_ID};
 
-    private String[] resultColumns = { DBHelper.KEY_MESSAGE_ID, DBHelper.KEY_OPTION_SELECTED, DBHelper.KEY_CONVERSATION_ROW_ID};
+    private String[] resultColumns = { DBHelper.KEY_MESSAGE_GUID, DBHelper.KEY_OPTION_SELECTED, DBHelper.KEY_CONVERSATION_ROW_ID};
 
     public MessageDataSource(Context ctx) {
 
@@ -73,7 +71,7 @@ public class MessageDataSource {
         String currentDatedTime = sdf.format(new Date());
         ContentValues initialValues = new ContentValues();
 
-        initialValues.put(DBHelper.KEY_MESSAGE_ID, message_id);
+        initialValues.put(DBHelper.KEY_MESSAGE_GUID, message_id);
         initialValues.put(DBHelper.KEY_MESSAGE, message);
         initialValues.put(DBHelper.KEY_USER, user);
         //initialValues.put(DBHelper.KEY_USER_NAME, user_name);
@@ -118,7 +116,7 @@ public class MessageDataSource {
         }
         String options =message.getOption_selected();
         ArrayList<Integer> selectedOptions = getSelectedOpetions(options);
-        ArrayList<WnMessage> relatedMessages = getRelatedMessages(Long.valueOf(message.getConversation_id())
+        ArrayList<WnMessage> relatedMessages = getRelatedMessages(Long.valueOf(message.getConversation_rowId())
                 , new ArrayList<>(Arrays.asList(messageID)));
         int relatedMessageCount = relatedMessages.size();
         for(int k=0 ; k < relatedMessageCount ; k++) {
@@ -143,8 +141,8 @@ public class MessageDataSource {
     private WnMessage cursorToMessage(Cursor cursor) {
 
         WnMessage message = new WnMessage();
-        message.setId(cursor.getLong(0));
-        message.setMessage_id(cursor.getString(1));
+        message.setRowId(cursor.getLong(0));
+        message.setMessage_guid(cursor.getString(1));
         message.setMessage(cursor.getString(2));
         message.setUser(cursor.getString(3));
         //message.setUserName(cursor.getString(4));
@@ -153,12 +151,12 @@ public class MessageDataSource {
         message.setStatus(cursor.getString(5));
         message.setDelivery_date(cursor.getString(6));
         message.setFilled_by_you(cursor.getInt(7));
-        message.setConversation_id(cursor.getString(8));
+        message.setConversation_rowId(cursor.getString(8));
 
-//        //message.getConversation_id
+//        //message.getConversation_guid
 //        ConversationDataSource conversationDataSource = new ConversationDataSource(MainActivity.getAppContext());
 //        conversationDataSource.open();
-//        WnConversation conversation = conversationDataSource.getConversationByID(message.getConversation_id());
+//        WnConversation conversation = conversationDataSource.getConversationByRowID(message.getConversation_guid());
 //        message.setTab(conversation.getTab());
 //        conversationDataSource.close();
 //
@@ -177,7 +175,7 @@ public class MessageDataSource {
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             WnMessage message = cursorToMessage(cursor);
-            message.setUser_photo(Contacts.retrieveContactPhoto(MainActivity.getAppContext(), message.getUser()));
+            //message.setUser_photo(Contacts.retrieveContactPhoto(MainActivity.getAppContext(), message.getUser()));
             messages.add(message);
             cursor.moveToNext();
         }
@@ -202,13 +200,13 @@ public class MessageDataSource {
             excludeString = "{}";
         }
         Cursor cursor = db.query(DBHelper.TABLE_MESSAGES_NAME,
-                allColumns,"("+ DBHelper.KEY_CONVERSATION_ROW_ID +")=? AND ("+DBHelper.KEY_MESSAGE_ID+" NOT IN (?))"
+                allColumns,"("+ DBHelper.KEY_CONVERSATION_ROW_ID +")=? AND ("+DBHelper.KEY_MESSAGE_GUID +" NOT IN (?))"
         ,new String[]{Long.toString(conversationID), excludeString}, null, null, null);
         cursor.moveToFirst();
         int length = cursor.getCount();
         for(int i = 0 ; i < length ; i++){
             WnMessage message = cursorToMessage(cursor);
-            if(i != 1 || !messages.get(0).getMessage_id().equals(message.getMessage_id())) {
+            if(i != 1 || !messages.get(0).getMessage_guid().equals(message.getMessage_guid())) {
                 messages.add(message);
             }
             cursor.moveToNext();
@@ -222,12 +220,12 @@ public class MessageDataSource {
         WnMessage message = null;
 
         Cursor cursor = db.query(DBHelper.TABLE_MESSAGES_NAME,
-                allColumns, DBHelper.KEY_MESSAGE_ID +"=?", new String[]{message_id}, null, null, null);
+                allColumns, DBHelper.KEY_MESSAGE_GUID +"=?", new String[]{message_id}, null, null, null);
 
         cursor.moveToFirst();
         if(!cursor.isAfterLast()) {
             message = cursorToMessage(cursor);
-            message.setUser_photo(Contacts.retrieveContactPhoto(MainActivity.getAppContext(), message.getUser()));
+            //message.setUser_photo(Contacts.retrieveContactPhoto(MainActivity.getAppContext(), message.getUser()));
 
         }
         // make sure to close the cursor

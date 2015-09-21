@@ -17,7 +17,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,7 +48,7 @@ public class ChatFragment extends ListFragment {
     static final String TAG = "WN";
     private SharedPreferences prefs;
     List<NameValuePair> params;
-    private String c_id,conversation_id;
+    private String conversation_rowId, conversation_guid;
     private EditText chatTextView;
     private String to_user;
     private ChatDataSource datasource;
@@ -72,7 +71,7 @@ public class ChatFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
-        this.c_id = args.getString("c_id");
+        this.conversation_rowId = args.getString("c_id");
     }
 
     private void initControls(View view) {
@@ -116,11 +115,11 @@ public class ChatFragment extends ListFragment {
         datasource = new ChatDataSource(context);
         ConversationDataSource conversationDataSource = new ConversationDataSource(context);
         conversationDataSource.open();
-        WnConversation conversation = conversationDataSource.getConversationByID(c_id);
-        conversation_id = conversation.getConversation_id();
+        WnConversation conversation = conversationDataSource.getConversationByRowID(conversation_rowId);
+        conversation_guid = conversation.getConversation_guid();
         conversationDataSource.close();
         datasource.open();
-        Cursor cursor = datasource.getAllDataByConversationRowID(c_id);
+        Cursor cursor = datasource.getAllDataByConversationRowID(conversation_rowId);
         int cursorCount = cursor.getCount();
         cursor.moveToFirst();
         //SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
@@ -167,7 +166,7 @@ public class ChatFragment extends ListFragment {
         //chatTextView = (EditText)view.findViewById(R.id.message_text);
         ConversationDataSource conversationDataSource = new ConversationDataSource(getActivity());
         conversationDataSource.open();
-        Set<String> phones= conversationDataSource.getUsersPhones(Long.valueOf(c_id));
+        Set<String> phones= conversationDataSource.getUsersPhones(Long.valueOf(conversation_rowId));
         myPhone= prefs.getString("REG_FROM","");
         conversationDataSource.close();
         phones.remove(myPhone);
@@ -182,11 +181,11 @@ public class ChatFragment extends ListFragment {
         datasource = new ChatDataSource(view.getContext());
         ConversationDataSource conversationDataSource1 = new ConversationDataSource(view.getContext());
         conversationDataSource.open();
-        WnConversation conversation = conversationDataSource.getConversationByID(c_id);
-        conversation_id = conversation.getConversation_id();
+        WnConversation conversation = conversationDataSource.getConversationByRowID(conversation_rowId);
+        conversation_guid = conversation.getConversation_guid();
         conversationDataSource.close();
         /*datasource.open();
-        Cursor cursor = datasource.getAllDataByConversationRowID(c_id);
+        Cursor cursor = datasource.getAllDataByConversationRowID(conversation_rowId);
         String[] from = new String[] { DBHelper.KEY_CHAT_FROM, DBHelper.KEY_CHAT_DELIVERY ,DBHelper.KEY_CHAT_TEXT};
         int[] to = new int[] {R.id.from_user, R.id.delivery,  R.id.message_text};
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(view.getContext(), R.layout.chat_row, cursor, from, to, 0);
@@ -232,14 +231,14 @@ public class ChatFragment extends ListFragment {
             params.add(new BasicNameValuePair("fromu",from));
             params.add(new BasicNameValuePair("to", to_user));
             params.add(new BasicNameValuePair("status", ""+ status));
-            params.add(new BasicNameValuePair("c_id", conversation_id));
+            params.add(new BasicNameValuePair("conversation_rowId", conversation_guid));
             params.add(new BasicNameValuePair("text", "" + chatText));
 
             //MESSAGE SENDING
             JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/sendchat", params);
 
             dba.open();
-            WnChatMessage temp= dba.insert(chatText, from, Long.valueOf(c_id));// Insert record in your DB
+            WnChatMessage temp= dba.insert(chatText, from, Long.valueOf(conversation_rowId));// Insert record in your DB
             dba.close();
             return jObj;
         }
@@ -259,7 +258,7 @@ public class ChatFragment extends ListFragment {
                 {
 
                     /*datasource.open();
-                    ((SimpleCursorAdapter) getListAdapter()).changeCursor(datasource.getAllDataByConversationRowID(c_id));
+                    ((SimpleCursorAdapter) getListAdapter()).changeCursor(datasource.getAllDataByConversationRowID(conversation_rowId));
                     datasource.close();
                     ((SimpleCursorAdapter) getListAdapter()).notifyDataSetChanged();*/
                 }

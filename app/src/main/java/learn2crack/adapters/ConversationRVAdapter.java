@@ -46,7 +46,7 @@ public class ConversationRVAdapter extends RecyclerView.Adapter<ConversationRVAd
         String display_status;
         String status = conversations.get(i).getStatus();
         conversationViewHolder.contactName.setText(conversations.get(i).getContacts().get(0).getName());
-        //conversationViewHolder.conversation_id.setText(conversations.get(i).getConversation_id());
+        //conversationViewHolder.conversation_id.setText(conversations.get(i).getConversation_guid());
         conversationViewHolder.updateDatetime.setText(conversations.get(i).getUpdate_datetime());
 //        conversationViewHolder.tab.setText("Tab = " + conversations.get(i).getTab());
 //        //historyViewHolder.contactPhoto.setScaleType(ImageView.ScaleType.FIT_XY);

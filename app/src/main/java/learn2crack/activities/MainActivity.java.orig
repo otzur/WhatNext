@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements
 
             //contactListFragment = new UserFragment();
             contactListFragment = new WnContactsListFragment();
-            Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
+            Toolbar mToolbar = (Toolbar) findViewById(R.rowId.toolbar);
             setSupportActionBar(mToolbar);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
 
@@ -100,28 +100,28 @@ public class MainActivity extends AppCompatActivity implements
             ab.setHomeAsUpIndicator(R.drawable.ic_menu);
             ab.setDisplayHomeAsUpEnabled(true);
 
-            mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+            mDrawerLayout = (DrawerLayout) findViewById(R.rowId.drawer_layout);
 
-            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            NavigationView navigationView = (NavigationView) findViewById(R.rowId.nav_view);
             if (navigationView != null) {
                 setupDrawerContent(navigationView);
             }
 
             prefs = getSharedPreferences("Chat", 0);
             String userName = prefs.getString("FROM_NAME", "");
-            TextView userTextView  = (TextView)findViewById(R.id.userName);
+            TextView userTextView  = (TextView)findViewById(R.rowId.userName);
 
 
             if (!userName.isEmpty()) {
                 userTextView.setText(userName);
             }
 
-            viewPager = (ViewPager) findViewById(R.id.viewpager);
+            viewPager = (ViewPager) findViewById(R.rowId.viewpager);
             if (viewPager != null) {
                 setupViewPager(viewPager);
             }
 
-            /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+            /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.rowId.fab);
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -131,8 +131,8 @@ public class MainActivity extends AppCompatActivity implements
             });*/
 
 //            drawerFragment = (FragmentDrawer)
-//                    getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
-//            drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), mToolbar);
+//                    getSupportFragmentManager().findFragmentById(R.rowId.fragment_navigation_drawer);
+//            drawerFragment.setUp(R.rowId.fragment_navigation_drawer, (DrawerLayout) findViewById(R.rowId.drawer_layout), mToolbar);
 //            drawerFragment.setDrawerListener(this);
 
             // display the first navigation drawer view on app launch
@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements
 //                Fragment user = new UserFragment();
 //                FragmentManager fragmentManager = getSupportFragmentManager();
 //                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//                fragmentTransaction.replace(R.id.container_body, user);
+//                fragmentTransaction.replace(R.rowId.container_body, user);
 //                fragmentTransaction.commit();
 //
 //            } else {
@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements
 //                    reg = new LoginFragment();
 //                    FragmentManager fragmentManager = getSupportFragmentManager();
 //                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//                    fragmentTransaction.replace(R.id.container_body, reg);
+//                    fragmentTransaction.replace(R.rowId.container_body, reg);
 //                    fragmentTransaction.commit();
 //                }
 //            }
@@ -188,18 +188,18 @@ public class MainActivity extends AppCompatActivity implements
         String[] whereArgs = new String[] { String.valueOf(contactUri) };
         Log.d(TAG, String.valueOf(contactUri));
         Cursor cursor2=null;
-        String id="";
+        String rowId="";
         int idx;
         try {
             cursor2 = getContentResolver().query(contactUri, null, null, null, null);
             if (cursor2.moveToFirst()) {
                 idx = cursor2.getColumnIndex(ContactsContract.Contacts._ID);
-                id = cursor2.getString(idx);
+                rowId = cursor2.getString(idx);
             }
                 cursor2 = context.getContentResolver().query(
                     ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                     null,
-                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = "+id,null, null);
+                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = "+rowId,null, null);
     }
         catch (Exception ex){
             Log.e("wn",ex.getLocalizedMessage());
@@ -286,58 +286,58 @@ public class MainActivity extends AppCompatActivity implements
                         FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager());
 
                         switch (menuItem.getItemId()) {
-                            case R.id.nav_home: {
+                            case R.rowId.nav_home: {
                                 fragmentAdapter.addFragment(contactListFragment, "User");
                                 break;
                             }
-                            case R.id.nav_friends: {
+                            case R.rowId.nav_friends: {
                                 fragmentAdapter.addFragment(contactListFragment, "User");
                                 break;
                             }
 
-                            case R.id.nav_history: {
+                            case R.rowId.nav_history: {
                                 fragmentAdapter.addFragment(new HistoryFragment(), "Messages");
                                 break;
                             }
 
-                            case R.id.nav_discussion: {
+                            case R.rowId.nav_discussion: {
                                 fragmentAdapter.addFragment(new CheeseListFragment(), "Cheese List");
                                 break;
                             }
 
 <<<<<<< HEAD
-                            case R.id.nav_history2: {
+                            case R.rowId.nav_history2: {
                                 fragmentAdapter.addFragment(new HistoryFragment2(), "Person List");
                                 break;
                             }
 
-                            case R.id.nav_logout: {
+                            case R.rowId.nav_logout: {
                                 new Logout().execute();
 =======
-                            case R.id.nav_history2:
+                            case R.rowId.nav_history2:
                             {
                                 fragmentAdapter.addFragment(new HistoryFragment2(), "History List");
                                 break;
                             }
 
-                            case R.id.nav_conversation:
+                            case R.rowId.nav_conversation:
                             {
                                 fragmentAdapter.addFragment(new ConversationFragment(), "Conversation List");
                                 break;
                             }
 
-                            case R.id.nav_cardview_example:
+                            case R.rowId.nav_cardview_example:
                             {
                                 fragmentAdapter.addFragment(new RecyclerViewActivity(), "Card View Example");
                                 break;
                             }
 
-                            case R.id.nav_empty_example:
+                            case R.rowId.nav_empty_example:
                             {
                                 fragmentAdapter.addFragment(new EmptyFragment(), "Empty Example");
                                 break;
                             }
-                            case R.id.nav_logout:
+                            case R.rowId.nav_logout:
                             {
                                 new  Logout().execute();
 >>>>>>> db7b1d59c99ac0e5e5404b870a81f2d719579520
@@ -365,11 +365,11 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        if (v.getTag(R.id.TAG_CONTACT_ID) == null) {
+        if (v.getTag(R.rowId.TAG_CONTACT_ID) == null) {
             // context menu logic
             return;
         }
-        Contact contact = (Contact)v.getTag(R.id.TAG_CONTACT);
+        Contact contact = (Contact)v.getTag(R.rowId.TAG_CONTACT);
         if (contact == null) {
             // context menu logic
             return;
@@ -439,7 +439,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
+            case android.R.rowId.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;
         }
@@ -541,12 +541,12 @@ public class MainActivity extends AppCompatActivity implements
             Fragment reg = new LoginFragment();
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.viewpager, reg);
+            fragmentTransaction.replace(R.rowId.viewpager, reg);
             fragmentTransaction.commit();
             /////////////////////
 //            Fragment reg = new LoginFragment();
 //            FragmentTransaction ft = getFragmentManager().beginTransaction();
-//            ft.replace(R.id.container_body, reg);
+//            ft.replace(R.rowId.container_body, reg);
 //            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 //            ft.addToBackStack(null);
 //            ft.commit();
@@ -595,7 +595,7 @@ public class MainActivity extends AppCompatActivity implements
                 if(res.equals("Removed Sucessfully")) {
 //                    Fragment reg = new LoginFragment();
 //                    FragmentTransaction ft = getFragmentManager().beginTransaction();
-//                    ft.replace(R.id.viewpager, reg);
+//                    ft.replace(R.rowId.viewpager, reg);
 //                    ft.setTransition(FragmentTransaction.TRANSIT_NONE);
 //                    ft.addToBackStack(null);
 //                    ft.commit();
@@ -604,7 +604,7 @@ public class MainActivity extends AppCompatActivity implements
 //                    Fragment login = new LoginFragment();
 //                    FragmentManager fragmentManager = getSupportFragmentManager();
 //                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//                    fragmentTransaction.replace(R.id.viewpager, login);
+//                    fragmentTransaction.replace(R.rowId.viewpager, login);
 //                    fragmentTransaction.commit();
 
                     FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager());

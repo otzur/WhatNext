@@ -82,7 +82,7 @@ public class HistoryRVAdapter extends RecyclerView.Adapter<HistoryRVAdapter.Hist
         historyViewHolder.options.setText("Options: " + messages.get(i).getOption_selected());
         historyViewHolder.tab.setText("Tab = Move to conversation");
         //historyViewHolder.contactPhoto.setScaleType(ImageView.ScaleType.FIT_XY);
-        historyViewHolder.contactPhoto.setImageBitmap(messages.get(i).getUser_photo());
+        //historyViewHolder.contactPhoto.setImageBitmap(messages.get(i).getUser_photo());
 
         //messages.get(i).setUser_photo(Contacts.retrieveContactPhoto(, messages.get(i).getUser()));
 

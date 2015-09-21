@@ -50,15 +50,15 @@ public class HistoryFragment extends ListFragment {
                     data_source.close();
                     ConversationDataSource c_DataSource = new ConversationDataSource(getActivity().getApplicationContext());
                     c_DataSource.open();
-                    WnConversation conversation = c_DataSource.getConversationByID(message.getConversation_id());
+                    WnConversation conversation = c_DataSource.getConversationByRowID(message.getConversation_rowId());
                     c_DataSource.close();
                     Bundle args = new Bundle();
                     args.putString("mobno", message.getUser());
                     //args.putString("user_name", message.getUserName());
                     args.putString("type", conversation.getType());
                     args.putString("tab", Integer.toString(conversation.getTab()));
-                    args.putString("c_id", Long.toString(conversation.getId()));
-                    args.putString("conversation_id", conversation.getConversation_id());
+                    args.putString("c_id", Long.toString(conversation.getRowId()));
+                    args.putString("conversation_id", conversation.getConversation_guid());
                     args.putString("status", "received");
                     Intent chat = new Intent(getActivity(), WnMessageReceiveActivity.class);
                     chat.putExtra("INFO", args);
@@ -99,7 +99,7 @@ public class HistoryFragment extends ListFragment {
        // ArrayAdapter<WnMessage> adapter = new ArrayAdapter<>(view.getContext(),android.R.layout.simple_list_item_1, values);
        // setListAdapter(adapter);
 
-        String[] from = new String[] { DBHelper.KEY_ROWID, DBHelper.KEY_MESSAGE_ID,  DBHelper.KEY_USER,
+        String[] from = new String[] { DBHelper.KEY_ROWID, DBHelper.KEY_MESSAGE_GUID,  DBHelper.KEY_USER,
                 DBHelper.KEY_OPTION_SELECTED,DBHelper.KEY_STATUS, DBHelper.KEY_CREATION_DATE ,DBHelper.KEY_CONVERSATION_ROW_ID, DBHelper.KEY_FILLED_BY_YOU};
         int[] to = new int[] {R.id.row_id, R.id.message_id,  R.id.from_user,  R.id.selected_options, R.id.status, R.id.creation_date ,R.id.c_id, R.id.filled_by_you};
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(view.getContext(), R.layout.history_row, cursor, from, to, 0);

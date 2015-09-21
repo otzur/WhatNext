@@ -8,30 +8,30 @@ import android.os.Bundle;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
+import learn2crack.bl.ObjectManager;
 import learn2crack.db.ChatDataSource;
 import learn2crack.db.ConversationDataSource;
-import learn2crack.db.MessageDataSource;
 import learn2crack.models.WnConversation;
-import learn2crack.utilities.Contacts;
+import learn2crack.models.WnMessage;
 
 public class MSGReceiver  extends WakefulBroadcastReceiver {
 
     private Bundle handleWnChatMessage(Context context, Intent intent) {
         ChatDataSource chatDataSource = new ChatDataSource(context);
         ConversationDataSource dbConversations=new ConversationDataSource(context);
-        String fromu="",conversation_id="",chatText="";
+        String fromu,conversation_guid,chatText;
         Bundle extras = intent.getExtras();
         WnConversation conversation;
         fromu = extras.getString("fromu");
         chatText = extras.getString("text");
-        conversation_id = extras.getString("c_id");
+        conversation_guid = extras.getString("c_id");
         dbConversations.open();
-        conversation = dbConversations.getConversationByUniqeID(conversation_id);
+        conversation = dbConversations.getConversationByGUID(conversation_guid);
         dbConversations.close();
         chatDataSource.open();
-        chatDataSource.insert(chatText, fromu, conversation.getId());
+        chatDataSource.insert(chatText, fromu, conversation.getRowId());
         chatDataSource.close();
-        extras.putString("c_id", Long.toString(conversation.getId()));
+        extras.putString("c_id", Long.toString(conversation.getRowId()));
         return extras;
     }
 
@@ -40,52 +40,69 @@ public class MSGReceiver  extends WakefulBroadcastReceiver {
 
     private Bundle handleWnMessage(Context context, Intent intent){
 
-        MessageDataSource dba=new MessageDataSource(context);
-        ConversationDataSource dbConversations=new ConversationDataSource(context);
-        String msg_id="",user="",user_name="",type="",tab="",status="",selected_options="",conversation_id="";
+        String msg_id="", contactPhoneNumber="",type="",tab="",status="",selected_options="",conversation_guid="";
         Bundle extras = intent.getExtras();
-        WnConversation conversation;
-//        String to = context.getSharedPreferences("chat", 0).getString("REG_FROM","");
-//        String to_name = "33";
+        WnConversation conversation = null;
+
         status = extras.getString("status");
         msg_id = extras.getString("msg_id");
-        user = extras.getString("fromu");
-        user_name = Contacts.getContactName(context, user);//extras.getString("from_name");
+        contactPhoneNumber = extras.getString("fromu");
         type = extras.getString("type");
         tab = extras.getString("tab");
         selected_options = extras.getString("selected_options");
-        conversation_id = extras.getString("c_id");
+        conversation_guid = extras.getString("c_id");
 
-        Log.i("WN MSGReceiver", "status = " + status );
-        Log.i("WN MSGReceiver", "conversation_id = " + conversation_id);
+        Log.i("WN MSGReceiver", "status = " + status);
+        Log.i("WN MSGReceiver", "conversation_id = " + conversation_guid);
+
+
+        WnConversation wnConversation = ObjectManager.createNewConversation(contactPhoneNumber, type, status);
+        wnConversation.setTab(Integer.valueOf(tab));
+        wnConversation.setConversation_guid(conversation_guid);
+
+        WnMessage wnMessage  = ObjectManager.createNewMessage(msg_id,contactPhoneNumber, selected_options, status,0);
+        wnConversation.addMessage(wnMessage);
+
 
         switch (status) {
             case "New":
-                dbConversations.open();
-                conversation = dbConversations.insert(conversation_id,
-                        0, type, tab, user, user_name, "New");
-                dbConversations.close();
-                dba.open();
-                dba.insert(msg_id, "message", user, selected_options, "New", 0, Long.valueOf(conversation.getId()).toString());
-                dba.close();
+
+                // first save conversation into database
+                  Long conversationRowId = ObjectManager.saveConversation(wnConversation);
+                  wnConversation.setRowId(conversationRowId);
+                  extras.putString("c_id", Long.toString(wnConversation.getRowId()));
+                  extras.putString("conversation_guid", wnConversation.getConversation_guid());
+//                dbConversations.open();
+//                conversation = dbConversations.insert(conversation_id,
+//                        0, type, tab, contactPhoneNumber, contactName, "New");
+//                dbConversations.close();
+//                dba.open();
+//                dba.insert(msg_id, "message", contactPhoneNumber, selected_options, "New", 0, Long.valueOf(conversation.getRowId()).toString());
+//                dba.close();
                 break;
             case "Results":
             case "Response":
-                dbConversations.open();
-                conversation = dbConversations.getConversationByUniqeID(conversation_id);
-                dbConversations.update(conversation_id, 0, type, tab, user, user_name,"Results");
-                dbConversations.close();
-                dba.open();
-                dba.insert(msg_id, "message", user, selected_options, "Results", 0, Long.valueOf(conversation.getId()).toString());
-                dba.close();
+
+                conversation = ObjectManager.getConversationByGUID(conversation_guid);
+                conversation.setStatus("Results");
+                WnMessage wnMessage1  = ObjectManager.createNewMessage(msg_id, contactPhoneNumber,selected_options,"Results",0);
+                conversation.addMessage(wnMessage1);
+                ObjectManager.updateConversation(conversation);
+                extras.putString("c_id", Long.toString(conversation.getRowId()));
+                extras.putString("conversation_guid", conversation.getConversation_guid());
+
+//                dbConversations.update(conversation_guid, 0, type, tab, contactPhoneNumber, contactName,"Results");
+//                dbConversations.close();
+//                dba.open();
+//                dba.insert(msg_id, "message", contactPhoneNumber, selected_options, "Results", 0, Long.valueOf(conversation.getRowId()).toString());
+//                dba.close();
                 break;
             default:
                 Log.e("WN MSGReceiver", "status = " + status );
                 Log.e("WN MSGReceiver", "failed to figure message status");
                 return null;
         }
-        extras.putString("c_id", Long.toString(conversation.getId()));
-        extras.putString("conversation_id", conversation.getConversation_id());
+
         return extras;
     }
 

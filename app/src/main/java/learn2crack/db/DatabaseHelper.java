@@ -22,7 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     * user messages consts
     */
     public static final String TABLE_MESSAGES_NAME = "userMessages";
-    public static final String KEY_MESSAGE_ID = "message_id";
+    public static final String KEY_MESSAGE_GUID = "message_id";
     public static final String KEY_MESSAGE = "message";
     public static final String KEY_USER = "user";
     public static final String KEY_USER_NAME = "user_name";
@@ -36,7 +36,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     * conversation consts
     */
     public static final String TABLE_CONVERSATION_NAME = "conversations";
-    public static final String KEY_CONVERSATION_ID = "conversation_id";
+    public static final String KEY_CONVERSATION_GUID = "conversation_id";
     //public static final String KEY_N_USERS = "n_users";
     public static final String KEY_OPTIONS_TYPE ="options_type";
     public static final String KEY_CONVERSATION_TYPE = "type";

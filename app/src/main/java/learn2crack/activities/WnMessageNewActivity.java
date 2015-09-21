@@ -30,7 +30,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import learn2crack.bl.ObjectManager;
 import learn2crack.chat.R;
@@ -99,8 +98,11 @@ public class WnMessageNewActivity extends AppCompatActivity {
 
             wnConversation = (WnConversation) bundle.getSerializable("conversation");
             //tvUserName.setText(wnConversation.getContacts().get(0).name);
+            Log.i(TAG, "Inside new Activity");
             Log.i(TAG,"got conversation Serializable" );
             Log.i(TAG, "status = " + wnConversation.getStatus());
+            Log.i(TAG, "Conversation_guid = " + wnConversation.getConversation_guid());
+            Log.i(TAG, "User name= " + wnConversation.getContacts().get(0).getName());
         }
 
 
@@ -115,9 +117,6 @@ public class WnMessageNewActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 new Send(viewPager.getCurrentItem()).execute();
-
-                //Snackbar.make(view, "WN Message Sent", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-                //finish();
             }
         });
     }
@@ -164,37 +163,38 @@ public class WnMessageNewActivity extends AppCompatActivity {
         @Override
         protected JSONObject doInBackground(String... args) {
             JSONParser json = new JSONParser();
-            UUID messageGuid = UUID.randomUUID();
-            UUID convGuid = UUID.randomUUID();
-            wnConversation.setConversation_id(convGuid.toString());
+            //UUID messageGuid = UUID.randomUUID();
+            //UUID convGuid = UUID.randomUUID();
+            //wnConversation.setConversation_guid(convGuid.toString());
 
             WnMessageRowOptionFragment of = getVisibleFragment(wnConversation.getTab());
             selected_options = of.getSelectedOptions();
             Log.i(TAG, "selected_options = " + of.getSelectedOptions());
 
 
-            WnMessage wnMessage = ObjectManager.createNewMessage(messageGuid.toString(), "message", from,
-                    selected_options, wnConversation.getStatus(), wnConversation.getUpdate_datetime(), 1, convGuid.toString()) ;
+            WnMessage wnMessage = ObjectManager.createNewMessage( wnConversation.getContacts().get(0).getPhoneNumber(), selected_options, "Sent", 1) ;
+            //wnMessage.setConversation_rowId(convGuid.toString());
 
             wnConversation.addMessage(wnMessage);
 
             /// fill parameters to the cloud gcm
             params = new ArrayList<>();
-            params.add(new BasicNameValuePair("msg_id",messageGuid.toString()));
+            params.add(new BasicNameValuePair("msg_id",wnMessage.getMessage_guid()));
             params.add(new BasicNameValuePair("fromu",from));
             params.add(new BasicNameValuePair("from_name","Me"));
             params.add(new BasicNameValuePair("to", wnConversation.getContacts().get(0).getPhoneNumber()));
             params.add(new BasicNameValuePair("user_name", wnConversation.getContacts().get(0).getName()));
             params.add(new BasicNameValuePair("tab", ""+ wnConversation.getTab()));
             params.add(new BasicNameValuePair("type", "" + wnConversation.getType()));
-            params.add(new BasicNameValuePair("status", "" + wnConversation.getStatus()));
-            params.add(new BasicNameValuePair("c_id", convGuid.toString()));
+            params.add(new BasicNameValuePair("status", "New"));
+            params.add(new BasicNameValuePair("c_id", wnConversation.getConversation_guid()));
             params.add(new BasicNameValuePair("selected_options", selected_options));
             //MESSAGE SENDING
             JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/send", params);
 
-            Long conversationId = ObjectManager.saveConversation(wnConversation);
-            wnConversation.setId(conversationId);
+            wnConversation.setStatus("Sent");
+            Long conversationRowId = ObjectManager.saveConversation(wnConversation);
+            wnConversation.setRowId(conversationRowId);
 
             return jObj;
 
@@ -212,7 +212,9 @@ public class WnMessageNewActivity extends AppCompatActivity {
                 else
                 {
                     Bundle args = new Bundle();
-                    args.putString("c_id", Long.toString(wnConversation.getId()));
+
+                    Log.i(TAG, "new activit post exec c_id = " + wnConversation.getRowId());
+                    args.putString("c_id", Long.toString(wnConversation.getRowId()));
                     Intent chat = new Intent(getApplicationContext(), ResultActivity.class);
                     chat.putExtra("INFO", args);
                     chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

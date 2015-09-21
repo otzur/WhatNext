@@ -407,12 +407,12 @@ public class UserFragment extends Fragment {
                     //intent.putExtra(CheeseDetailActivity.EXTRA_NAME, holder.mBoundString);
 
 //                    if(users.get(position).get("wn").equals("true")) {
-                    String name = (String) text1.getText();
+                    //String name = (String) text1.getText();
                     String mobno = (String) text2.getText();
                     String type = "HimAndHer";
                     String status = "New";
 
-                    WnConversation wnConversation =  ObjectManager.createNewConversation(name,mobno,type, status);
+                    WnConversation wnConversation =  ObjectManager.createNewConversation(mobno,type, status);
                     Bundle args = new Bundle();
                     args.putSerializable("conversation", wnConversation);
 

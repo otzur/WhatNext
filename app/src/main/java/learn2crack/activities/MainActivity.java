@@ -4,10 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -45,6 +47,7 @@ import learn2crack.bl.ObjectManager;
 import learn2crack.chat.R;
 import learn2crack.cheese.CheeseListFragment;
 import learn2crack.cotacts.Contact;
+import learn2crack.db.DatabaseHelper;
 import learn2crack.models.WnConversation;
 import learn2crack.utilities.JSONParser;
 
@@ -63,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements
 
     Fragment reg = null;
 
-    static final String TAG = "WN";
+    final String TAG = "WN ";// + getLocalClassName();
     //new matrial design
     //private Toolbar mToolbar;
     //private FragmentDrawer drawerFragment;
@@ -80,6 +83,8 @@ public class MainActivity extends AppCompatActivity implements
     // as the query is typed.
     private boolean isSearchResultView = false;
     private Uri mContactUri=null;
+    private SQLiteDatabase db;
+    private DatabaseHelper DBHelper;
 
     public static Context getAppContext() {
         return MainActivity.context;
@@ -333,6 +338,17 @@ public class MainActivity extends AppCompatActivity implements
                                 new Logout().execute();
                                 break;
                             }
+                            case R.id.nav_db:{
+
+                                DBHelper = DatabaseHelper.getInstance(getAppContext());
+                                db = DBHelper.getWritableDatabase();
+                                DBHelper.onUpgrade(db, 0, 1);
+
+
+                                Snackbar.make(navigationView, "Database deleted", Snackbar.LENGTH_LONG)
+                                        .setAction("Action", null).show();
+
+                            }
                         }
 
 
@@ -383,13 +399,12 @@ public class MainActivity extends AppCompatActivity implements
                 phoneNumber = contact.getPhones().valueAt(0);
             }
 
-            String name = "";
             //String mobno = phone;
             String type = "HimAndHer";
             String status = "New";
 
             Log.i(TAG, "Start new activity");
-            WnConversation wnConversation =  ObjectManager.createNewConversation(name, phoneNumber, type, status);
+            WnConversation wnConversation =  ObjectManager.createNewConversation(phoneNumber, type, status);
             Bundle args = new Bundle();
             args.putSerializable("conversation", wnConversation);
 
@@ -416,12 +431,12 @@ public class MainActivity extends AppCompatActivity implements
         String phone = item.getTitle().toString();
         //if(hasWN.equals("1")) {
 
-        String name = "";
+
         String mobno = phone;
         String type = "HimAndHer";
         String status = "New";
 
-        WnConversation wnConversation =  ObjectManager.createNewConversation(name, mobno, type, status);
+        WnConversation wnConversation =  ObjectManager.createNewConversation(mobno, type, status);
         Bundle args = new Bundle();
         args.putSerializable("conversation", wnConversation);
 
