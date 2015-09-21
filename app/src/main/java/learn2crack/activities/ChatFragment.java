@@ -229,7 +229,7 @@ public class ChatFragment extends ListFragment {
             JSONParser json = new JSONParser();
             params = new ArrayList<>();
             params.add(new BasicNameValuePair("fromu",from));
-            params.add(new BasicNameValuePair("to", to_user));
+            params.add(new BasicNameValuePair("to", to_user.replaceAll("[^0-9]", "")));
             params.add(new BasicNameValuePair("status", ""+ status));
             params.add(new BasicNameValuePair("conversation_rowId", conversation_guid));
             params.add(new BasicNameValuePair("text", "" + chatText));

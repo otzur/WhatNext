@@ -1,6 +1,7 @@
 package learn2crack.cotacts;
 
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.provider.ContactsContract;
 import android.text.SpannableStringBuilder;
 import android.util.LongSparseArray;
@@ -13,6 +14,7 @@ public class Contact {
     private Resources res;
     private String name;
     private String photoURI = "";
+    private Bitmap photo = null;
     private LongSparseArray<String> phones;
 
     public Contact(long id, String name, Resources res) {
@@ -35,6 +37,14 @@ public class Contact {
 
     public String getName() {
         return name;
+    }
+
+    public Bitmap getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(Bitmap photo) {
+        this.photo = photo;
     }
 
     @Override

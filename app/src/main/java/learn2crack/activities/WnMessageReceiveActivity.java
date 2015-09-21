@@ -203,8 +203,8 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
             params = new ArrayList<>();
             params.add((new BasicNameValuePair("msg_id", msg_id)));
             params.add(new BasicNameValuePair("fromu", from));
-            //params.add(new BasicNameValuePair("from_name",from_name));
-            params.add(new BasicNameValuePair("to", user_phone));
+            params.add(new BasicNameValuePair("to", user_phone.replaceAll("[^0-9]", "")));
+
             params.add(new BasicNameValuePair("user_name", user_name));
 
 
