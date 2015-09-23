@@ -117,7 +117,7 @@ public class MessageDataSource {
         String options =message.getOption_selected();
         ArrayList<Integer> selectedOptions = getSelectedOpetions(options);
         ArrayList<WnMessage> relatedMessages = getRelatedMessages(Long.valueOf(message.getConversation_rowId())
-                , new ArrayList<>(Arrays.asList(messageID)));
+                , new ArrayList<>(Arrays.asList(message.getStatus())));
         int relatedMessageCount = relatedMessages.size();
         for(int k=0 ; k < relatedMessageCount ; k++) {
             message = relatedMessages.get(k);
@@ -200,8 +200,13 @@ public class MessageDataSource {
             excludeString = "{}";
         }
         Cursor cursor = db.query(DBHelper.TABLE_MESSAGES_NAME,
-                allColumns,"("+ DBHelper.KEY_CONVERSATION_ROW_ID +")=? AND ("+DBHelper.KEY_MESSAGE_GUID +" NOT IN (?))"
+                allColumns,"("+ DBHelper.KEY_CONVERSATION_ROW_ID +")=? AND ("+DBHelper.KEY_STATUS +" NOT IN (?))"
         ,new String[]{Long.toString(conversationID), excludeString}, null, null, null);
+
+//        Cursor cursor = db.query(DBHelper.TABLE_MESSAGES_NAME,
+//                allColumns,"("+ DBHelper.KEY_CONVERSATION_ROW_ID +")=?"
+//                ,new String[]{Long.toString(conversationID)}, null, null, null);
+
         cursor.moveToFirst();
         int length = cursor.getCount();
         for(int i = 0 ; i < length ; i++){
