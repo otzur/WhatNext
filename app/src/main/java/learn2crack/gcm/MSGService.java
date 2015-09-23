@@ -99,8 +99,10 @@ public class MSGService extends IntentService {
         switch (wnConversation.getStatus()) {
             case "New":
                 wnConversation.setStatus("Received");
-                wnConversation.clearMessages();
-                //wnConversation.getMessages().get(0).setStatus("Received");
+                //wnConversation.clearMessages();
+                wnConversation.getMessages().get(0).setStatus("Received");
+                wnConversation.getMessages().get(0).setRowId(1);
+
 //                args.putString("msg_id", msg_id);
 //                args.putString("mobno", mobno);
 //                args.putString("type", type);

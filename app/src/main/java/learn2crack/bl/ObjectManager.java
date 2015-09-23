@@ -56,10 +56,11 @@ public class ObjectManager {
 
         dbConversations.close();
 
+        Log.i(TAG, "Update conversation completed rowid = " + wnConversation.getRowId());
         for (WnMessage message : wnConversation.getMessages())
         {
             if(message.getRowId() == -1)
-                saveMessage(message, wnConversationId);
+                saveMessage(message, wnConversation.getRowId());
         }
 
     }
