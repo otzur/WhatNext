@@ -20,6 +20,7 @@ import learn2crack.bl.ObjectManager;
 import learn2crack.chat.R;
 import learn2crack.models.WnConversation;
 import learn2crack.models.WnMessage;
+import learn2crack.models.WnMessageStatus;
 
 
 public class MSGService extends IntentService {
@@ -38,6 +39,8 @@ public class MSGService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         Bundle extras = intent.getExtras();
+        //WnMessageStatus status = (WnMessageStatus) extras.getSerializable("status");
+        WnMessageStatus status = WnMessageStatus.valueOf(extras.getString("status"));
         GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
         String messageType = gcm.getMessageType(intent);
         prefs = getSharedPreferences("Chat", 0);
@@ -58,15 +61,18 @@ public class MSGService extends IntentService {
 
                 if(!prefs.getString("CURRENT_ACTIVE","").equals(extras.getString("fromu"))) {
                     extras=extras.getBundle("INFO");
-                    if(!extras.getString("status","").equals("chat")) {
+                    if(!status.equals(WnMessageStatus.CHAT)) {
+                    //if(!extras.getString("status","").equals("chat")) {
 
                         //String from_contact = Contacts.getContactName(this, extras.getString("fromu"));
-                        wnConversation = ObjectManager.createNewConversation( extras.getString("fromu"), extras.getString("type"), extras.getString("status"));
+                        //wnConversation = ObjectManager.createNewConversation( extras.getString("fromu"), extras.getString("type"), WnMessageStatus.valueOf(extras.getString("status")));
+                        wnConversation = ObjectManager.createNewConversation( extras.getString("fromu"), extras.getString("type"), status);
                         wnConversation.setTab(Integer.valueOf(extras.getString("tab")));
                         wnConversation.setConversation_guid(extras.getString("conversation_guid"));
                         wnConversation.setRowId(Long.valueOf(extras.getString("c_id")));
                         WnMessage wnMessage  = ObjectManager.createNewMessage(extras.getString("msg_id"),extras.getString("fromu"),
-                                extras.getString("selected_options"),  extras.getString("status"),0);
+                                extras.getString("selected_options"), status,0);
+                                //extras.getString("selected_options"), WnMessageStatus.valueOf(extras.getString("status")),0);
                         wnConversation.addMessage(wnMessage);
 
                         sendNotification(wnConversation);
@@ -97,10 +103,10 @@ public class MSGService extends IntentService {
         //String to = getSharedPreferences("chat",0).getString("REG_FROM","");
         Intent chat = null;
         switch (wnConversation.getStatus()) {
-            case "New":
-                wnConversation.setStatus("Received");
+            case NEW:
+                wnConversation.setStatus(WnMessageStatus.RECEIVED);
                 //wnConversation.clearMessages();
-                wnConversation.getMessages().get(0).setStatus("Received");
+                wnConversation.getMessages().get(0).setStatus(WnMessageStatus.RECEIVED);
                 wnConversation.getMessages().get(0).setRowId(1);
 
 //                args.putString("msg_id", msg_id);
@@ -114,14 +120,14 @@ public class MSGService extends IntentService {
                 args.putSerializable("conversation", wnConversation);
                 chat = new Intent(this, WnMessageReceiveActivity.class);
                 break;
-            case "Received":
-            case "Results":
-            case "Response":
+            case RECEIVED:
+            case RESULTS:
+            case RESPONSE:
                 args.putString("c_id", Long.valueOf(wnConversation.getRowId()).toString());
                 args.putString("status", "Response");
                 chat = new Intent(this, ResultActivity.class);
                 break;
-            case "chat":
+            case CHAT:
                 args.putString("c_id", Long.valueOf(wnConversation.getRowId()).toString());
                 args.putString("status", "chat");
                 chat = new Intent(this, ResultActivity.class);

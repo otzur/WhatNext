@@ -19,6 +19,7 @@ import learn2crack.models.WnContact;
 import learn2crack.models.WnConversation;
 import learn2crack.models.WnMessage;
 import learn2crack.models.WnMessageResult;
+import learn2crack.models.WnMessageStatus;
 import learn2crack.utilities.Contacts;
 
 import static learn2crack.utilities.Utils.getSelectedOpetions;
@@ -54,7 +55,7 @@ public class ConversationDataSource {
     }
 
     public long update(String conversation_guid, int options_type, String type, String tab, String contact_phone,
-                                 String contact_name, String status){
+                                 String contact_name, WnMessageStatus status){
 
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -67,7 +68,7 @@ public class ConversationDataSource {
         initialValues.put(DBHelper.KEY_CONVERSATION_TAB, tab);
         initialValues.put(DBHelper.KEY_CONTACT_PHONE, contact_phone);
         initialValues.put(DBHelper.KEY_CONTACT_NAME, contact_name);
-        initialValues.put(DBHelper.KEY_CONVERSATION_STATUS, status);
+        initialValues.put(DBHelper.KEY_CONVERSATION_STATUS, status.name());
         initialValues.put(DBHelper.KEY_CONVERSATION_DATE, updateDatedTime);
 
         Log.i(TAG, "update conversation into database");
@@ -80,7 +81,7 @@ public class ConversationDataSource {
 
 
     public WnConversation insert(String conversation_guid, int options_type, String type, String tab,
-                                 String contact_phone, String contact_name, String status){
+                                 String contact_phone, String contact_name, WnMessageStatus status){
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String updateDatedTime = sdf.format(new Date());
@@ -93,7 +94,7 @@ public class ConversationDataSource {
         initialValues.put(DBHelper.KEY_CONVERSATION_TAB, tab);
         initialValues.put(DBHelper.KEY_CONTACT_PHONE, contact_phone);
         initialValues.put(DBHelper.KEY_CONTACT_NAME, contact_name);
-        initialValues.put(DBHelper.KEY_CONVERSATION_STATUS, status);
+        initialValues.put(DBHelper.KEY_CONVERSATION_STATUS, status.name());
         initialValues.put(DBHelper.KEY_CONVERSATION_DATE, updateDatedTime);
 
         Log.i(TAG, "insert conversation into database");
@@ -123,7 +124,9 @@ public class ConversationDataSource {
 
 //        wnConversation.setContact_phone_number(cursor.getString(5));
 //        wnConversation.setUser_name(cursor.getString(6));
-        wnConversation.setStatus(cursor.getString(7));
+        String myStatus  = cursor.getString(7);
+        Log.i(TAG, "Status in cursor  = " + myStatus);
+        wnConversation.setStatus(WnMessageStatus.valueOf(cursor.getString(7)));
         wnConversation.setUpdate_datetime(cursor.getString(8));
         return wnConversation;
     }

@@ -12,7 +12,7 @@ public class WnMessage implements Serializable {
     private String message;
     private String user;
     private String option_selected;
-    private String Status;
+    private WnMessageStatus Status;
     private String delivery_date;
     private int filled_by_you;
     private String conversation_rowId;
@@ -84,11 +84,11 @@ public class WnMessage implements Serializable {
         this.message_guid = message_guid;
     }
 
-    public String getStatus() {
+    public WnMessageStatus getStatus() {
         return Status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(WnMessageStatus status) {
         Status = status;
     }
 
@@ -109,6 +109,5 @@ public class WnMessage implements Serializable {
     public String getMessage_guid() {
         return message_guid;
     }
-
 
 }

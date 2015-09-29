@@ -37,6 +37,7 @@ import learn2crack.bl.ObjectManager;
 import learn2crack.chat.R;
 import learn2crack.cheese.Cheeses;
 import learn2crack.models.WnConversation;
+import learn2crack.models.WnMessageStatus;
 import learn2crack.utilities.JSONParser;
 
 import static android.provider.ContactsContract.RawContacts;
@@ -282,7 +283,7 @@ public class UserFragment extends Fragment {
             params.add(new BasicNameValuePair("mobno", prefs.getString("REG_FROM","")));
             JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/logout",params);
 
-            Log.i("WN", "Logout sent");
+            Log.i("WN", "Logout SENT");
             //Toast.makeText(this, "Logout is clicked!", Toast.LENGTH_SHORT).show();
 
             return jObj;
@@ -410,7 +411,7 @@ public class UserFragment extends Fragment {
                     //String name = (String) text1.getText();
                     String mobno = (String) text2.getText();
                     String type = "HimAndHer";
-                    String status = "New";
+                    WnMessageStatus status = WnMessageStatus.NEW;
 
                     WnConversation wnConversation =  ObjectManager.createNewConversation(mobno,type, status);
                     Bundle args = new Bundle();

@@ -10,6 +10,7 @@ import learn2crack.db.MessageDataSource;
 import learn2crack.models.WnContact;
 import learn2crack.models.WnConversation;
 import learn2crack.models.WnMessage;
+import learn2crack.models.WnMessageStatus;
 import learn2crack.utilities.Contacts;
 
 /**
@@ -30,7 +31,7 @@ public class ObjectManager {
         return conversation;
     }
 
-    public static WnConversation createNewConversation( String contactPhoneNumber, String type, String status) {
+    public static WnConversation createNewConversation( String contactPhoneNumber, String type, WnMessageStatus status) {
 
         UUID uuid = UUID.randomUUID();
         String contactName  = (Contacts.getContactName(MainActivity.getAppContext(), contactPhoneNumber));
@@ -87,7 +88,7 @@ public class ObjectManager {
         return wnConversationId ;
     }
 
-    public static WnMessage createNewMessage(String msg_id, String contactPhoneNumber, String selected_options, String status, int filled_by_you) {
+    public static WnMessage createNewMessage(String msg_id, String contactPhoneNumber, String selected_options, WnMessageStatus status, int filled_by_you) {
 
         WnMessage wnMessage = new WnMessage();
 
@@ -109,7 +110,7 @@ public class ObjectManager {
     }
 
     public static WnMessage createNewMessage( String userPhone,
-                                             String option_selected, String status ,int filled_by_you) {
+                                             String option_selected, WnMessageStatus status ,int filled_by_you) {
 
         UUID messageGuid = UUID.randomUUID();
         return createNewMessage(messageGuid.toString(),userPhone, option_selected, status, filled_by_you);

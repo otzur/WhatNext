@@ -12,7 +12,7 @@ public class WnConversation implements Serializable {
     private String type;
     private int options_type;
     private int tab;
-    private String status;
+    private WnMessageStatus status;
     private ArrayList<WnContact> contacts;
     private ArrayList<WnMessage> messages;
 //    private ArrayList<WnChatMessage> chatMessages;
@@ -48,11 +48,11 @@ public class WnConversation implements Serializable {
 
     private String update_datetime;
 
-    public String getStatus() {
+    public WnMessageStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(WnMessageStatus status) {
         this.status = status;
     }
 

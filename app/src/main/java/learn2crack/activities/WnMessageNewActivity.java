@@ -36,6 +36,7 @@ import learn2crack.chat.R;
 import learn2crack.cheese.Cheeses;
 import learn2crack.models.WnConversation;
 import learn2crack.models.WnMessage;
+import learn2crack.models.WnMessageStatus;
 import learn2crack.utilities.JSONParser;
 
 /**
@@ -172,7 +173,7 @@ public class WnMessageNewActivity extends AppCompatActivity {
             Log.i(TAG, "selected_options = " + of.getSelectedOptions());
 
 
-            WnMessage wnMessage = ObjectManager.createNewMessage( wnConversation.getContacts().get(0).getPhoneNumber(), selected_options, "Sent", 1) ;
+            WnMessage wnMessage = ObjectManager.createNewMessage( wnConversation.getContacts().get(0).getPhoneNumber(), selected_options, WnMessageStatus.SENT, 1) ;
             //wnMessage.setConversation_rowId(convGuid.toString());
 
             wnConversation.addMessage(wnMessage);
@@ -186,13 +187,13 @@ public class WnMessageNewActivity extends AppCompatActivity {
             params.add(new BasicNameValuePair("user_name", wnConversation.getContacts().get(0).getName()));
             params.add(new BasicNameValuePair("tab", "" + wnConversation.getTab()));
             params.add(new BasicNameValuePair("type", "" + wnConversation.getType()));
-            params.add(new BasicNameValuePair("status", "New"));
+            params.add(new BasicNameValuePair("status", WnMessageStatus.NEW.toString()));
             params.add(new BasicNameValuePair("c_id", wnConversation.getConversation_guid()));
             params.add(new BasicNameValuePair("selected_options", selected_options));
             //MESSAGE SENDING
             JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/send", params);
 
-            wnConversation.setStatus("Sent");
+            wnConversation.setStatus(WnMessageStatus.SENT);
             Long conversationRowId = ObjectManager.saveConversation(wnConversation);
             wnConversation.setRowId(conversationRowId);
 

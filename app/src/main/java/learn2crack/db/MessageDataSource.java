@@ -15,6 +15,7 @@ import java.util.List;
 
 import learn2crack.models.WnMessage;
 import learn2crack.models.WnMessageResult;
+import learn2crack.models.WnMessageStatus;
 
 import static learn2crack.utilities.Utils.getSelectedOpetions;
 
@@ -61,7 +62,7 @@ public class MessageDataSource {
 //        return db.insert(TABLE_MESSAGES_NAME, null, initialValues);
 //    }
 
-    public WnMessage insert(String message_id , String message, String user , String selectedOptions, String status,
+    public WnMessage insert(String message_id , String message, String user , String selectedOptions, WnMessageStatus status,
                 int filled_by_you, String conversation_rowid) {
 
         Log.i(TAG, "Inside insert message : from user = " + user);
@@ -77,7 +78,7 @@ public class MessageDataSource {
         //initialValues.put(DBHelper.KEY_USER_NAME, user_name);
         initialValues.put(DBHelper.KEY_OPTION_SELECTED, selectedOptions);
         //initialValues.put(DBHelper.KEY_TYPE, type);
-        initialValues.put(DBHelper.KEY_STATUS, status);
+        initialValues.put(DBHelper.KEY_STATUS, status.name());
         initialValues.put(DBHelper.KEY_CREATION_DATE, currentDatedTime);
         initialValues.put(DBHelper.KEY_FILLED_BY_YOU, filled_by_you);
         initialValues.put(DBHelper.KEY_CONVERSATION_ROW_ID, conversation_rowid);
@@ -148,7 +149,7 @@ public class MessageDataSource {
         //message.setUserName(cursor.getString(4));
         message.setOption_selected(cursor.getString(4));
         //message.setType(cursor.getString(6));
-        message.setStatus(cursor.getString(5));
+        message.setStatus(WnMessageStatus.valueOf(cursor.getString(5)));
         message.setDelivery_date(cursor.getString(6));
         message.setFilled_by_you(cursor.getInt(7));
         message.setConversation_rowId(cursor.getString(8));
@@ -184,7 +185,7 @@ public class MessageDataSource {
         return messages;
     }
 
-    public ArrayList<WnMessage> getRelatedMessages(long conversationID, ArrayList<String> exclude){
+    public ArrayList<WnMessage> getRelatedMessages(long conversationID, ArrayList<WnMessageStatus> exclude){
         ArrayList<WnMessage> messages = new ArrayList<>();
         String excludeString="";
         if(exclude != null) {

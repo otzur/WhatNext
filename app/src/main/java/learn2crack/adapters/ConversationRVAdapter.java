@@ -12,6 +12,7 @@ import java.util.List;
 
 import learn2crack.chat.R;
 import learn2crack.models.WnConversation;
+import learn2crack.models.WnMessageStatus;
 
 /**
  * Created by otzur on 9/16/2015.
@@ -44,7 +45,7 @@ public class ConversationRVAdapter extends RecyclerView.Adapter<ConversationRVAd
     @Override
     public void onBindViewHolder(ConversationViewHolder conversationViewHolder, int i) {
         String display_status;
-        String status = conversations.get(i).getStatus();
+        WnMessageStatus status = conversations.get(i).getStatus();
         conversationViewHolder.contactName.setText(conversations.get(i).getContacts().get(0).getName());
         //conversationViewHolder.conversation_id.setText(conversations.get(i).getConversation_guid());
         conversationViewHolder.updateDatetime.setText(conversations.get(i).getUpdate_datetime());
@@ -53,17 +54,17 @@ public class ConversationRVAdapter extends RecyclerView.Adapter<ConversationRVAd
         conversationViewHolder.contactPhoto.setImageBitmap(conversations.get(i).getContacts().get(0).getPhoto());
 
         switch (status) {
-            case "New":
+            case NEW:
                 display_status = "New WN received- Waiting to your response";
                 break;
-            case "Sent":
+            case SENT:
                 display_status = "WN Sent- Waiting for other to response";
                 break;
-            case "Response":
+            case RESPONSE:
                 display_status = "WN response- Waiting for results";
                 break;
-            case "Results":
-                display_status = "Results inside";
+            case RESULTS:
+                display_status = "RESULTS inside";
                 break;
             default :
                 display_status = "default";

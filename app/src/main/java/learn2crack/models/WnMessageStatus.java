@@ -5,7 +5,10 @@ package learn2crack.models;
  */
 
 public enum WnMessageStatus {
-    new_message,
-    new_received,
-    new_response
+    NEW,
+    RECEIVED,
+    SENT,
+    RESPONSE,
+    CHAT, RESULTS
+
 }

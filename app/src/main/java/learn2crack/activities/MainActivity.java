@@ -49,6 +49,7 @@ import learn2crack.cheese.CheeseListFragment;
 import learn2crack.cotacts.Contact;
 import learn2crack.db.DatabaseHelper;
 import learn2crack.models.WnConversation;
+import learn2crack.models.WnMessageStatus;
 import learn2crack.utilities.JSONParser;
 
 
@@ -401,7 +402,7 @@ public class MainActivity extends AppCompatActivity implements
 
             //String mobno = phone;
             String type = "HimAndHer";
-            String status = "New";
+            WnMessageStatus status = WnMessageStatus.NEW;
 
             Log.i(TAG, "Start new activity");
             WnConversation wnConversation =  ObjectManager.createNewConversation(phoneNumber, type, status);
@@ -434,7 +435,7 @@ public class MainActivity extends AppCompatActivity implements
 
         String mobno = phone;
         String type = "HimAndHer";
-        String status = "New";
+        WnMessageStatus status = WnMessageStatus.NEW;
 
         WnConversation wnConversation =  ObjectManager.createNewConversation(mobno, type, status);
         Bundle args = new Bundle();
@@ -593,7 +594,7 @@ public class MainActivity extends AppCompatActivity implements
             params.add(new BasicNameValuePair("mobno", prefs.getString("REG_FROM", "")));
             JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/logout",params);
 
-            Log.i("WN", "Logout sent");
+            Log.i("WN", "Logout SENT");
 
             SharedPreferences.Editor edit = prefs.edit();
             edit.putString("REG_FROM", "");

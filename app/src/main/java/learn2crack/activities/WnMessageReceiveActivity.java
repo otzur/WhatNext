@@ -34,6 +34,7 @@ import learn2crack.chat.R;
 import learn2crack.cheese.Cheeses;
 import learn2crack.models.WnConversation;
 import learn2crack.models.WnMessage;
+import learn2crack.models.WnMessageStatus;
 import learn2crack.utilities.Contacts;
 import learn2crack.utilities.JSONParser;
 
@@ -190,7 +191,7 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
             Log.i(TAG, "type = " + type);
 
             //status = "Response";
-            wnConversation.setStatus("Response");
+            wnConversation.setStatus(WnMessageStatus.RESPONSE);
             Log.i(TAG, "status = " + status);
 
         }
@@ -225,16 +226,16 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
             //Log.i(TAG, "from_name = " + from_name);
 
 //            WnConversation wnConversation = null;
-            wnConversation.setStatus("Results");
-            WnMessage wnMessage  =  ObjectManager.createNewMessage(msg_id,user_phone, selected_options, "Results", 1);
+            wnConversation.setStatus(WnMessageStatus.RESULTS);
+            WnMessage wnMessage  =  ObjectManager.createNewMessage(msg_id,user_phone, selected_options, WnMessageStatus.RESULTS, 1);
             wnConversation.addMessage(wnMessage);
             ObjectManager.updateConversation(wnConversation);
 //            dbConversations.open();
-//            dbConversations.update(conversation_guid, 0, type, selectedTab, user_phone, user_name, "Results");
+//            dbConversations.update(conversation_guid, 0, type, selectedTab, user_phone, user_name, "RESULTS");
 //            dbConversations.close();
 //
 //            dba.open();
-//            dba.insert(uuid.toString(), "message", user_phone, selected_options ,"Results", 1, c_id);// Insert record in your DB
+//            dba.insert(uuid.toString(), "message", user_phone, selected_options ,"RESULTS", 1, c_id);// Insert record in your DB
 //            dba.close();
             return jObj;
 

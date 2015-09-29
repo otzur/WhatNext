@@ -12,6 +12,7 @@ import java.util.List;
 
 import learn2crack.chat.R;
 import learn2crack.models.WnMessage;
+import learn2crack.models.WnMessageStatus;
 
 public class HistoryRVAdapter extends RecyclerView.Adapter<HistoryRVAdapter.HistoryViewHolder> {
 
@@ -75,7 +76,7 @@ public class HistoryRVAdapter extends RecyclerView.Adapter<HistoryRVAdapter.Hist
     @Override
     public void onBindViewHolder(HistoryViewHolder historyViewHolder, int i) {
         //personViewHolder.contactName.setText(messages.get(i).getUser());
-        String status = messages.get(i).getStatus();
+        WnMessageStatus status = messages.get(i).getStatus();
         String display_status;
         historyViewHolder.contactName.setText("Move to conversation");
         historyViewHolder.datetime.setText(messages.get(i).getDelivery_date());
@@ -87,16 +88,16 @@ public class HistoryRVAdapter extends RecyclerView.Adapter<HistoryRVAdapter.Hist
         //messages.get(i).setUser_photo(Contacts.retrieveContactPhoto(, messages.get(i).getUser()));
 
         switch (status) {
-            case "New":
+            case NEW:
                 display_status = "New WN received- Waiting to your response";
                 break;
-            case "Sent":
+            case SENT:
                 display_status = "WN Sent- Waiting for other to response";
                 break;
-            case "Response":
+            case RESPONSE:
                 display_status = "WN response- Waiting for results";
                 break;
-            case "Results":
+            case RESULTS:
                 display_status = "Results inside";
                 break;
             default :
