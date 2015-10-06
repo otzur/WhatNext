@@ -61,40 +61,35 @@ public class MSGReceiver  extends WakefulBroadcastReceiver {
         Log.i("WN MSGReceiver", "conversation_id = " + conversation_guid);
 
 
-        //WnConversation wnConversation = ObjectManager.createNewConversation(contactPhoneNumber, type, status);
-        WnConversation wnConversation = ObjectManager.createNewConversation(contactPhoneNumber, type, WnMessageStatus.valueOf(status));
-        wnConversation.setTab(Integer.valueOf(tab));
-        wnConversation.setConversation_guid(conversation_guid);
 
-//        WnMessage wnMessage  = ObjectManager.createNewMessage(msg_id,contactPhoneNumber, selected_options, status,0);
-        WnMessage wnMessage  = ObjectManager.createNewMessage(msg_id,contactPhoneNumber, selected_options, WnMessageStatus.valueOf(status),0);
-        wnConversation.addMessage(wnMessage);
 
 
         switch (wnMessageStatus) {
             case NEW:
 
+                //WnConversation wnConversation = ObjectManager.createNewConversation(contactPhoneNumber, type, status);
+                WnConversation wnConversation = ObjectManager.createNewConversation(context, contactPhoneNumber, type);
+                wnConversation.setTab(Integer.valueOf(tab));
+                wnConversation.setConversation_guid(conversation_guid);
+                //WnMessage wnMessage  = ObjectManager.createNewMessage(msg_id,contactPhoneNumber, selected_options, status,0);
+                WnMessage wnMessage  = ObjectManager.createNewMessage(msg_id,contactPhoneNumber, selected_options, WnMessageStatus.valueOf(status),0);
+                wnConversation.addMessage(wnMessage);
                 // first save conversation into database
-                  Long conversationRowId = ObjectManager.saveConversation(wnConversation);
-                  wnConversation.setRowId(conversationRowId);
-                  extras.putString("c_id", Long.toString(wnConversation.getRowId()));
-                  extras.putString("conversation_guid", wnConversation.getConversation_guid());
-//                dbConversations.open();
-//                conversation = dbConversations.insert(conversation_id,
-//                        0, type, tab, contactPhoneNumber, contactName, "New");
-//                dbConversations.close();
-//                dba.open();
-//                dba.insert(msg_id, "message", contactPhoneNumber, selected_options, "New", 0, Long.valueOf(conversation.getRowId()).toString());
-//                dba.close();
+                Long conversationRowId = ObjectManager.saveConversation(context, wnConversation);
+                wnConversation.setRowId(conversationRowId);
+
+                extras.putString("c_id", Long.toString(wnConversation.getRowId()));
+                extras.putString("conversation_guid", wnConversation.getConversation_guid());
+
                 break;
             case RESULTS:
             case RESPONSE:
 
-                conversation = ObjectManager.getConversationByGUID(conversation_guid);
+                conversation = ObjectManager.getConversationByGUID(context,conversation_guid);
                 conversation.setStatus(WnMessageStatus.RESULTS);
                 WnMessage wnMessage1  = ObjectManager.createNewMessage(msg_id, contactPhoneNumber,selected_options, WnMessageStatus.RESULTS,0);
                 conversation.addMessage(wnMessage1);
-                ObjectManager.updateConversation(conversation);
+                ObjectManager.updateConversation(context, conversation);
                 extras.putString("c_id", Long.toString(conversation.getRowId()));
                 extras.putString("conversation_guid", conversation.getConversation_guid());
 

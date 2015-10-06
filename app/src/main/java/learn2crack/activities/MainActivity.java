@@ -49,7 +49,6 @@ import learn2crack.cheese.CheeseListFragment;
 import learn2crack.cotacts.Contact;
 import learn2crack.db.DatabaseHelper;
 import learn2crack.models.WnConversation;
-import learn2crack.models.WnMessageStatus;
 import learn2crack.utilities.JSONParser;
 
 
@@ -63,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements
 
     String SENDER_ID = "681641134962";
 
-    private static Context context;
+    private static Context context ;
 
     Fragment reg = null;
 
@@ -88,13 +87,13 @@ public class MainActivity extends AppCompatActivity implements
     private DatabaseHelper DBHelper;
 
     public static Context getAppContext() {
-        return MainActivity.context;
+        return context;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MainActivity.context = getApplicationContext();
+        this.context = getApplicationContext();
         try {
             setContentView(R.layout.activity_main);
 
@@ -402,10 +401,10 @@ public class MainActivity extends AppCompatActivity implements
 
             //String mobno = phone;
             String type = "HimAndHer";
-            WnMessageStatus status = WnMessageStatus.NEW;
+            //WnMessageStatus status = WnMessageStatus.NEW;
 
             Log.i(TAG, "Start new activity");
-            WnConversation wnConversation =  ObjectManager.createNewConversation(phoneNumber, type, status);
+            WnConversation wnConversation =  ObjectManager.createNewConversation(MainActivity.getAppContext(), phoneNumber, type);
             Bundle args = new Bundle();
             args.putSerializable("conversation", wnConversation);
 
@@ -435,9 +434,8 @@ public class MainActivity extends AppCompatActivity implements
 
         String mobno = phone;
         String type = "HimAndHer";
-        WnMessageStatus status = WnMessageStatus.NEW;
-
-        WnConversation wnConversation =  ObjectManager.createNewConversation(mobno, type, status);
+        //WnMessageStatus status = WnMessageStatus.NEW;
+        WnConversation wnConversation =  ObjectManager.createNewConversation( MainActivity.getAppContext(), mobno, type);
         Bundle args = new Bundle();
         args.putSerializable("conversation", wnConversation);
 

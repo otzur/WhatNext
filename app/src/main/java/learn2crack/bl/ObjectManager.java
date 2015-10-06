@@ -1,5 +1,6 @@
 package learn2crack.bl;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.util.UUID;
@@ -20,36 +21,37 @@ public class ObjectManager {
 
     static final String TAG = "WN";
 
-    public static WnConversation getConversationByGUID(String conversation_guid) {
+    public static WnConversation getConversationByGUID(Context context, String conversation_guid) {
 
-        ConversationDataSource dbConversations = new ConversationDataSource(MainActivity.getAppContext());
+        ConversationDataSource dbConversations = new ConversationDataSource(context);
         dbConversations.open();
         WnConversation conversation = dbConversations.getConversationByGUID(conversation_guid);
 
         String user_phone = conversation.getContacts().get(0).getPhoneNumber();
-        conversation.getContacts().get(0).setName(Contacts.getContactName(MainActivity.getAppContext(), user_phone));
+        conversation.getContacts().get(0).setName(Contacts.getContactName(context, user_phone));
         return conversation;
     }
 
-    public static WnConversation createNewConversation( String contactPhoneNumber, String type, WnMessageStatus status) {
+    public static WnConversation createNewConversation(Context context, String contactPhoneNumber, String type) {
+
 
         UUID uuid = UUID.randomUUID();
-        String contactName  = (Contacts.getContactName(MainActivity.getAppContext(), contactPhoneNumber));
+        String contactName  = (Contacts.getContactName(context, contactPhoneNumber));
         WnConversation wnConversation = new WnConversation();
         wnConversation.setRowId(-1);
         WnContact contact = new WnContact(contactName, contactPhoneNumber);
         wnConversation.addContact(contact);
         wnConversation.setType(type);
-        wnConversation.setStatus(status);
+        wnConversation.setStatus(WnMessageStatus.NEW);
         wnConversation.setConversation_guid(uuid.toString());
 
         return wnConversation;
     }
 
 
-    public static void updateConversation(WnConversation wnConversation)
+    public static void updateConversation(Context context , WnConversation wnConversation)
     {
-        ConversationDataSource dbConversations = new ConversationDataSource(MainActivity.getAppContext());
+        ConversationDataSource dbConversations = new ConversationDataSource(context);
         dbConversations.open();
         long wnConversationId = dbConversations.update(wnConversation.getConversation_guid(), wnConversation.getOptions_type(),
                 wnConversation.getType(), Integer.valueOf(wnConversation.getTab()).toString(), wnConversation.getContacts().get(0).getPhoneNumber(),
@@ -65,9 +67,9 @@ public class ObjectManager {
         }
 
     }
-    public static long saveConversation(WnConversation wnConversation) {
+    public static long saveConversation(Context context ,WnConversation wnConversation) {
 
-        ConversationDataSource dbConversations = new ConversationDataSource(MainActivity.getAppContext());
+        ConversationDataSource dbConversations = new ConversationDataSource(context);
         dbConversations.open();
         long wnConversationId= dbConversations.insert(wnConversation.getConversation_guid(), 0 ,
                 wnConversation.getType(), Integer.valueOf(wnConversation.getTab()).toString(),

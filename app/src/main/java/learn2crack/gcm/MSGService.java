@@ -66,10 +66,11 @@ public class MSGService extends IntentService {
 
                         //String from_contact = Contacts.getContactName(this, extras.getString("fromu"));
                         //wnConversation = ObjectManager.createNewConversation( extras.getString("fromu"), extras.getString("type"), WnMessageStatus.valueOf(extras.getString("status")));
-                        wnConversation = ObjectManager.createNewConversation( extras.getString("fromu"), extras.getString("type"), status);
-                        wnConversation.setTab(Integer.valueOf(extras.getString("tab")));
-                        wnConversation.setConversation_guid(extras.getString("conversation_guid"));
-                        wnConversation.setRowId(Long.valueOf(extras.getString("c_id")));
+                        wnConversation = ObjectManager.getConversationByGUID( getApplicationContext(), extras.getString("conversation_guid"));
+                        //wnConversation = ObjectManager.createNewConversation( extras.getString("fromu"), extras.getString("type"), status);
+                        //wnConversation.setTab(Integer.valueOf(extras.getString("tab")));
+                        //wnConversation.setConversation_guid(extras.getString("conversation_guid"));
+                        //wnConversation.setRowId(Long.valueOf(extras.getString("c_id")));
                         WnMessage wnMessage  = ObjectManager.createNewMessage(extras.getString("msg_id"),extras.getString("fromu"),
                                 extras.getString("selected_options"), status,0);
                                 //extras.getString("selected_options"), WnMessageStatus.valueOf(extras.getString("status")),0);

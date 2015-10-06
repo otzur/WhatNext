@@ -12,3 +12,4 @@ public enum WnMessageStatus {
     CHAT, RESULTS
 
 }
+

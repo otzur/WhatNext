@@ -38,7 +38,7 @@ public class ConversationRVAdapter extends RecyclerView.Adapter<ConversationRVAd
 
     @Override
     public ConversationViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.conversation_cardview, viewGroup, false);
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.conversation_cardview2, viewGroup, false);
         return new ConversationViewHolder(v);
     }
 
@@ -55,16 +55,20 @@ public class ConversationRVAdapter extends RecyclerView.Adapter<ConversationRVAd
 
         switch (status) {
             case NEW:
-                display_status = "New WN received- Waiting to your response";
+                display_status = "New WN message";
+                conversationViewHolder.resultImage.setImageResource(R.drawable.message_new_128);
                 break;
             case SENT:
-                display_status = "WN Sent- Waiting for other to response";
+                display_status = "Waiting";
+                conversationViewHolder.resultImage.setImageResource(R.drawable.message_waiting);
                 break;
             case RESPONSE:
-                display_status = "WN response- Waiting for results";
+                display_status = "Waiting";
+                conversationViewHolder.resultImage.setImageResource(R.drawable.message_waiting);
                 break;
             case RESULTS:
                 display_status = "RESULTS inside";
+                conversationViewHolder.resultImage.setImageResource(R.drawable.message_full_match);
                 break;
             default :
                 display_status = "default";
@@ -72,6 +76,9 @@ public class ConversationRVAdapter extends RecyclerView.Adapter<ConversationRVAd
 
         }
         conversationViewHolder.status.setText(display_status);
+        conversationViewHolder.left_text_button.setText("LEFT");
+        conversationViewHolder.right_text_button.setText("RIGHT");
+
     }
 
     @Override
@@ -91,7 +98,10 @@ public class ConversationRVAdapter extends RecyclerView.Adapter<ConversationRVAd
         TextView status;
         ImageView contactPhoto;
         TextView updateDatetime;
-        TextView conversation_id;
+        //TextView conversation_id;
+        TextView right_text_button;
+        TextView left_text_button;
+        ImageView resultImage;
         //TextView tab;
         public ConversationViewHolder(View itemView) {
             super(itemView);
@@ -100,9 +110,12 @@ public class ConversationRVAdapter extends RecyclerView.Adapter<ConversationRVAd
             contactName = (TextView)itemView.findViewById(R.id.contact_name);
             status = (TextView)itemView.findViewById(R.id.status);
             contactPhoto = (ImageView)itemView.findViewById(R.id.contact_photo);
+            resultImage = (ImageView)itemView.findViewById(R.id.resultImage);
             updateDatetime = (TextView)itemView.findViewById(R.id.datetime);
             //datetime = (TextView)itemView.findViewById(R.id.datetime);
-            conversation_id = (TextView)itemView.findViewById(R.id.conversation_id);
+            //conversation_id = (TextView)itemView.findViewById(R.id.conversation_id);
+            right_text_button = (TextView)itemView.findViewById(R.id.right_text_button);
+            left_text_button = (TextView)itemView.findViewById(R.id.left_text_button);
             //tab = (TextView)itemView.findViewById(R.id.tab);
 
             itemView.setOnClickListener(this);

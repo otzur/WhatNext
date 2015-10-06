@@ -13,6 +13,7 @@ public class WnConversation implements Serializable {
     private int options_type;
     private int tab;
     private WnMessageStatus status;
+    private WnMatch match;
     private ArrayList<WnContact> contacts;
     private ArrayList<WnMessage> messages;
 //    private ArrayList<WnChatMessage> chatMessages;
@@ -20,6 +21,14 @@ public class WnConversation implements Serializable {
 
     public ArrayList<WnContact> getContacts() {
         return contacts;
+    }
+
+    public WnMatch getMatch() {
+        return match;
+    }
+
+    public void setMatch(WnMatch match) {
+        this.match = match;
     }
 
     public ArrayList<WnMessage> getMessages() {

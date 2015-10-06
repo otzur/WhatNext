@@ -194,7 +194,7 @@ public class WnMessageNewActivity extends AppCompatActivity {
             JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/send", params);
 
             wnConversation.setStatus(WnMessageStatus.SENT);
-            Long conversationRowId = ObjectManager.saveConversation(wnConversation);
+            Long conversationRowId = ObjectManager.saveConversation(MainActivity.getAppContext(), wnConversation);
             wnConversation.setRowId(conversationRowId);
 
             return jObj;

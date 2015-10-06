@@ -229,7 +229,7 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
             wnConversation.setStatus(WnMessageStatus.RESULTS);
             WnMessage wnMessage  =  ObjectManager.createNewMessage(msg_id,user_phone, selected_options, WnMessageStatus.RESULTS, 1);
             wnConversation.addMessage(wnMessage);
-            ObjectManager.updateConversation(wnConversation);
+            ObjectManager.updateConversation(MainActivity.getAppContext(), wnConversation);
 //            dbConversations.open();
 //            dbConversations.update(conversation_guid, 0, type, selectedTab, user_phone, user_name, "RESULTS");
 //            dbConversations.close();
