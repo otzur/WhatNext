@@ -17,6 +17,7 @@ import java.util.Set;
 import learn2crack.activities.MainActivity;
 import learn2crack.models.WnContact;
 import learn2crack.models.WnConversation;
+import learn2crack.models.WnMatch;
 import learn2crack.models.WnMessage;
 import learn2crack.models.WnMessageResult;
 import learn2crack.models.WnMessageStatus;
@@ -141,6 +142,8 @@ public class ConversationDataSource {
         while (!cursor.isAfterLast()) {
             WnConversation conversation = cursorToConversation(cursor);
             conversation.getContacts().get(0).setPhoto(Contacts.retrieveContactPhoto(MainActivity.getAppContext(), conversation.getContacts().get(0).getPhoneNumber()));
+            WnMessageResult wnMessageResult =  getResultsForConversation(Long.valueOf(conversation.getRowId()).toString());
+            conversation.setWnMessageResult(wnMessageResult);
             conversations.add(conversation);
             cursor.moveToNext();
         }
@@ -160,6 +163,10 @@ public class ConversationDataSource {
         }
         // make sure to close the cursor
         cursor.close();
+
+        WnMessageResult wnMessageResult =  getResultsForConversation(Long.valueOf(conversation.getRowId()).toString());
+        conversation.setWnMessageResult(wnMessageResult);
+
         return conversation;
     }
 
@@ -211,8 +218,9 @@ public class ConversationDataSource {
         MessageDataSource messageDataSource = new MessageDataSource(context);
         messageDataSource.open();
         ArrayList<WnMessage> relatedMessages = messageDataSource.getRelatedMessages(Long.valueOf(c_id) , null);
-            String options =relatedMessages.get(0).getOption_selected();
+        String options =relatedMessages.get(0).getOption_selected();
         ArrayList<Integer> selectedOptions = getSelectedOpetions(options);
+        int selectedOptionCount = selectedOptions.size();
         messageDataSource.close();
         int relatedMessageCount = relatedMessages.size();
         for(int k=1 ; k < relatedMessageCount ; k++) {
@@ -223,7 +231,22 @@ public class ConversationDataSource {
             for (int i = 0; i < selectedOptions.size(); i++) {
                 result.addMatched("" + selectedOptions.get(i));
             }
+
+            if(result.getMatched() != null) {
+                if (result.getMatched().size() == 0)
+                    result.setWnMatch(WnMatch.NO_MATCH);
+                if (result.getMatched().size() == selectedOptionCount)
+                    result.setWnMatch(WnMatch.FULL_MATCH);
+                else
+                    result.setWnMatch(WnMatch.PARTIAL_MATCH);
+            }
+            else
+                result.setWnMatch(WnMatch.NO_MATCH);
+
+
+
         }
+
         if(relatedMessageCount == 1){
             result.setAllUsersResponded(false);
         }

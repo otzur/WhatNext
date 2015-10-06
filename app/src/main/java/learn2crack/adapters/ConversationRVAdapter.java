@@ -12,6 +12,8 @@ import java.util.List;
 
 import learn2crack.chat.R;
 import learn2crack.models.WnConversation;
+import learn2crack.models.WnMatch;
+import learn2crack.models.WnMessageResult;
 import learn2crack.models.WnMessageStatus;
 
 /**
@@ -44,8 +46,9 @@ public class ConversationRVAdapter extends RecyclerView.Adapter<ConversationRVAd
 
     @Override
     public void onBindViewHolder(ConversationViewHolder conversationViewHolder, int i) {
-        String display_status;
+        String display_status = "";
         WnMessageStatus status = conversations.get(i).getStatus();
+        WnMessageResult wnMessageResult = conversations.get(i).getWnMessageResult();
         conversationViewHolder.contactName.setText(conversations.get(i).getContacts().get(0).getName());
         //conversationViewHolder.conversation_id.setText(conversations.get(i).getConversation_guid());
         conversationViewHolder.updateDatetime.setText(conversations.get(i).getUpdate_datetime());
@@ -67,8 +70,24 @@ public class ConversationRVAdapter extends RecyclerView.Adapter<ConversationRVAd
                 conversationViewHolder.resultImage.setImageResource(R.drawable.message_waiting);
                 break;
             case RESULTS:
-                display_status = "RESULTS inside";
-                conversationViewHolder.resultImage.setImageResource(R.drawable.message_full_match);
+
+                //display_status = "RESULTS inside";
+                if(wnMessageResult.getWnMatch() == WnMatch.FULL_MATCH){
+                    conversationViewHolder.resultImage.setImageResource(R.drawable.message_full_match);
+                    display_status = "You have full match";
+                }
+
+                if(wnMessageResult.getWnMatch() == WnMatch.PARTIAL_MATCH){
+                    conversationViewHolder.resultImage.setImageResource(R.drawable.message_partial_match);
+                    display_status = "You have partial match";
+                }
+
+                if(wnMessageResult.getWnMatch() == WnMatch.NO_MATCH){
+                    conversationViewHolder.resultImage.setImageResource(R.drawable.message_no_match);
+                    display_status = "No match";
+                }
+
+
                 break;
             default :
                 display_status = "default";

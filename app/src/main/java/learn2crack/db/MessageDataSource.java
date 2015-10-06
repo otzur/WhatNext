@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import learn2crack.bl.ObjectManager;
+import learn2crack.models.WnConversation;
 import learn2crack.models.WnMessage;
 import learn2crack.models.WnMessageResult;
 import learn2crack.models.WnMessageStatus;
@@ -109,6 +111,18 @@ public class MessageDataSource {
         return cursor;
     }
 
+    public void getResultsforConversation(Context context, String conversation_guid){
+        WnConversation wnConversation = ObjectManager.getConversationByGUID(context, conversation_guid);
+        if(wnConversation == null)  return;
+
+        // get all messages related to this conversation
+        ArrayList<WnMessage> relatedMessages = getRelatedMessages(Long.valueOf(wnConversation.getRowId()) , null);
+
+
+
+        return;
+
+    }
     public WnMessageResult getResultsForMessageID(String messageID){
         WnMessageResult result = new WnMessageResult();
         WnMessage message = getMessage(messageID);
@@ -124,11 +138,10 @@ public class MessageDataSource {
             message = relatedMessages.get(k);
             options = message.getOption_selected();
             ArrayList<Integer> selectedOptions2 = getSelectedOpetions(options);
-            for (int i = 0; i < selectedOptions.size(); i++) {
+            for (int i = 0; i < selectedOptions.size(); i++)
                 if (selectedOptions2.contains(selectedOptions.get(i))) {
                     result.addMatched("" + selectedOptions.get(i));
                 }
-            }
         }
         if(relatedMessageCount == 0){
             result.setAllUsersResponded(false);
@@ -185,6 +198,7 @@ public class MessageDataSource {
         return messages;
     }
 
+
     public ArrayList<WnMessage> getRelatedMessages(long conversationID, ArrayList<WnMessageStatus> exclude){
         ArrayList<WnMessage> messages = new ArrayList<>();
         String excludeString="";
@@ -212,9 +226,9 @@ public class MessageDataSource {
         int length = cursor.getCount();
         for(int i = 0 ; i < length ; i++){
             WnMessage message = cursorToMessage(cursor);
-            if(i != 1 || !messages.get(0).getMessage_guid().equals(message.getMessage_guid())) {
+            //if(i != 1 || !messages.get(0).getMessage_guid().equals(message.getMessage_guid())) {
                 messages.add(message);
-            }
+            //}
             cursor.moveToNext();
         }
         // make sure to close the cursor

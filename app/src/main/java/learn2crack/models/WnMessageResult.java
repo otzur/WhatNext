@@ -1,18 +1,26 @@
 package learn2crack.models;
 
-import android.support.v4.app.ListFragment;
-
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by samzaleg on 8/24/2015.
  */
-public class WnMessageResult {
+public class WnMessageResult implements Serializable {
     List<String> checked_by_you;
     List<String> matched;
+    WnMatch wnMatch;
     String type;
     boolean allUsersResponded;
+
+    public WnMatch getWnMatch() {
+        return wnMatch;
+    }
+
+    public void setWnMatch(WnMatch wnMatch) {
+        this.wnMatch = wnMatch;
+    }
 
     public boolean isAllUsersResponded() {
         return allUsersResponded;

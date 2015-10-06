@@ -16,8 +16,19 @@ public class WnConversation implements Serializable {
     private WnMatch match;
     private ArrayList<WnContact> contacts;
     private ArrayList<WnMessage> messages;
+    private WnMessageResult wnMessageResult;
 //    private ArrayList<WnChatMessage> chatMessages;
     private static final long serialVersionUID = -7060210544600464481L;
+
+
+
+    public WnMessageResult getWnMessageResult() {
+        return wnMessageResult;
+    }
+
+    public void setWnMessageResult(WnMessageResult wnMessageResult) {
+        this.wnMessageResult = wnMessageResult;
+    }
 
     public ArrayList<WnContact> getContacts() {
         return contacts;
