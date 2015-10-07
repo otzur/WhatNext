@@ -5,7 +5,6 @@ package learn2crack.activities;
  */
 
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -46,8 +45,8 @@ public class ConversationFragment extends Fragment {
             @Override
             public void onItemClick(int position, View v) {
                 Log.i("WN", "click  item on position " + position);
-                Snackbar.make(v, "click  item on position " + position, Snackbar.LENGTH_LONG).setAction("Action", null).show();
-                Snackbar.make(v, "Delivery_date = " + conversations.get(position).getConversation_guid(), Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                //Snackbar.make(v, "click  item on position " + position, Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                //Snackbar.make(v, "Delivery_date = " + conversations.get(position).getConversation_guid(), Snackbar.LENGTH_LONG).setAction("Action", null).show();
             }
         });
     }

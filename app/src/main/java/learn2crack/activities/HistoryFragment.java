@@ -74,7 +74,7 @@ public class HistoryFragment extends ListFragment {
         String c_id =(String) ((TextView) v.findViewById(R.id.c_id)).getText();
         args.putString("c_id", c_id);
         //Intent chat =chat = new Intent(getActivity(), WnMessageResultActivity.class);
-        Intent chat =chat = new Intent(getActivity(), ResultActivity.class);
+        Intent chat = new Intent(getActivity(), ResultActivity.class);
         chat.putExtra("INFO", args);
         chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         getActivity().getApplicationContext().startActivity(chat);

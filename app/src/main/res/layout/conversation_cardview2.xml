@@ -1,127 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:padding="@dimen/small_padding"
-    xmlns:tools="http://schemas.android.com/tools"
-    >
+    android:orientation="vertical"
+    android:padding="@dimen/small_padding">
 
-    <android.support.v7.widget.CardView
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
+    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/cardView"
-        card_view:cardElevation="@dimen/card_elevation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         card_view:cardCornerRadius="@dimen/card_corner_radius"
-        android:layout_height="match_parent">
+        card_view:cardElevation="@dimen/card_elevation">
+
+
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content">>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:minWidth="120dp"
-                android:contentDescription="@null"
-                android:scaleType="centerCrop"
-                android:id="@+id/contact_photo"
-                android:layout_gravity="left" />
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:orientation="vertical">
 
             <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent">
-
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/description_color"
-                    android:textSize="@dimen/datetime_size"
-                    android:id="@+id/datetime"
-                    tools:text="Date time"
-                    android:gravity="right"
-                    android:autoText="false"
-                    android:editable="false"
-                    android:paddingRight="@dimen/big_padding"
-                    android:paddingBottom="@dimen/small_padding" />
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/contact_name"
-                    android:textSize="@dimen/title_size"
-                    android:textColor="@color/black_button"
-                    tools:text="El Pooch"
-                    android:paddingBottom="@dimen/small_padding"
-                    android:paddingLeft="@dimen/big_padding" />
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">>
 
                 <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:scaleType="fitXY"
-                    android:id="@+id/resultImage"
-                    android:src="@drawable/message_new_128"
-                    android:contentDescription="null"
-                    android:layout_gravity="center" />
+                    android:id="@+id/contact_photo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:layout_gravity="left"
+                    android:contentDescription="@null"
+                    android:minWidth="120dp"
+                    android:scaleType="centerCrop" />
 
-                <TextView
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:orientation="vertical">
+
+
+                    <TextView
+                        android:id="@+id/datetime"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:autoText="false"
+                        android:editable="false"
+                        android:gravity="right"
+                        android:paddingBottom="@dimen/small_padding"
+                        android:paddingRight="@dimen/big_padding"
+                        android:textColor="@color/description_color"
+                        android:textSize="@dimen/datetime_size"
+                        tools:text="Date time" />
+
+                    <TextView
+                        android:id="@+id/contact_name"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
+                        android:paddingBottom="@dimen/small_padding"
+                        android:paddingLeft="@dimen/big_padding"
+                        android:textColor="@color/black_button"
+                        android:textSize="@dimen/title_size"
+                        tools:text="El Pooch" />
+
+                    <ImageView
+                        android:id="@+id/resultImage"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="null"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/message_new_128" />
+
+                    <TextView
+                        android:id="@+id/status"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingLeft="@dimen/big_padding"
+                        android:paddingTop="@dimen/small_padding"
                         android:textColor="@color/description_color"
                         android:textSize="@dimen/description_size"
-                        android:id="@+id/status"
-                        android:paddingTop="@dimen/small_padding"
-                        android:paddingLeft="@dimen/big_padding"
-                    tools:text="By Alex Nelson"
-                    android:gravity="center" />
+                        tools:text="By Alex Nelson" />
 
 
-                <View
+                    <View
                         android:id="@+id/cardDivider"
                         android:layout_width="fill_parent"
                         android:layout_height="1px"
                         android:background="@color/divider_grey"
-                        android:visibility="invisible"/>
+                        android:visibility="invisible" />
 
                     <LinearLayout
-                        android:orientation="horizontal"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="right">
+                        android:gravity="right"
+                        android:orientation="horizontal">
 
                         <TextView
+                            android:id="@+id/left_text_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/black_button"
-                            android:textSize="@dimen/button_size"
-                            android:id="@+id/left_text_button"
+                            android:paddingBottom="@dimen/big_padding"
                             android:paddingLeft="@dimen/big_padding"
                             android:paddingRight="@dimen/small_padding"
-                            android:paddingBottom="@dimen/big_padding"
                             android:paddingTop="@dimen/big_padding"
+                            android:textColor="@color/black_button"
+                            android:textSize="@dimen/button_size"
                             android:textStyle="bold"
-                            tools:text="Free sample"/>
+                            tools:text="Free sample" />
 
                         <TextView
+                            android:id="@+id/right_text_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:id="@+id/right_text_button"
+                            android:paddingBottom="@dimen/big_padding"
+                            android:paddingLeft="@dimen/small_padding"
+                            android:paddingRight="@dimen/big_padding"
+                            android:paddingTop="@dimen/big_padding"
                             android:textColor="@color/colorPrimaryDark"
                             android:textSize="@dimen/button_size"
-                            android:paddingLeft="@dimen/small_padding"
-                            android:paddingTop="@dimen/big_padding"
-                            android:paddingRight="@dimen/big_padding"
-                            android:paddingBottom="@dimen/big_padding"
                             android:textStyle="bold"
-                            tools:text="Review"/>
+                            tools:text="Review" />
                     </LinearLayout>
 
 
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llExpandArea"
+                android:visibility="gone"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="6dp"
+                    android:text="Item One" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="6dp"
+                    android:text="Item Two" />
+
             </LinearLayout>
         </LinearLayout>
-
     </android.support.v7.widget.CardView>
 
 </LinearLayout>

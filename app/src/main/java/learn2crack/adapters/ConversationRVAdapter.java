@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -17,10 +18,11 @@ import learn2crack.models.WnMessageResult;
 import learn2crack.models.WnMessageStatus;
 
 /**
- * Created by otzur on 9/16/2015.
+ * Created by $(USER) on $(DATE).
  */
 public class ConversationRVAdapter extends RecyclerView.Adapter<ConversationRVAdapter.ConversationViewHolder> {
 
+    private static int expandedPosition = -1;
     private static ConversationItemClickListener conversationItemClickListener;
 
     public void setOnItemClickListener(ConversationItemClickListener conversationItemClickListener){
@@ -98,6 +100,15 @@ public class ConversationRVAdapter extends RecyclerView.Adapter<ConversationRVAd
         conversationViewHolder.left_text_button.setText("LEFT");
         conversationViewHolder.right_text_button.setText("RIGHT");
 
+        if ( i == expandedPosition) {
+            if(conversationViewHolder.llExpandArea.getVisibility() == View.VISIBLE )
+                conversationViewHolder.llExpandArea.setVisibility(View.GONE);
+            else
+                conversationViewHolder.llExpandArea.setVisibility(View.VISIBLE);
+        } else {
+            conversationViewHolder.llExpandArea.setVisibility(View.GONE);
+        }
+
     }
 
     @Override
@@ -105,12 +116,13 @@ public class ConversationRVAdapter extends RecyclerView.Adapter<ConversationRVAd
         return conversations.size();
     }
 
+
     public interface ConversationItemClickListener{
-        void onItemClick(int position, View v);
+         void onItemClick(int position, View v);
 
     }
 
-    public static class ConversationViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ConversationViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         CardView cv;
         TextView contactName;
@@ -121,6 +133,7 @@ public class ConversationRVAdapter extends RecyclerView.Adapter<ConversationRVAd
         TextView right_text_button;
         TextView left_text_button;
         ImageView resultImage;
+        LinearLayout llExpandArea;
         //TextView tab;
         public ConversationViewHolder(View itemView) {
             super(itemView);
@@ -135,6 +148,7 @@ public class ConversationRVAdapter extends RecyclerView.Adapter<ConversationRVAd
             //conversation_id = (TextView)itemView.findViewById(R.id.conversation_id);
             right_text_button = (TextView)itemView.findViewById(R.id.right_text_button);
             left_text_button = (TextView)itemView.findViewById(R.id.left_text_button);
+            llExpandArea = (LinearLayout)itemView.findViewById(R.id.llExpandArea);
             //tab = (TextView)itemView.findViewById(R.id.tab);
 
             itemView.setOnClickListener(this);
@@ -142,7 +156,19 @@ public class ConversationRVAdapter extends RecyclerView.Adapter<ConversationRVAd
 
         @Override
         public void onClick(View v) {
+
+            // Check for an expanded view, collapse if you find one
+            if (expandedPosition >= 0) {
+                int prev = expandedPosition;
+                notifyItemChanged(prev);
+            }
+            // Set the current position to "expanded"
+            expandedPosition = getAdapterPosition();
+            notifyItemChanged(expandedPosition);
+
             conversationItemClickListener.onItemClick(getAdapterPosition(), v);
+
+
         }
     }
 }
