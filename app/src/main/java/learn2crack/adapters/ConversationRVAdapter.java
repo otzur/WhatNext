@@ -100,14 +100,14 @@ public class ConversationRVAdapter extends RecyclerView.Adapter<ConversationRVAd
         conversationViewHolder.left_text_button.setText("LEFT");
         conversationViewHolder.right_text_button.setText("RIGHT");
 
-        if ( i == expandedPosition) {
-            if(conversationViewHolder.llExpandArea.getVisibility() == View.VISIBLE )
-                conversationViewHolder.llExpandArea.setVisibility(View.GONE);
-            else
-                conversationViewHolder.llExpandArea.setVisibility(View.VISIBLE);
-        } else {
-            conversationViewHolder.llExpandArea.setVisibility(View.GONE);
-        }
+//        if ( i == expandedPosition) {
+//            if(conversationViewHolder.llExpandArea.getVisibility() == View.VISIBLE )
+//                conversationViewHolder.llExpandArea.setVisibility(View.GONE);
+//            else
+//                conversationViewHolder.llExpandArea.setVisibility(View.VISIBLE);
+//        } else {
+//            conversationViewHolder.llExpandArea.setVisibility(View.GONE);
+//        }
 
     }
 

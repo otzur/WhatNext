@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import java.text.SimpleDateFormat;
@@ -120,7 +121,9 @@ public class ConversationDataSource {
         wnConversation.setType(cursor.getString(3));
         wnConversation.setTab(cursor.getInt(4));
 
-        WnContact contact = new WnContact(cursor.getString(6), cursor.getString(5));
+        Bitmap contactPhoto = Contacts.retrieveContactPhoto(MainActivity.getAppContext(), cursor.getString(5));
+        WnContact contact = new WnContact(cursor.getString(6), cursor.getString(5),contactPhoto );
+        //contact.setPhoto(Contacts.retrieveContactPhoto(MainActivity.getAppContext(), cursor.getString(5)));
         wnConversation.addContact(contact);
 
 //        wnConversation.setContact_phone_number(cursor.getString(5));
@@ -141,7 +144,7 @@ public class ConversationDataSource {
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             WnConversation conversation = cursorToConversation(cursor);
-            conversation.getContacts().get(0).setPhoto(Contacts.retrieveContactPhoto(MainActivity.getAppContext(), conversation.getContacts().get(0).getPhoneNumber()));
+            //conversation.getContacts().get(0).setPhoto(Contacts.retrieveContactPhoto(MainActivity.getAppContext(), conversation.getContacts().get(0).getPhoneNumber()));
             WnMessageResult wnMessageResult =  getResultsForConversation(Long.valueOf(conversation.getRowId()).toString());
             conversation.setWnMessageResult(wnMessageResult);
             conversations.add(conversation);

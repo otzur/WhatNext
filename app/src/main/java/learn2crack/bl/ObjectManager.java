@@ -1,6 +1,7 @@
 package learn2crack.bl;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import java.util.UUID;
@@ -39,7 +40,10 @@ public class ObjectManager {
         String contactName  = (Contacts.getContactName(context, contactPhoneNumber));
         WnConversation wnConversation = new WnConversation();
         wnConversation.setRowId(-1);
-        WnContact contact = new WnContact(contactName, contactPhoneNumber);
+
+        Bitmap contactPhoto = Contacts.retrieveContactPhoto(MainActivity.getAppContext(), contactPhoneNumber);
+        WnContact contact = new WnContact(contactName, contactPhoneNumber, contactPhoto);
+        //contact.setPhoto(Contacts.retrieveContactPhoto(MainActivity.getAppContext(), contactPhoneNumber));
         wnConversation.addContact(contact);
         wnConversation.setType(type);
         wnConversation.setStatus(WnMessageStatus.NEW);
@@ -67,6 +71,8 @@ public class ObjectManager {
         }
 
     }
+
+
     public static long saveConversation(Context context ,WnConversation wnConversation) {
 
         ConversationDataSource dbConversations = new ConversationDataSource(context);

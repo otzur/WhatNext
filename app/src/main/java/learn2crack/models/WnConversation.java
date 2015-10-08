@@ -20,7 +20,9 @@ public class WnConversation implements Serializable {
 //    private ArrayList<WnChatMessage> chatMessages;
     private static final long serialVersionUID = -7060210544600464481L;
 
-
+    public WnConversation() {
+        messages = new ArrayList<>();
+    }
 
     public WnMessageResult getWnMessageResult() {
         return wnMessageResult;

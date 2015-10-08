@@ -4,6 +4,7 @@ package learn2crack.activities;
  * Created by ${USER} on ${DATE}.
  */
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -45,6 +46,41 @@ public class ConversationFragment extends Fragment {
             @Override
             public void onItemClick(int position, View v) {
                 Log.i("WN", "click  item on position " + position);
+                WnConversation wnConversation = conversations.get(position);
+
+                Bundle args = new Bundle();
+                Intent intent = null;
+
+                switch (wnConversation.getStatus()) {
+                    case SENT:
+                    case NEW: {
+
+                        //wnConversation.getContacts().get(0).setPhoto(null);
+                        args.putSerializable("conversation", wnConversation);
+                        intent = new Intent(getActivity(), WnMessageReceiveActivity.class);
+                        break;
+                    }
+
+                    case RECEIVED: {
+
+                    }
+                    case RESPONSE:
+                    case RESULTS:
+
+                    {
+
+                        String c_id = Long.valueOf(wnConversation.getRowId()).toString();
+                        args.putString("c_id", c_id);
+                        //Intent chat =chat = new Intent(getActivity(), WnMessageResultActivity.class);
+                        intent = new Intent(getActivity(), ResultActivity.class);
+
+                        break;
+                    }
+                }
+
+                intent.putExtra("INFO", args);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getActivity().getApplicationContext().startActivity(intent);
                 //Snackbar.make(v, "click  item on position " + position, Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 //Snackbar.make(v, "Delivery_date = " + conversations.get(position).getConversation_guid(), Snackbar.LENGTH_LONG).setAction("Action", null).show();
             }
