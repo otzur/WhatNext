@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import learn2crack.bl.ObjectManager;
+import learn2crack.bl.OptionSelectorManager;
 import learn2crack.chat.R;
 import learn2crack.cheese.Cheeses;
 import learn2crack.models.WnConversation;
@@ -214,8 +215,9 @@ public class WnMessageNewActivity extends AppCompatActivity {
                 {
                     Bundle args = new Bundle();
 
-                    Log.i(TAG, "new activit post exec c_id = " + wnConversation.getRowId());
+                    Log.i(TAG, "new activity post exec c_id = " + wnConversation.getRowId());
                     args.putString("c_id", Long.toString(wnConversation.getRowId()));
+                    args.putInt("numberOfOptions", wnConversation.getTab());
                     Intent chat = new Intent(getApplicationContext(), ResultActivity.class);
                     chat.putExtra("INFO", args);
                     chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -254,19 +256,18 @@ public class WnMessageNewActivity extends AppCompatActivity {
             Bundle bundl = new Bundle();
             switch (position) {
                 case 0: {
-                    bundl.putInt("numberOfOptions", 2);
-                    //return new HomeFragment();
+                    bundl.putInt("numberOfOptions", OptionSelectorManager.getNumberOfOptionsByTab(0));
+
                 }break;
                 case 1: {
-                    bundl.putInt("numberOfOptions", 5);
-                    //return new MessagesFragment();
+                    bundl.putInt("numberOfOptions", OptionSelectorManager.getNumberOfOptionsByTab(1));
                 };break;
                 case 2:
                 default:
                 {
-                    bundl.putInt("numberOfOptions", 8);
-                    //return new FriendsFragment();
-                };break;
+                    bundl.putInt("numberOfOptions", OptionSelectorManager.getNumberOfOptionsByTab(2));
+
+                }break;
             }
             wnMessageRowOptionFragment.setArguments(bundl);
             return wnMessageRowOptionFragment;

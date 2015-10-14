@@ -89,7 +89,7 @@ public class MSGService extends IntentService {
                     }
                     else{
                         sendChatNotification(extras.getString("fromu"),
-                                extras.getString("c_id"));
+                                extras.getString("c_id"), Integer.valueOf(extras.getString("tab")));
                     }
                 }
                 Log.i("WN", "Received: " + extras.getString("msg_id"));
@@ -126,11 +126,13 @@ public class MSGService extends IntentService {
             case RESPONSE:
                 args.putString("c_id", Long.valueOf(wnConversation.getRowId()).toString());
                 args.putString("status", "Response");
+                args.putInt("numberOfOptions", wnConversation.getTab());
                 chat = new Intent(this, ResultActivity.class);
                 break;
             case CHAT:
                 args.putString("c_id", Long.valueOf(wnConversation.getRowId()).toString());
                 args.putString("status", "chat");
+                args.putInt("numberOfOptions", wnConversation.getTab());
                 chat = new Intent(this, ResultActivity.class);
                 break;
             default:
@@ -159,9 +161,10 @@ public class MSGService extends IntentService {
         manager.notify(0, notification.build());
     }
 
-    private void sendChatNotification(String from, String c_id){
+    private void sendChatNotification(String from, String c_id ,int tab){
         Bundle args = new Bundle();
         args.putString("c_id", c_id);
+        args.putInt("numberOfOptions", tab);
         //update current chat if active
         Intent intent = new Intent("wn_chat_receiver");
         intent.putExtra("INFO", args);

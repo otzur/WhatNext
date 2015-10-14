@@ -9,10 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.List;
+
+import learn2crack.bl.OptionSelectorManager;
 import learn2crack.chat.R;
 import learn2crack.db.ConversationDataSource;
 import learn2crack.db.MessageDataSource;
 import learn2crack.models.WnMessageResult;
+import learn2crack.models.WnMessageRowOption;
 
 
 public class ResultFragment extends Fragment {
@@ -37,7 +41,14 @@ public class ResultFragment extends Fragment {
         TextView mText = (TextView)rv.findViewById(R.id.result_text);
         mText.setTextSize(40);
         Bundle args = getArguments();
+
+//        Bundle bundle=getArguments().getBundle("INFO");
+//        //here is your list array
+//        int numberOfOptions = bundle.getInt("numberOfOptions");
+//
         String msg_id= args.getString("msg_id", "");
+        int tab = args.getInt("numberOfOptions");
+        Log.i("WN/RESULT FREG:","numberOfOptions = " + tab);
         WnMessageResult wnResult = null;
         if(!msg_id.equals("")) {
             MessageDataSource datasource = new MessageDataSource(rv.getContext());
@@ -51,6 +62,11 @@ public class ResultFragment extends Fragment {
             wnResult = conversationDataSource.getResultsForConversation(args.getString("c_id", ""));
             conversationDataSource.close();
         }
+
+        int numberOfOptions = OptionSelectorManager.getNumberOfOptionsByTab(tab);
+        OptionSelectorManager optionSelectorManager = new OptionSelectorManager(numberOfOptions);
+        List<WnMessageRowOption>  list  = optionSelectorManager.getList();
+
         int size = 0;
         if(wnResult.getMatched() != null) {
             size = wnResult.getMatched().size();
@@ -58,7 +74,8 @@ public class ResultFragment extends Fragment {
         if(size > 0) {
             mText.setText("Matched: \n");
             for (int i = 0; i < size; i++) {
-                mText.append(wnResult.getMatched().get(i) + "\n");
+                int index = Integer.valueOf(wnResult.getMatched().get(i));
+                mText.append(list.get(index).getName() + "\n");
             }
         }
         else{

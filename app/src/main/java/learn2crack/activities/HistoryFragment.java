@@ -38,6 +38,7 @@ public class HistoryFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
         String msg_id =(String) ((TextView) v.findViewById(R.id.message_id)).getText();
+
         String filled_by_you =(String) ((TextView) v.findViewById(R.id.filled_by_you)).getText();
         if(filled_by_you.equals("0")){
             String status =(String) ((TextView) v.findViewById(R.id.status)).getText();
@@ -73,6 +74,7 @@ public class HistoryFragment extends ListFragment {
         args.putString("msg_id", msg_id);
         String c_id =(String) ((TextView) v.findViewById(R.id.c_id)).getText();
         args.putString("c_id", c_id);
+        //args.putInt("numberOfOptions", Integer.toString(conversation.getTab()));
         //Intent chat =chat = new Intent(getActivity(), WnMessageResultActivity.class);
         Intent chat = new Intent(getActivity(), ResultActivity.class);
         chat.putExtra("INFO", args);

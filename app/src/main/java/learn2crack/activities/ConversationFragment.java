@@ -71,6 +71,7 @@ public class ConversationFragment extends Fragment {
 
                         String c_id = Long.valueOf(wnConversation.getRowId()).toString();
                         args.putString("c_id", c_id);
+                        args.putInt("numberOfOptions", wnConversation.getTab());
                         //Intent chat =chat = new Intent(getActivity(), WnMessageResultActivity.class);
                         intent = new Intent(getActivity(), ResultActivity.class);
 

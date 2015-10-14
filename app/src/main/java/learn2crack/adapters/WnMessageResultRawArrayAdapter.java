@@ -10,16 +10,16 @@ import android.widget.TextView;
 import java.util.List;
 
 import learn2crack.chat.R;
-import learn2crack.models.WnMessageResultRaw;
+import learn2crack.models.WnMessageRowOption;
 
 /**
  * Created by samzaleg on 8/23/2015.
  */
-public class WnMessageResultRawArrayAdapter extends ArrayAdapter<WnMessageResultRaw> {
-    private final List<WnMessageResultRaw> list;
+public class WnMessageResultRawArrayAdapter extends ArrayAdapter<WnMessageRowOption> {
+    private final List<WnMessageRowOption> list;
     private final Activity context;
 
-    public WnMessageResultRawArrayAdapter(Activity context, List<WnMessageResultRaw> list) {
+    public WnMessageResultRawArrayAdapter(Activity context, List<WnMessageRowOption> list) {
         super( context, R.layout.message_raw_result_layout, list);
         this.context = context;
         this.list = list;
@@ -45,7 +45,7 @@ public class WnMessageResultRawArrayAdapter extends ArrayAdapter<WnMessageResult
         }
         ViewHolder holder = (ViewHolder) view.getTag();
         holder.text.setText(list.get(position).getName());
-        if(list.get(position).isMatched()){
+        if(list.get(position).isSelected()){
             holder.text.setTextSize(30);
         }
         return view;

@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import learn2crack.bl.ObjectManager;
+import learn2crack.bl.OptionSelectorManager;
 import learn2crack.chat.R;
 import learn2crack.cheese.Cheeses;
 import learn2crack.models.WnConversation;
@@ -251,6 +252,7 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
                 } else {
                     Bundle args = new Bundle();
                     args.putString("c_id", Long.valueOf(wnConversation.getRowId()).toString());
+                    args.putInt("numberOfOptions", wnConversation.getTab());
                     Intent chat = new Intent(getApplicationContext(), ResultActivity.class);
                     chat.putExtra("INFO", args);
                     chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -287,26 +289,27 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
 
             WnMessageRowOptionFragment wnMessageRowOptionFragment = new WnMessageRowOptionFragment();
             Bundle bundl = new Bundle();
-            switch (wnConversation.getTab()) {
-                case 0: {
-                    bundl.putInt("numberOfOptions", 2);
-                    //return new HomeFragment();
-                }
-                break;
-                case 1: {
-                    bundl.putInt("numberOfOptions", 5);
-                    //return new MessagesFragment();
-                }
-                ;
-                break;
-                case 2:
-                default: {
-                    bundl.putInt("numberOfOptions", 8);
-                    //return new FriendsFragment();
-                }
-                ;
-                break;
-            }
+            bundl.putInt("numberOfOptions", OptionSelectorManager.getNumberOfOptionsByTab(wnConversation.getTab()));
+//            switch (wnConversation.getTab()) {
+//                case 0: {
+//                    bundl.putInt("numberOfOptions", 2);
+//                    //return new HomeFragment();
+//                }
+//                break;
+//                case 1: {
+//                    bundl.putInt("numberOfOptions", 5);
+//                    //return new MessagesFragment();
+//                }
+//                ;
+//                break;
+//                case 2:
+//                default: {
+//                    bundl.putInt("numberOfOptions", 8);
+//                    //return new FriendsFragment();
+//                }
+//                ;
+//                break;
+//            }
             wnMessageRowOptionFragment.setArguments(bundl);
             return wnMessageRowOptionFragment;
         }
