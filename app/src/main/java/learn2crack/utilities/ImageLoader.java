@@ -29,9 +29,7 @@ import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.widget.ImageView;
 
-//import com.example.android.contactslist.BuildConfig;
 
-import com.bumptech.glide.Glide;
 
 import java.io.FileDescriptor;
 import java.lang.ref.WeakReference;

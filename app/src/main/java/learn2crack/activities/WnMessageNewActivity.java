@@ -143,6 +143,9 @@ public class WnMessageNewActivity extends AppCompatActivity {
         private void loadBackdrop() {
         final ImageView imageView = (ImageView) findViewById(R.id.backdrop);
         Glide.with(this).load(Cheeses.getRandomCheeseDrawable()).centerCrop().into(imageView);
+
+
+
     }
 
     private class Send extends AsyncTask<String, String, JSONObject> {

@@ -65,15 +65,23 @@ public class ConversationFragment extends Fragment {
 
                     }
                     case RESPONSE:
+                    case CHAT:
+                        break;
                     case RESULTS:
 
                     {
 
-                        String c_id = Long.valueOf(wnConversation.getRowId()).toString();
-                        args.putString("c_id", c_id);
-                        args.putInt("numberOfOptions", wnConversation.getTab());
-                        //Intent chat =chat = new Intent(getActivity(), WnMessageResultActivity.class);
-                        intent = new Intent(getActivity(), ResultActivity.class);
+                        // this is good code
+//                        String c_id = Long.valueOf(wnConversation.getRowId()).toString();
+//                        args.putString("c_id", c_id);
+//                        args.putInt("numberOfOptions", wnConversation.getTab());
+//                        intent = new Intent(getActivity(), ResultActivity.class);
+
+                        args.putSerializable("conversation", wnConversation);
+                        intent = new Intent(getActivity(), WnMessageDetailActivity.class);
+                        //intent.putExtra(WnMessageDetailActivity.EXTRA_CONTACT_NAME, wnConversation.getContacts().get(0).getName());
+                        //intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        //getActivity().getApplicationContext().startActivity(intent2);
 
                         break;
                     }
