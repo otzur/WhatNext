@@ -1,8 +1,16 @@
 package learn2crack.utilities;
 
 
+import android.content.Context;
 import android.util.Log;
-
+/*
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
+import com.android.volley.toolbox.RequestFuture;
+*/
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -20,6 +28,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 
 public class JSONParser {
@@ -72,6 +81,25 @@ public class JSONParser {
         // return JSON String
         return jObj;
     }
+/*
+    public JSONObject getJSONFromUrl(String url,List<NameValuePair> params,Context context) {
+        RequestFuture<JSONObject> future = RequestFuture.newFuture();
+        JsonObjectRequest request = new JsonObjectRequest(url, null, future, future);
+        // Access the RequestQueue through your singleton class.
+        RequestsQueue.getInstance(context).getRequestQueue().add(request);
+        try {
+            JSONObject response = future.get(); // this will block (forever)
+            return response;
+        } catch (InterruptedException e) {
+            Log.e("WN","error while getting JSON from url: " + e.getStackTrace());
+        } catch (ExecutionException e) {
+            Log.e("WN","error while getting JSON from url: " + e.getStackTrace());
+        }
+        return null;
+    }
+*/
+
+
 
     public JSONArray getJSONArray(String url,List<NameValuePair> params) {
         // Making HTTP request

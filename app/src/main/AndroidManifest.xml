@@ -50,6 +50,7 @@
         <activity
             android:name="learn2crack.activities.MainActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -67,15 +68,18 @@
         <activity
             android:name="learn2crack.activities.WnMessageNewActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask" />
         <activity
             android:name="learn2crack.activities.WnMessageReceiveActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask" />
 
         <activity
             android:name="learn2crack.activities.WnMessageDetailActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             />
 
         <provider
@@ -121,6 +125,7 @@
         <activity
             android:name="learn2crack.activities.ResultActivity"
             android:label="@string/app_name" >
+            android:screenOrientation="portrait"
         </activity>
     </application>
 

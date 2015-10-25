@@ -96,15 +96,21 @@ public class WnMessageNewActivity extends AppCompatActivity {
 //            status = bundle.getString("status");
 //        }
 
-        if(bundle.getSerializable("conversation") != null){
+        //next row throws exception
+        try {
+            if (bundle.getSerializable("conversation") != null) {
 
-            wnConversation = (WnConversation) bundle.getSerializable("conversation");
-            //tvUserName.setText(wnConversation.getContacts().get(0).name);
-            Log.i(TAG, "Inside new Activity");
-            Log.i(TAG,"got conversation Serializable" );
-            Log.i(TAG, "status = " + wnConversation.getStatus());
-            Log.i(TAG, "Conversation_guid = " + wnConversation.getConversation_guid());
-            Log.i(TAG, "User name= " + wnConversation.getContacts().get(0).getName());
+                wnConversation = (WnConversation) bundle.getSerializable("conversation");
+                //tvUserName.setText(wnConversation.getContacts().get(0).name);
+                Log.i(TAG, "Inside new Activity");
+                Log.i(TAG, "got conversation Serializable");
+                Log.i(TAG, "status = " + wnConversation.getStatus());
+                Log.i(TAG, "Conversation_guid = " + wnConversation.getConversation_guid());
+                Log.i(TAG, "User name= " + wnConversation.getContacts().get(0).getName());
+            }
+        }
+        catch (Exception ex){
+            Log.e("WN","bundle.getSerializable(\"conversation\") throws exception- " + ex.getStackTrace());
         }
 
 
