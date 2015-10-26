@@ -7,14 +7,16 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
-import android.widget.ListView;
 
 import com.bumptech.glide.Glide;
 
 import java.io.ByteArrayOutputStream;
 
+import learn2crack.adapters.MessageDetailAdapter;
 import learn2crack.chat.R;
 import learn2crack.models.WnConversation;
 
@@ -26,15 +28,38 @@ public class WnMessageDetailActivity extends AppCompatActivity {
 
     static final String TAG = "WN/WnMessageDetailActivity";
     private  WnConversation wnConversation;
-    ListView lvResult;
+    private RecyclerView rv;
+    private RecyclerView.Adapter rvAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.message_detail_layout);
 
-        // Get ListView object from xml
-        //lvResult = (ListView) findViewById(R.id.listResult);
+
+        rv = (RecyclerView) findViewById(R.id.rvOptionList);
+        // use this setting to improve performance if you know that changes
+        // in content do not change the layout size of the RecyclerView
+        rv.setHasFixedSize(true);
+        // use a linear layout manager
+        mLayoutManager = new LinearLayoutManager(this);
+        rv.setLayoutManager(mLayoutManager);
+
+        // Defined Array values to show in ListView
+        String[] values = new String[] {
+                "Android List View",
+                "Adapter implementation",
+                "Simple List View In Android",
+                "Create List View Android",
+                "Android Example",
+                "List View Source Code",
+                "List View Array Adapter",
+                "Android Example List View"
+        };
+
+
+
 
         String contactName = "TEST NAME";
         Bundle bundle = getIntent().getBundleExtra("INFO");
@@ -43,6 +68,9 @@ public class WnMessageDetailActivity extends AppCompatActivity {
 
             wnConversation = (WnConversation) bundle.getSerializable("conversation");
             contactName = wnConversation.getContacts().get(0).getName();
+            rvAdapter = new MessageDetailAdapter(values);
+            rv.setAdapter(rvAdapter);
+
         }
 
 
@@ -53,31 +81,13 @@ public class WnMessageDetailActivity extends AppCompatActivity {
         CollapsingToolbarLayout collapsingToolbar =
                 (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbar.setTitle(contactName);
-//
+
+        //Load contact image
         loadBackdrop();
 
-        // Defined Array values to show in ListView
-        String[] values = new String[] { "Android List View",
-                "Adapter implementation",
-                "Simple List View In Android",
-                "Create List View Android",
-                "Android Example",
-                "List View Source Code",
-                "List View Array Adapter",
-                "Android Example List View"
-        };
 
-        // Define a new Adapter
-        // First parameter - Context
-        // Second parameter - Layout for the row
-        // Third parameter - ID of the TextView to which the data is written
-        // Forth - the Array of data
 
-//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-//                android.R.layout.simple_list_item_1, android.R.id.text1, values);
 
-        // Assign adapter to ListView
-       // lvResult.setAdapter(adapter);
     }
 
     public Uri getImageUri(Context inContext, Bitmap inImage) {
@@ -102,3 +112,4 @@ public class WnMessageDetailActivity extends AppCompatActivity {
     }
 
 }
+
