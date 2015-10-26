@@ -24,7 +24,11 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.apache.commons.codec.binary.Hex;
 
+import java.io.IOException;
+import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,6 +43,8 @@ import learn2crack.db.DatabaseHelper;
 import learn2crack.models.ChatMessage;
 import learn2crack.models.WnChatMessage;
 import learn2crack.models.WnConversation;
+import learn2crack.models.WnMessageStatus;
+import learn2crack.utilities.Base64;
 import learn2crack.utilities.JSONParser;
 
 
@@ -202,41 +208,59 @@ public class ChatFragment extends ListFragment {
                 new Send(text.toString()).execute();
             }
         });*/
-        return view;
-    }
+                return view;
+            }
 
-    private class Send extends AsyncTask<String, String, JSONObject> {
+            private class Send extends AsyncTask<String, String, JSONObject> {
 
-        ChatDataSource dba=new ChatDataSource(getActivity().getApplicationContext());//Create this object in onCreate() method
-        Bundle bundle;
+                ChatDataSource dba=new ChatDataSource(getActivity().getApplicationContext());//Create this object in onCreate() method
+                Bundle bundle;
 
 
-        private String from;
+                private String from;
 
-        private String status;
-        private String deliveryTime;
-        private String chatText;
+                private WnMessageStatus status;
+                private String deliveryTime;
+                private String chatText;
 
-        public Send(String message_text) {
-            from =  prefs.getString("REG_FROM","");
-            Log.i(TAG,"from user   = " + from);
-            status  = "chat";
-            chatText = message_text;
-        }
+                public Send(String message_text) {
+                    from =  prefs.getString("REG_FROM","");
+                    Log.i(TAG,"from user   = " + from);
+                    status  = WnMessageStatus.CHAT;
+                    chatText = message_text;
+                }
 
-        @Override
-        protected JSONObject doInBackground(String... args) {
-            JSONParser json = new JSONParser();
-            params = new ArrayList<>();
-            params.add(new BasicNameValuePair("fromu",from));
-            params.add(new BasicNameValuePair("to", to_user.replaceAll("[^0-9]", "")));
-            params.add(new BasicNameValuePair("status", ""+ status));
-            params.add(new BasicNameValuePair("conversation_rowId", conversation_guid));
-            params.add(new BasicNameValuePair("text", "" + chatText));
+                @Override
+                protected JSONObject doInBackground(String... args) {
+                    JSONParser json = new JSONParser();
+                    params = new ArrayList<>();
+                    params.add(new BasicNameValuePair("fromu",from));
+                    params.add(new BasicNameValuePair("to", to_user.replaceAll("[^0-9]", "")));
+                    params.add(new BasicNameValuePair("status", ""+ status));
+                    params.add(new BasicNameValuePair("c_id", conversation_guid));
+                    String str = new String(chatText.getBytes(), Charset.forName("UTF-8"));
+                    //try {
+                    //String ds= String.format("%040x", new BigInteger(1, str.getBytes(/*YOUR_CHARSET?*/)));
+                    String hexString="";
+                    try {
+                        byte[] bytes = {3 ,4};
+                        hexString = Base64.encode(chatText.getBytes());
+
+            }
+            catch (Exception e){
+
+            }
+                params.add(new BasicNameValuePair("text", hexString));//chatText.getBytes("UTF-8")));
+            //}
+            //catch (IOException ex){
+            //    Log.e("WN",ex.getStackTrace().toString());
+            //}
+            /*.getBytes("UTF8").toString()*/
+
+            //}
 
             //MESSAGE SENDING
             JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/sendchat", params);
-
             dba.open();
             WnChatMessage temp= dba.insert(chatText, from, Long.valueOf(conversation_rowId));// Insert record in your DB
             dba.close();

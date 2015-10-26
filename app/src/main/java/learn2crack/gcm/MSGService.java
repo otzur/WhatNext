@@ -88,8 +88,7 @@ public class MSGService extends IntentService {
 //                                extras.getString("conversation_id"));
                     }
                     else{
-                        sendChatNotification(extras.getString("fromu"),
-                                extras.getString("c_id"), Integer.valueOf(extras.getString("tab")));
+                        sendChatNotification(extras.getString("fromu"), extras.getString("c_id"), 0);
                     }
                 }
                 Log.i("WN", "Received: " + extras.getString("msg_id"));

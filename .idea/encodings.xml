@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
-    <file url="file://$PROJECT_DIR$/app/src/main/java/learn2crack/adapters/ChatAdapter.java" charset="windows-1255" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/learn2crack/models/ChatMessage.java" charset="windows-1255" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/drawable/in_message_bg.9.png" charset="windows-1255" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/drawable/out_message_bg.9.png" charset="windows-1255" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_chat.xml" charset="windows-1255" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/layout/list_item_chat_message.xml" charset="windows-1255" />
     <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

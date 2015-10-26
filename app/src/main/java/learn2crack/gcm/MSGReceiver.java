@@ -8,12 +8,15 @@ import android.os.Bundle;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
+import java.io.IOException;
+
 import learn2crack.bl.ObjectManager;
 import learn2crack.db.ChatDataSource;
 import learn2crack.db.ConversationDataSource;
 import learn2crack.models.WnConversation;
 import learn2crack.models.WnMessage;
 import learn2crack.models.WnMessageStatus;
+import learn2crack.utilities.Base64;
 
 public class MSGReceiver  extends WakefulBroadcastReceiver {
 
@@ -24,10 +27,20 @@ public class MSGReceiver  extends WakefulBroadcastReceiver {
         Bundle extras = intent.getExtras();
         WnConversation conversation;
         fromu = extras.getString("fromu");
-        chatText = extras.getString("text");
+        //chatText = extras.getString("text");
+        chatText ="";
+        try{
+            //byte[] temp = extras.getString("text").getBytes();
+            chatText = new String(Base64.decode(extras.getString("text")),"UTF-8");
+            //extras.getString("text").getBytes("UTF8").toString();
+        }
+        catch (IOException ex){
+            Log.e("WN", "Cannot convert to utf8: "+ ex.getStackTrace() );
+        }
         conversation_guid = extras.getString("c_id");
         dbConversations.open();
-        conversation = dbConversations.getConversationByGUID(conversation_guid);
+        //conversation = dbConversations.getConversationByGUID(conversation_guid);
+        conversation = ObjectManager.getConversationByGUID(context,conversation_guid);
         dbConversations.close();
         chatDataSource.open();
         chatDataSource.insert(chatText, fromu, conversation.getRowId());
