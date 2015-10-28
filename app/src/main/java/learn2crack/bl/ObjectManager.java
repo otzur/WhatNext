@@ -1,12 +1,14 @@
 package learn2crack.bl;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.util.Log;
 
 import java.util.UUID;
 
 import learn2crack.activities.MainActivity;
+import learn2crack.db.ChatDataSource;
 import learn2crack.db.ConversationDataSource;
 import learn2crack.db.MessageDataSource;
 import learn2crack.models.WnContact;
@@ -70,6 +72,13 @@ public class ObjectManager {
                 saveMessage(message, wnConversation.getRowId());
         }
 
+    }
+
+    public static Cursor getConversationChatMessages(Context context, WnConversation wnConversation){
+        ChatDataSource datasource = new ChatDataSource(context);
+        ConversationDataSource conversationDataSource = new ConversationDataSource(context);
+        conversationDataSource.open();
+        return datasource.getAllDataByConversationRowID(Long.toString(wnConversation.getRowId()));
     }
 
 
