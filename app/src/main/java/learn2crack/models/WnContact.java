@@ -37,6 +37,9 @@ public class WnContact  implements Serializable {
                 oos.writeObject(byteStream.toByteArray());
             }
         }
+        else {
+            oos.writeObject(new byte[1]);
+        }
     }
 
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException{
@@ -45,7 +48,7 @@ public class WnContact  implements Serializable {
         ois.defaultReadObject();
         // All other fields that you serialized
         byte[] image = (byte[]) ois.readObject();
-        if(image != null && image.length > 0){
+        if(image != null && image.length > 0 && image != new byte[1]){
             photo = BitmapFactory.decodeByteArray(image, 0, image.length);
         }
     }
