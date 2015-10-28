@@ -108,6 +108,12 @@ public class WnMessageNewActivity extends AppCompatActivity {
                 Log.i(TAG, "Conversation_guid = " + wnConversation.getConversation_guid());
                 Log.i(TAG, "User name= " + wnConversation.getContacts().get(0).getName());
             }
+            else
+            {
+                throw new Exception("bundle.getSerializable(conversation) == null");
+            }
+
+
         }
         catch (Exception ex){
             Log.e("WN","bundle.getSerializable(\"conversation\") throws exception- " + ex.getStackTrace());

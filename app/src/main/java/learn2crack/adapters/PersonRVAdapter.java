@@ -38,6 +38,7 @@ public class PersonRVAdapter extends RecyclerView.Adapter<PersonRVAdapter.Person
     List<Person> persons;
 
     public PersonRVAdapter(List<Person> persons){
+
         this.persons = persons;
     }
 
