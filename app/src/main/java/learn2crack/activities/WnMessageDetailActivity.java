@@ -18,10 +18,15 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 
 import java.io.ByteArrayOutputStream;
+import java.util.List;
 
 import learn2crack.adapters.MessageDetailAdapter;
+import learn2crack.bl.OptionSelectorManager;
 import learn2crack.chat.R;
 import learn2crack.models.WnConversation;
+import learn2crack.models.WnMatch;
+import learn2crack.models.WnMessageResult;
+import learn2crack.models.WnMessageRowOption;
 
 /**
  * Created by otzur on 10/14/2015.
@@ -50,26 +55,74 @@ public class WnMessageDetailActivity extends AppCompatActivity {
         rv.setLayoutManager(mLayoutManager);
 
         // Defined Array values to show in ListView
-        String[] values = new String[] {
-                "Android List View",
-                "Adapter implementation",
-                "Simple List View In Android",
-                "Create List View Android",
-                "Android Example",
-                "List View Source Code",
-                "List View Array Adapter",
-                "Android Example List View"
-        };
-
-
-
+//        String[] values = new String[]
+//                {
+//                "Android List View",
+//                "Adapter implementation",
+//                "Simple List View In Android",
+//                "Create List View Android",
+//                "Android Example",
+//                "List View Source Code",
+//                "List View Array Adapter",
+//                "Android Example List View"
+//        };
+//
+//        int size = 0;
+//        if(wnResult.getMatched() != null) {
+//            size = wnResult.getMatched().size();
+//        }
+//        if(size > 0) {
+//            mText.setText("Matched: \n");
+//            for (int i = 0; i < size; i++) {
+//                int index = Integer.valueOf(wnResult.getMatched().get(i));
+//                mText.append(list.get(index).getName() + "\n");
+//            }
+//        }
+//        else{
+//            if(wnResult.isAllUsersResponded()) {
+//                mText.setText("No match... not at all :( \n");
+//                mText.setTextColor(Color.RED);
+//            }
+//            else{
+//                mText.setText("Waiting for other user to respond \n");
+//                mText.setTextColor(Color.BLUE);
+//            }
+//
+//        }
 
         String contactName = "TEST NAME";
         Bundle bundle = getIntent().getBundleExtra("INFO");
-
+        int numberOfOptions = 0;
         if(bundle.getSerializable("conversation") != null){
 
             wnConversation = (WnConversation) bundle.getSerializable("conversation");
+            numberOfOptions = OptionSelectorManager.getNumberOfOptionsByTab(wnConversation.getTab());
+            OptionSelectorManager optionSelectorManager = new OptionSelectorManager(numberOfOptions);
+            List<WnMessageRowOption> list  = optionSelectorManager.getList();
+
+            WnMessageResult wnMessageResult = wnConversation.getWnMessageResult();
+            if(wnMessageResult.getWnMatch() == WnMatch.NO_MATCH)
+                return;
+
+           int size = 0;
+           List<String> matched = wnMessageResult.getMatched();
+           String[] values = null;
+           if(wnMessageResult.getMatched() != null) {
+                size = wnMessageResult.getMatched().size();
+
+           }
+           if(size > 0) {
+                values = new String[size];
+                //mText.setText("Matched: \n");
+                for (int i = 0; i < size; i++) {
+                    int index = Integer.valueOf(wnMessageResult.getMatched().get(i));
+                    values[i] = list.get(index).getName();
+                }
+            }
+
+
+            //////////////////////////////////////////////////////////////
+
             contactName = wnConversation.getContacts().get(0).getName();
             rvAdapter = new MessageDetailAdapter(values);
             rv.setAdapter(rvAdapter);

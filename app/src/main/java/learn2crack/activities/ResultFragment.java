@@ -49,7 +49,7 @@ public class ResultFragment extends Fragment {
         String msg_id= args.getString("msg_id", "");
         int tab = args.getInt("numberOfOptions");
         Log.i("WN/RESULT FREG:","numberOfOptions = " + tab);
-        WnMessageResult wnResult = null;
+        WnMessageResult wnResult;
         if(!msg_id.equals("")) {
             MessageDataSource datasource = new MessageDataSource(rv.getContext());
             datasource.open();
