@@ -66,37 +66,10 @@ public class WnMessageNewActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         TextView tvUserName = (TextView)findViewById(R.id.userName);
-        //btnSend = (ImageButton) findViewById(R.id.btnSend);
 
         prefs = getSharedPreferences("Chat", 0);
         bundle = getIntent().getBundleExtra("INFO");
 
-//        if(bundle.getString("mobno") != null)
-//        {
-//            Log.i(TAG,"mobno = " + (bundle.getString("mobno")));
-//        }
-//        if(bundle.getString("name") != null){
-//
-//            tvUserName.setText(bundle.getString("name"));
-//            collapsingToolbar.setTitle(bundle.getString("name"));
-//        }
-//
-//        if(bundle.getString("tab") != null && bundle.getString("selected_options") != null){
-//
-//            selectedTab = bundle.getString("tab");
-//        }
-//
-//        if(bundle.getString("type") != null){
-//
-//            type = bundle.getString("type");
-//        }
-//
-//        if(bundle.getString("status") != null){
-//
-//            status = bundle.getString("status");
-//        }
-
-        //next row throws exception
         try {
             if (bundle.getSerializable("conversation") != null) {
 
@@ -137,8 +110,7 @@ public class WnMessageNewActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items user the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.chat_menu, menu);
         return true;
     }
 

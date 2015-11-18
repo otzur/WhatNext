@@ -79,6 +79,8 @@ public class ConversationFragment extends Fragment {
 
                         args.putSerializable("conversation", wnConversation);
                         intent = new Intent(getActivity(), WnMessageDetailActivity.class);
+                        //intent = new Intent(getActivity(),WnMessageChatActivity.class);
+                        //intent = new Intent(getActivity(), WnMessageChatActivity.class);
                         //intent.putExtra(WnMessageDetailActivity.EXTRA_CONTACT_NAME, wnConversation.getContacts().get(0).getName());
                         //intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         //getActivity().getApplicationContext().startActivity(intent2);

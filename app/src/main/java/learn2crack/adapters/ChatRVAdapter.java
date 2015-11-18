@@ -15,6 +15,7 @@ import java.util.List;
 
 import learn2crack.chat.R;
 import learn2crack.models.ChatMessage;
+import learn2crack.models.WnChatMessage;
 import learn2crack.models.WnConversation;
 import learn2crack.models.WnMatch;
 import learn2crack.models.WnMessageResult;
@@ -27,9 +28,11 @@ public class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatMessag
 
     private static int expandedPosition = -1;
 
-    List<ChatMessage> chatMessages;
-    public ChatRVAdapter(List<ChatMessage> chatMessages) {
+    List<WnChatMessage> chatMessages;
+    String myPhone;
+    public ChatRVAdapter(List<WnChatMessage> chatMessages, String myPhone) {
         this.chatMessages = chatMessages;
+        this.myPhone = myPhone;
     }
 
     @Override
@@ -46,10 +49,11 @@ public class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatMessag
     @Override
     public void onBindViewHolder(ChatMessageViewHolder chatMessageViewHolder, int i) {
 
-        ChatMessage chatMessage = chatMessages.get(i);
+        WnChatMessage chatMessage = chatMessages.get(i);
+        chatMessage.updateIsMe(myPhone);
         setAlignment(chatMessageViewHolder, chatMessage.getIsme());
-        chatMessageViewHolder.txtMessage.setText(chatMessage.getMessage());
-        chatMessageViewHolder.txtInfo.setText(chatMessage.getDate());
+        chatMessageViewHolder.txtMessage.setText(chatMessage.getChat_text());
+        chatMessageViewHolder.txtInfo.setText(chatMessage.getDelivery_date());
 
     }
 

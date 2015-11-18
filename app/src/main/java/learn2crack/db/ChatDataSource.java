@@ -41,7 +41,7 @@ public class ChatDataSource {
 
     public WnChatMessage insert(String text, String user, long conversationId){
         WnChatMessage message = new WnChatMessage();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String currentDatedTime = sdf.format(new Date());
         ContentValues initialValues = new ContentValues();
         initialValues.put(DBHelper.KEY_CHAT_DELIVERY, currentDatedTime);

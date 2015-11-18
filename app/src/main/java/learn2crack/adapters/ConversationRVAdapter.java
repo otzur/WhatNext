@@ -167,8 +167,6 @@ public class ConversationRVAdapter extends RecyclerView.Adapter<ConversationRVAd
             notifyItemChanged(expandedPosition);
 
             conversationItemClickListener.onItemClick(getAdapterPosition(), v);
-
-
         }
     }
 }

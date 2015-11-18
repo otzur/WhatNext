@@ -9,6 +9,22 @@ public class WnChatMessage {
     private String delivery_date;
     private String chat_text;
     private String from;
+    private boolean isMe; //the message sent by current user or not
+
+    public boolean getIsme() {
+        return isMe;
+    }
+
+    public void setMe(boolean isMe) {
+        this.isMe = isMe;
+    }
+
+    public void updateIsMe(String sender){
+        if(from == null){
+            return;
+        }
+        isMe = from.equals(sender);
+    }
 
     public long getConversation_id() {
         return conversation_id;

@@ -11,6 +11,8 @@ import learn2crack.activities.MainActivity;
 import learn2crack.db.ChatDataSource;
 import learn2crack.db.ConversationDataSource;
 import learn2crack.db.MessageDataSource;
+import learn2crack.models.ChatMessage;
+import learn2crack.models.WnChatMessage;
 import learn2crack.models.WnContact;
 import learn2crack.models.WnConversation;
 import learn2crack.models.WnMessage;
@@ -76,9 +78,11 @@ public class ObjectManager {
 
     public static Cursor getConversationChatMessages(Context context, WnConversation wnConversation){
         ChatDataSource datasource = new ChatDataSource(context);
-        ConversationDataSource conversationDataSource = new ConversationDataSource(context);
-        conversationDataSource.open();
-        return datasource.getAllDataByConversationRowID(Long.toString(wnConversation.getRowId()));
+        //ConversationDataSource conversationDataSource = new ConversationDataSource(context);
+        //conversationDataSource.open();
+        datasource.open();
+        Cursor res = datasource.getAllDataByConversationRowID(Long.toString(wnConversation.getRowId()));
+        return res;
     }
 
 
@@ -124,6 +128,14 @@ public class ObjectManager {
 
         return wnMessage;
 
+    }
+
+    public static WnChatMessage saveChatMessage(Context context, WnConversation wnConversation, String chatText, String sender){
+        ChatDataSource chatDataSource = new ChatDataSource(context);
+        chatDataSource.open();
+        WnChatMessage chatMessage= chatDataSource.insert(chatText, sender, wnConversation.getRowId());
+        chatDataSource.close();
+        return chatMessage;
     }
 
     public static WnMessage createNewMessage( String userPhone,
