@@ -15,6 +15,8 @@ import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import learn2crack.activities.ResultActivity;
+import learn2crack.activities.WnMessageChatActivity;
+import learn2crack.activities.WnMessageDetailActivity;
 import learn2crack.activities.WnMessageReceiveActivity;
 import learn2crack.bl.ObjectManager;
 import learn2crack.chat.R;
@@ -60,79 +62,43 @@ public class MSGService extends IntentService {
                     MESSAGE_TYPE_MESSAGE.equals(messageType)) {
 
                 if(!prefs.getString("CURRENT_ACTIVE","").equals(extras.getString("fromu"))) {
-                    extras=extras.getBundle("INFO");
-                    if(!status.equals(WnMessageStatus.CHAT)) {
-                    //if(!extras.getString("status","").equals("chat")) {
+                    extras = extras.getBundle("INFO");
+                    wnConversation = ObjectManager.getConversationByGUID(getApplicationContext(), extras.getString("c_id"));
+                    if (wnConversation != null) {
+                        if (!status.equals(WnMessageStatus.CHAT)) {
+                            WnMessage wnMessage = ObjectManager.createNewMessage(extras.getString("msg_id"), extras.getString("fromu"),
+                                    extras.getString("selected_options"), status, 0);
+                            //extras.getString("selected_options"), WnMessageStatus.valueOf(extras.getString("status")),0);
+                            wnConversation.addMessage(wnMessage);
 
-                        //String from_contact = Contacts.getContactName(this, extras.getString("fromu"));
-                        //wnConversation = ObjectManager.createNewConversation( extras.getString("fromu"), extras.getString("type"), WnMessageStatus.valueOf(extras.getString("status")));
-                        wnConversation = ObjectManager.getConversationByGUID( getApplicationContext(), extras.getString("conversation_guid"));
-                        //wnConversation = ObjectManager.createNewConversation( extras.getString("fromu"), extras.getString("type"), status);
-                        //wnConversation.setTab(Integer.valueOf(extras.getString("tab")));
-                        //wnConversation.setConversation_guid(extras.getString("conversation_guid"));
-                        //wnConversation.setRowId(Long.valueOf(extras.getString("c_id")));
-                        WnMessage wnMessage  = ObjectManager.createNewMessage(extras.getString("msg_id"),extras.getString("fromu"),
-                                extras.getString("selected_options"), status,0);
-                                //extras.getString("selected_options"), WnMessageStatus.valueOf(extras.getString("status")),0);
-                        wnConversation.addMessage(wnMessage);
-
-                        sendNotification(wnConversation);
-//                        sendNotification(extras.getString("msg_id"),
-//                                from_contact,
-//                                extras.getString("fromu"),
-//                                extras.getString("tab"),
-//                                extras.getString("selected_options"),
-//                                extras.getString("status"),
-//                                extras.getString("type"),
-//                                extras.getString("c_id"),
-//                                extras.getString("conversation_id"));
+                            sendNotification(wnConversation);
+                        } else {
+                            sendChatNotification(wnConversation);
+                        }
                     }
-                    else{
-                        sendChatNotification(extras.getString("fromu"), extras.getString("c_id"), 0);
-                    }
+                    Log.i("WN", "Received: " + extras.getString("msg_id"));
+                    Log.i("WN", "MSGService type: " + extras.getString("type"));
+                    MSGReceiver.completeWakefulIntent(intent);
                 }
-                Log.i("WN", "Received: " + extras.getString("msg_id"));
-                Log.i("WN", "MSGService type: " + extras.getString("type"));
             }
         }
-        MSGReceiver.completeWakefulIntent(intent);
+
     }
 
     private void sendNotification(WnConversation wnConversation) {
         Bundle args = new Bundle();
-        //String to = getSharedPreferences("chat",0).getString("REG_FROM","");
-        Intent chat = null;
+        Intent chat = new Intent(this, WnMessageReceiveActivity.class);
         switch (wnConversation.getStatus()) {
             case NEW:
                 wnConversation.setStatus(WnMessageStatus.RECEIVED);
-                //wnConversation.clearMessages();
                 wnConversation.getMessages().get(0).setStatus(WnMessageStatus.RECEIVED);
                 wnConversation.getMessages().get(0).setRowId(1);
-
-//                args.putString("msg_id", msg_id);
-//                args.putString("mobno", mobno);
-//                args.putString("type", type);
-//                args.putString("tab", tab);
-//                args.putString("selected_options", selected_options);
-//                args.putString("c_id", c_id);
-//                args.putString("conversation_id", conversation_id);
-//                args.putString("status", "Received");
                 args.putSerializable("conversation", wnConversation);
-                chat = new Intent(this, WnMessageReceiveActivity.class);
                 break;
             case RECEIVED:
             case RESULTS:
             case RESPONSE:
-                args.putString("c_id", Long.valueOf(wnConversation.getRowId()).toString());
-                args.putString("status", "Response");
-                args.putInt("numberOfOptions", wnConversation.getTab());
-                chat = new Intent(this, ResultActivity.class);
-                break;
-            case CHAT:
-                args.putString("c_id", Long.valueOf(wnConversation.getRowId()).toString());
-                args.putString("status", "chat");
-                args.putInt("numberOfOptions", wnConversation.getTab());
-                chat = new Intent(this, ResultActivity.class);
+                args.putSerializable("conversation", wnConversation);
                 break;
             default:
                 Log.e("WN MSGService","failed to figure message status");
@@ -160,19 +126,22 @@ public class MSGService extends IntentService {
         manager.notify(0, notification.build());
     }
 
-    private void sendChatNotification(String from, String c_id ,int tab){
+    //private void sendChatNotification(String from, String c_id ,int tab){
+    private void sendChatNotification(WnConversation conversation){
         Bundle args = new Bundle();
-        args.putString("c_id", c_id);
-        args.putInt("numberOfOptions", tab);
+        args.putSerializable("conversation", conversation);
+        //args.putString("c_id", c_id);
+        //args.putInt("numberOfOptions", tab);
         //update current chat if active
         Intent intent = new Intent("wn_chat_receiver");
         intent.putExtra("INFO", args);
+        String name =  conversation.getContacts().get(0).getName();
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
         notification = new NotificationCompat.Builder(this);
-        notification.setContentTitle("chat from " + from);
+        notification.setContentTitle("chat from " + name);
         notification.setTicker("New WN Chat Message!");
         notification.setSmallIcon(R.drawable.ic_discuss);
-        Intent chat = new Intent(this, ResultActivity.class);
+        Intent chat = new Intent(this, WnMessageChatActivity.class);
         chat.putExtra("INFO", args);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 1000,
                 chat, PendingIntent.FLAG_CANCEL_CURRENT);

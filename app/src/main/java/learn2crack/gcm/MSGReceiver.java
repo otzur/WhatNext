@@ -38,14 +38,14 @@ public class MSGReceiver  extends WakefulBroadcastReceiver {
             Log.e("WN", "Cannot convert to utf8: "+ ex.getStackTrace() );
         }
         conversation_guid = extras.getString("c_id");
-        dbConversations.open();
+        //dbConversations.open();
         //conversation = dbConversations.getConversationByGUID(conversation_guid);
         conversation = ObjectManager.getConversationByGUID(context,conversation_guid);
-        dbConversations.close();
+        //dbConversations.close();
         chatDataSource.open();
         chatDataSource.insert(chatText, fromu, conversation.getRowId());
         chatDataSource.close();
-        extras.putString("c_id", Long.toString(conversation.getRowId()));
+        extras.putString("conversation_guid", Long.toString(conversation.getRowId()));
         return extras;
     }
 

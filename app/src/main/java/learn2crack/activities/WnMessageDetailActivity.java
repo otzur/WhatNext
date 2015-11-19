@@ -1,13 +1,16 @@
 package learn2crack.activities;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,10 +26,12 @@ import java.util.List;
 import learn2crack.adapters.MessageDetailAdapter;
 import learn2crack.bl.OptionSelectorManager;
 import learn2crack.chat.R;
+import learn2crack.models.WnContact;
 import learn2crack.models.WnConversation;
 import learn2crack.models.WnMatch;
 import learn2crack.models.WnMessageResult;
 import learn2crack.models.WnMessageRowOption;
+import learn2crack.models.WnMessageStatus;
 
 /**
  * Created by otzur on 10/14/2015.
@@ -53,82 +58,15 @@ public class WnMessageDetailActivity extends AppCompatActivity {
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this);
         rv.setLayoutManager(mLayoutManager);
-
-        // Defined Array values to show in ListView
-//        String[] values = new String[]
-//                {
-//                "Android List View",
-//                "Adapter implementation",
-//                "Simple List View In Android",
-//                "Create List View Android",
-//                "Android Example",
-//                "List View Source Code",
-//                "List View Array Adapter",
-//                "Android Example List View"
-//        };
-//
-//        int size = 0;
-//        if(wnResult.getMatched() != null) {
-//            size = wnResult.getMatched().size();
-//        }
-//        if(size > 0) {
-//            mText.setText("Matched: \n");
-//            for (int i = 0; i < size; i++) {
-//                int index = Integer.valueOf(wnResult.getMatched().get(i));
-//                mText.append(list.get(index).getName() + "\n");
-//            }
-//        }
-//        else{
-//            if(wnResult.isAllUsersResponded()) {
-//                mText.setText("No match... not at all :( \n");
-//                mText.setTextColor(Color.RED);
-//            }
-//            else{
-//                mText.setText("Waiting for other user to respond \n");
-//                mText.setTextColor(Color.BLUE);
-//            }
-//
-//        }
-
         String contactName = "TEST NAME";
         Bundle bundle = getIntent().getBundleExtra("INFO");
         int numberOfOptions = 0;
+        //sets the adapter and load the results
         if(bundle.getSerializable("conversation") != null){
-
             wnConversation = (WnConversation) bundle.getSerializable("conversation");
-            numberOfOptions = OptionSelectorManager.getNumberOfOptionsByTab(wnConversation.getTab());
-            OptionSelectorManager optionSelectorManager = new OptionSelectorManager(numberOfOptions);
-            List<WnMessageRowOption> list  = optionSelectorManager.getList();
-
-            WnMessageResult wnMessageResult = wnConversation.getWnMessageResult();
-            if(wnMessageResult.getWnMatch() == WnMatch.NO_MATCH)
-                return;
-
-           int size = 0;
-           List<String> matched = wnMessageResult.getMatched();
-           String[] values = null;
-           if(wnMessageResult.getMatched() != null) {
-                size = wnMessageResult.getMatched().size();
-
-           }
-           if(size > 0) {
-                values = new String[size];
-                //mText.setText("Matched: \n");
-                for (int i = 0; i < size; i++) {
-                    int index = Integer.valueOf(wnMessageResult.getMatched().get(i));
-                    values[i] = list.get(index).getName();
-                }
-            }
-
-
-            //////////////////////////////////////////////////////////////
-
             contactName = wnConversation.getContacts().get(0).getName();
-            rvAdapter = new MessageDetailAdapter(values);
-            rv.setAdapter(rvAdapter);
-
+            refreshResults();
         }
-
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -166,15 +104,78 @@ public class WnMessageDetailActivity extends AppCompatActivity {
 
     private void loadBackdrop() {
         final ImageView imageView = (ImageView) findViewById(R.id.backdrop);
-        imageView.setImageBitmap(wnConversation.getContacts().get(0).getPhoto());
-
-        Uri imageUri  = getImageUri(getApplicationContext(), wnConversation.getContacts().get(0).getPhoto());
-        Glide.with(this).load(imageUri).centerCrop().into(imageView);
-        //Glide.with(this).load(wnConversation.getContacts().get(0).getPhoto()).centerCrop().into(imageView);
-//        Glide.with(getApplicationContext())
-//                .load("http://inthecheesefactory.com/uploads/source/glidepicasso/cover.jpg")
-//                .into(imageView);
+        WnContact contact = wnConversation.getContacts().get(0);
+        if(contact.getPhoto() != null) {
+            imageView.setImageBitmap(wnConversation.getContacts().get(0).getPhoto());
+            Uri imageUri = getImageUri(getApplicationContext(), wnConversation.getContacts().get(0).getPhoto());
+            Glide.with(this).load(imageUri).centerCrop().into(imageView);
+        }
     }
+
+    private void refreshResults(){
+        int numberOfOptions = OptionSelectorManager.getNumberOfOptionsByTab(wnConversation.getTab());
+        OptionSelectorManager optionSelectorManager = new OptionSelectorManager(numberOfOptions);
+        List<WnMessageRowOption> list  = optionSelectorManager.getList();
+        String[] values = null;
+        if(wnConversation.getStatus().equals(WnMessageStatus.RESULTS)) {
+            WnMessageResult wnMessageResult = wnConversation.getWnMessageResult();
+            if (wnMessageResult.getWnMatch() == WnMatch.NO_MATCH) {
+                values = new String[1];
+                values[0] = "No match";
+            }
+            else {
+                int size = 0;
+                if (wnMessageResult.getMatched() != null) {
+                    size = wnMessageResult.getMatched().size();
+
+                }
+                if (size > 0) {
+                    values = new String[size];
+                    for (int i = 0; i < size; i++) {
+                        int index = Integer.valueOf(wnMessageResult.getMatched().get(i));
+                        values[i] = list.get(index).getName();
+                    }
+                }
+            }
+           /* else{
+                values = new String[1];
+                values[0] = "No match";
+            }*/
+        }
+        else{
+            values = new String[1];
+            values[0] = "Waiting for " + wnConversation.getContacts().get(0).getName() + " to respond";
+        }
+        rvAdapter = new MessageDetailAdapter(values);
+        rv.setAdapter(rvAdapter);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                wnMessageReceiver, new IntentFilter("wn_message_receiver"));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(wnMessageReceiver);
+    }
+
+    private BroadcastReceiver wnMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getBundleExtra("INFO");
+            WnConversation newWnConversation = (WnConversation) bundle.getSerializable("conversation");
+            if(newWnConversation != null){
+                if(wnConversation.getConversation_guid().equals(newWnConversation.getConversation_guid())){
+                    wnConversation = newWnConversation;
+                    refreshResults();
+                }
+            }
+        }
+    };
 
 }
 

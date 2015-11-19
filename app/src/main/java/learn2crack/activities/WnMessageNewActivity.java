@@ -201,14 +201,11 @@ public class WnMessageNewActivity extends AppCompatActivity {
                 else
                 {
                     Bundle args = new Bundle();
-
                     Log.i(TAG, "new activity post exec c_id = " + wnConversation.getRowId());
-                    args.putString("c_id", Long.toString(wnConversation.getRowId()));
-                    args.putInt("numberOfOptions", wnConversation.getTab());
-                    Intent chat = new Intent(getApplicationContext(), ResultActivity.class);
+                    args.putSerializable("conversation", wnConversation);
+                    Intent chat = new Intent(getApplicationContext(), WnMessageDetailActivity.class);
                     chat.putExtra("INFO", args);
                     chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
                     getApplicationContext().startActivity(chat);
                     finish();
                 }

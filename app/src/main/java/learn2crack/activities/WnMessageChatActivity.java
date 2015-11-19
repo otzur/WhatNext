@@ -1,6 +1,9 @@
 package learn2crack.activities;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -11,6 +14,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -49,6 +53,7 @@ import learn2crack.db.ChatDataSource;
 import learn2crack.db.ConversationDataSource;
 import learn2crack.models.ChatMessage;
 import learn2crack.models.WnChatMessage;
+import learn2crack.models.WnContact;
 import learn2crack.models.WnConversation;
 import learn2crack.models.WnMessageStatus;
 import learn2crack.utilities.Base64;
@@ -86,13 +91,11 @@ public class WnMessageChatActivity extends AppCompatActivity {
         String contactName = "TEST NAME";
         Bundle bundle = getIntent().getBundleExtra("INFO");
         myPhone= getSharedPreferences("Chat", 0).getString("REG_FROM","");
-        if(bundle.getSerializable("conversation") != null){
-
-            wnConversation = (WnConversation) bundle.getSerializable("conversation");
+        wnConversation = (WnConversation) bundle.getSerializable("conversation");
+        if(wnConversation != null){
             contactName = wnConversation.getContacts().get(0).getName();
-            initializeData();
-            adapter = new ChatRVAdapter(chatMessages, myPhone);
-            rv.setAdapter(adapter);
+            //wnConversation = (WnConversation) bundle.getSerializable("conversation");
+            refreshChat();
         }
         chatEditText = (EditText)findViewById(R.id.chat_text);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -103,17 +106,6 @@ public class WnMessageChatActivity extends AppCompatActivity {
                 (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbar.setTitle(contactName);
         loadBackdrop();
-
-        // Defined Array values to show in ListView
-        String[] values = new String[] { "Android List View",
-                "Adapter implementation",
-                "Simple List View In Android",
-                "Create List View Android",
-                "Android Example",
-                "List View Source Code",
-                "List View Array Adapter",
-                "Android Example List View"
-        };
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabSend);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -152,12 +144,47 @@ public class WnMessageChatActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                wnChatMessageReceiver, new IntentFilter("wn_chat_receiver"));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(wnChatMessageReceiver);
+    }
+
+    private BroadcastReceiver wnChatMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle extra = intent.getBundleExtra("INFO");
+            //Bundle currentBundle = getIntent().getBundleExtra("INFO");
+            WnConversation newWnConversation = (WnConversation) extra.getSerializable("conversation");
+            if(newWnConversation.getConversation_guid().equals(wnConversation.getConversation_guid())){
+                initializeData();
+                adapter = new ChatRVAdapter(chatMessages, myPhone);
+                rv.setAdapter(adapter);
+            }
+        }
+    };
+
+    private void refreshChat(){
+        initializeData();
+        adapter = new ChatRVAdapter(chatMessages, myPhone);
+        rv.setAdapter(adapter);
+    }
+
     private void loadBackdrop() {
         final ImageView imageView = (ImageView) findViewById(R.id.backdrop);
         imageView.setImageBitmap(wnConversation.getContacts().get(0).getPhoto());
-
-        Uri imageUri  = getImageUri(getApplicationContext(), wnConversation.getContacts().get(0).getPhoto());
-        Glide.with(this).load(imageUri).centerCrop().into(imageView);
+        WnContact contact = wnConversation.getContacts().get(0);
+        if(contact.getPhoto() != null) {
+            Uri imageUri = getImageUri(getApplicationContext(), wnConversation.getContacts().get(0).getPhoto());
+            Glide.with(this).load(imageUri).centerCrop().into(imageView);
+        }
     }
 
     private void initializeData(){

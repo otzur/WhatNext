@@ -251,9 +251,9 @@ public class WnMessageReceiveActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "The user_phone has logged out. You cant send message anymore !", Toast.LENGTH_SHORT).show();
                 } else {
                     Bundle args = new Bundle();
-                    args.putString("c_id", Long.valueOf(wnConversation.getRowId()).toString());
-                    args.putInt("numberOfOptions", wnConversation.getTab());
-                    Intent chat = new Intent(getApplicationContext(), ResultActivity.class);
+                    wnConversation = ObjectManager.getConversationByGUID(getApplicationContext() ,wnConversation.getConversation_guid());
+                    args.putSerializable("conversation", wnConversation);
+                    Intent chat = new Intent(getApplicationContext(), WnMessageDetailActivity.class);
                     chat.putExtra("INFO", args);
                     chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
