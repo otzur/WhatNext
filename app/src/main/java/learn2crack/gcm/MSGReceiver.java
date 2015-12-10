@@ -45,7 +45,7 @@ public class MSGReceiver  extends WakefulBroadcastReceiver {
         chatDataSource.open();
         chatDataSource.insert(chatText, fromu, conversation.getRowId());
         chatDataSource.close();
-        extras.putString("conversation_guid", Long.toString(conversation.getRowId()));
+        extras.putString("conversation_guid", conversation.getConversation_guid());
         return extras;
     }
 

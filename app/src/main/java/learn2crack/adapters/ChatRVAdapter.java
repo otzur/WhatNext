@@ -30,6 +30,8 @@ public class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatMessag
 
     List<WnChatMessage> chatMessages;
     String myPhone;
+    //RecyclerView RV= null;
+
     public ChatRVAdapter(List<WnChatMessage> chatMessages, String myPhone) {
         this.chatMessages = chatMessages;
         this.myPhone = myPhone;
@@ -38,6 +40,8 @@ public class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatMessag
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
+        //RV = recyclerView;
+        //RV.setStackFromEnd(true);
     }
 
     @Override
@@ -54,7 +58,6 @@ public class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatMessag
         setAlignment(chatMessageViewHolder, chatMessage.getIsme());
         chatMessageViewHolder.txtMessage.setText(chatMessage.getChat_text());
         chatMessageViewHolder.txtInfo.setText(chatMessage.getDelivery_date());
-
     }
 
     private void setAlignment(ChatMessageViewHolder chatMessageViewHolder, boolean isMe) {
@@ -95,6 +98,10 @@ public class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatMessag
             layoutParams.gravity = Gravity.LEFT;
             chatMessageViewHolder.txtInfo.setLayoutParams(layoutParams);
         }
+        //if(RV != null){
+        //    RV.setVerticalScrollbarPosition(0);
+        //    RV.scrollToPosition(chatMessages.size()-1);
+        //}
     }
 
     @Override

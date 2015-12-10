@@ -45,7 +45,7 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="learn2crack.gcm.MSGService" />
+        <service android:name="learn2crack.gcm.MSGService" android:exported="true" />
 
         <activity
             android:name="learn2crack.activities.MainActivity"

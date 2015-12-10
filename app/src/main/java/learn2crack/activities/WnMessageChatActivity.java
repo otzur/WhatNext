@@ -115,16 +115,19 @@ public class WnMessageChatActivity extends AppCompatActivity {
                 if (TextUtils.isEmpty(messageText)) {
                     return;
                 }
-                WnChatMessage chatMessage = ObjectManager.saveChatMessage(getApplicationContext(),wnConversation,
+                WnChatMessage chatMessage = ObjectManager.saveChatMessage(getApplicationContext(), wnConversation,
                         messageText, myPhone);
                 chatMessage.setMe(true);
-                chatMessages.add(chatMessages.size(),chatMessage);
+                chatMessages.add(chatMessages.size(), chatMessage);
                 adapter.notifyDataSetChanged();
                 new Send(messageText).execute();
                 chatEditText.setText("");
+                rv.scrollToPosition(adapter.getItemCount() - 1);
             }
         });
-
+        if(rv.getVerticalScrollbarPosition() != adapter.getItemCount()-1){
+            refreshChat();
+        }
     }
 
     @Override
@@ -147,8 +150,13 @@ public class WnMessageChatActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        IntentFilter filters = new IntentFilter("wn_chat_receiver");
+        filters.addAction("wn_reveal_receiver");
         LocalBroadcastManager.getInstance(this).registerReceiver(
-                wnChatMessageReceiver, new IntentFilter("wn_chat_receiver"));
+                wnChatMessageReceiver, filters);
+        if(adapter != null && rv != null) {
+            rv.scrollToPosition(adapter.getItemCount() - 1);
+        }
     }
 
     @Override
@@ -160,13 +168,20 @@ public class WnMessageChatActivity extends AppCompatActivity {
     private BroadcastReceiver wnChatMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
             Bundle extra = intent.getBundleExtra("INFO");
-            //Bundle currentBundle = getIntent().getBundleExtra("INFO");
             WnConversation newWnConversation = (WnConversation) extra.getSerializable("conversation");
             if(newWnConversation.getConversation_guid().equals(wnConversation.getConversation_guid())){
-                initializeData();
-                adapter = new ChatRVAdapter(chatMessages, myPhone);
-                rv.setAdapter(adapter);
+                if(action.equals("wn_chat_receiver")) {
+                    initializeData();
+                    adapter = new ChatRVAdapter(chatMessages, myPhone);
+                    rv.setAdapter(adapter);
+                    rv.scrollToPosition(adapter.getItemCount() - 1);
+                }
+                else {
+                    // handle reveal for this wn conversation
+                    Toast.makeText(context, "reveal request received", Toast.LENGTH_LONG);
+                }
             }
         }
     };
@@ -175,6 +190,7 @@ public class WnMessageChatActivity extends AppCompatActivity {
         initializeData();
         adapter = new ChatRVAdapter(chatMessages, myPhone);
         rv.setAdapter(adapter);
+        rv.scrollToPosition(adapter.getItemCount()-1);
     }
 
     private void loadBackdrop() {
@@ -193,6 +209,9 @@ public class WnMessageChatActivity extends AppCompatActivity {
         int cursorCount = cursor.getCount();
         cursor.moveToFirst();
         //SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        if(chatMessages != null){
+            chatMessages.clear();
+        }
         for(int chatMessageID = 1 ; chatMessageID <= cursorCount ; chatMessageID++){
             WnChatMessage msg = new WnChatMessage();
             msg.setId(chatMessageID);
@@ -217,14 +236,14 @@ public class WnMessageChatActivity extends AppCompatActivity {
 
     private class Send extends AsyncTask<String, String, JSONObject> {
 
-        ChatDataSource dba=new ChatDataSource(getApplicationContext());//Create this object in onCreate() method
+        //ChatDataSource dba=new ChatDataSource(getApplicationContext());//Create this object in onCreate() method
         Bundle bundle;
 
 
         private String from;
 
         private WnMessageStatus status;
-        private String deliveryTime;
+        //private String deliveryTime;
         private String chatText;
 
         public Send(String message_text) {
@@ -265,9 +284,9 @@ public class WnMessageChatActivity extends AppCompatActivity {
 
             //MESSAGE SENDING
             JSONObject jObj = json.getJSONFromUrl("http://nodejs-whatnext.rhcloud.com/sendchat", params);
-            dba.open();
-            WnChatMessage temp= dba.insert(chatText, from, wnConversation.getRowId());// Insert record in your DB
-            dba.close();
+            //dba.open();
+            //WnChatMessage temp= dba.insert(chatText, from, wnConversation.getRowId());// Insert record in your DB
+            //dba.close();
             return jObj;
         }
         @Override

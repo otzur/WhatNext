@@ -17,6 +17,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -153,8 +154,10 @@ public class WnMessageDetailActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        IntentFilter filters = new IntentFilter("wn_message_receiver");
+        filters.addAction("wn_reveal_receiver");
         LocalBroadcastManager.getInstance(this).registerReceiver(
-                wnMessageReceiver, new IntentFilter("wn_message_receiver"));
+                wnMessageReceiver, filters);
     }
 
     @Override
@@ -166,12 +169,19 @@ public class WnMessageDetailActivity extends AppCompatActivity {
     private BroadcastReceiver wnMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
             Bundle bundle = intent.getBundleExtra("INFO");
             WnConversation newWnConversation = (WnConversation) bundle.getSerializable("conversation");
             if(newWnConversation != null){
                 if(wnConversation.getConversation_guid().equals(newWnConversation.getConversation_guid())){
-                    wnConversation = newWnConversation;
-                    refreshResults();
+                    if(action.equals("wn_message_receiver")) {
+                        wnConversation = newWnConversation;
+                        refreshResults();
+                    }
+                    else{
+                        //handle reveal action that refers for this wn conversation
+                        Toast.makeText(context, "reveal request received", Toast.LENGTH_LONG);
+                    }
                 }
             }
         }

@@ -63,9 +63,9 @@ public class MSGService extends IntentService {
 
                 if(!prefs.getString("CURRENT_ACTIVE","").equals(extras.getString("fromu"))) {
                     extras = extras.getBundle("INFO");
-                    wnConversation = ObjectManager.getConversationByGUID(getApplicationContext(), extras.getString("c_id"));
+                    wnConversation = ObjectManager.getConversationByGUID(getApplicationContext(), extras.getString("conversation_guid"));
                     if (wnConversation != null) {
-                        if (!status.equals(WnMessageStatus.CHAT)) {
+                        if (!status.equals(WnMessageStatus.CHAT) && !status.equals(WnMessageStatus.REVEAL)) {
                             WnMessage wnMessage = ObjectManager.createNewMessage(extras.getString("msg_id"), extras.getString("fromu"),
                                     extras.getString("selected_options"), status, 0);
                             //extras.getString("selected_options"), WnMessageStatus.valueOf(extras.getString("status")),0);
@@ -73,7 +73,12 @@ public class MSGService extends IntentService {
 
                             sendNotification(wnConversation);
                         } else {
-                            sendChatNotification(wnConversation);
+                            if (status.equals(WnMessageStatus.CHAT)) {
+                                sendChatNotification(wnConversation);
+                            }
+                            else{
+                                sendRevealNotification(wnConversation);
+                            }
                         }
                     }
                     Log.i("WN", "Received: " + extras.getString("msg_id"));
@@ -87,9 +92,10 @@ public class MSGService extends IntentService {
 
     private void sendNotification(WnConversation wnConversation) {
         Bundle args = new Bundle();
-        Intent chat = new Intent(this, WnMessageReceiveActivity.class);
+        Intent chat = null;
         switch (wnConversation.getStatus()) {
             case NEW:
+                chat = new Intent(this, WnMessageReceiveActivity.class);
                 wnConversation.setStatus(WnMessageStatus.RECEIVED);
                 wnConversation.getMessages().get(0).setStatus(WnMessageStatus.RECEIVED);
                 wnConversation.getMessages().get(0).setRowId(1);
@@ -98,13 +104,17 @@ public class MSGService extends IntentService {
             case RECEIVED:
             case RESULTS:
             case RESPONSE:
+                chat = new Intent(this, WnMessageDetailActivity.class);
                 args.putSerializable("conversation", wnConversation);
                 break;
             default:
                 Log.e("WN MSGService","failed to figure message status");
                 return;
         }
-
+        if(chat == null){
+            Log.e("WN","chat is not initialized");
+            return;
+        }
         chat.putExtra("INFO", args);
 
         Intent intent = new Intent("wn_message_receiver");
@@ -142,6 +152,27 @@ public class MSGService extends IntentService {
         notification.setTicker("New WN Chat Message!");
         notification.setSmallIcon(R.drawable.ic_discuss);
         Intent chat = new Intent(this, WnMessageChatActivity.class);
+        chat.putExtra("INFO", args);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 1000,
+                chat, PendingIntent.FLAG_CANCEL_CURRENT);
+        notification.setContentIntent(contentIntent);
+        notification.setAutoCancel(true);
+        manager =(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(0, notification.build());
+    }
+
+    private void sendRevealNotification(WnConversation conversation){
+        Bundle args = new Bundle();
+        args.putSerializable("conversation", conversation);
+        Intent intent = new Intent("wn_reveal_receiver");
+        intent.putExtra("INFO", args);
+        String name =  conversation.getContacts().get(0).getName();
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        notification = new NotificationCompat.Builder(this);
+        notification.setContentTitle("WN reveal from " + name);
+        notification.setTicker("New WN reveal Message!");
+        notification.setSmallIcon(R.drawable.ic_discuss);
+        Intent chat = new Intent(this, WnMessageDetailActivity.class);
         chat.putExtra("INFO", args);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 1000,
                 chat, PendingIntent.FLAG_CANCEL_CURRENT);

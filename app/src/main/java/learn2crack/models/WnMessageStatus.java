@@ -9,7 +9,8 @@ public enum WnMessageStatus {
     RECEIVED,
     SENT,
     RESPONSE,
-    CHAT, RESULTS
-
+    CHAT,
+    RESULTS,
+    REVEAL
 }
 

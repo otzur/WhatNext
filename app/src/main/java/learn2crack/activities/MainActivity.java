@@ -190,16 +190,18 @@ public class MainActivity extends AppCompatActivity implements
                         FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager());
 
                         switch (menuItem.getItemId()) {
-                            case R.id.nav_home: {
-                                fragmentAdapter.addFragment(contactListFragment, "User");
+                           /* case R.id.nav_home: {
+                                //fragmentAdapter.addFragment(contactListFragment, "User");
+                                //break;
+                                fragmentAdapter.addFragment(new ConversationFragment(), "Conversation List");
                                 break;
-                            }
+                            }*/
                             case R.id.nav_friends: {
                                 fragmentAdapter.addFragment(contactListFragment, "User");
                                 break;
                             }
 
-                            case R.id.nav_history: {
+                            /*case R.id.nav_history: {
                                 fragmentAdapter.addFragment(new HistoryFragment(), "Messages");
                                 break;
                             }
@@ -213,14 +215,14 @@ public class MainActivity extends AppCompatActivity implements
                                 fragmentAdapter.addFragment(new HistoryFragment2(), "History List");
                                 break;
                             }
-
+                            */
                             case R.id.nav_conversation:
                             {
                                 fragmentAdapter.addFragment(new ConversationFragment(), "Conversation List");
                                 break;
                             }
 
-                            case R.id.nav_cardview_example:
+                            /*case R.id.nav_cardview_example:
                             {
                                 fragmentAdapter.addFragment(new RecyclerViewActivity(), "Card View Example");
                                 break;
@@ -230,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements
                             {
                                 fragmentAdapter.addFragment(new EmptyFragment(), "Empty Example");
                                 break;
-                            }
+                            }*/
                             case R.id.nav_logout: {
                                 new Logout().execute();
                                 break;
