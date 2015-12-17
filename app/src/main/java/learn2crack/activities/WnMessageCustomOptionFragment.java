@@ -11,17 +11,18 @@ import android.widget.ArrayAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+import learn2crack.adapters.WnMessageCustomOptionArrayAdapter;
+import learn2crack.adapters.WnMessageRowOptionArrayAdapter;
 import learn2crack.bl.OptionSelectorManager;
 import learn2crack.models.WnMessageRowOption;
-import learn2crack.adapters.WnMessageRowOptionArrayAdapter;
 
 
 /**
  * Created by otzur on 6/3/2015.
  */
-public class WnMessageRowOptionFragment extends ListFragment {
+public class WnMessageCustomOptionFragment extends ListFragment {
 
-    private ArrayAdapter<WnMessageRowOption> adapter;
+    private WnMessageCustomOptionArrayAdapter adapter;
     private List<WnMessageRowOption> list;
     private int maxSelectedNumber = 0;
 
@@ -35,23 +36,11 @@ public class WnMessageRowOptionFragment extends ListFragment {
         Bundle bundle=getArguments();
         //here is your list array
         int numberOfOptions = bundle.getInt("numberOfOptions");
-
-        switch (numberOfOptions){
-            case 2:
-                maxSelectedNumber = 1;
-                break;
-            case 5:
-                maxSelectedNumber = 2;
-                break;
-            case 8:
-            default:
-                maxSelectedNumber = 3;
-        }
-
+        maxSelectedNumber = 1;
         // create an array of Strings, that will be put to our ListActivity
-        OptionSelectorManager optionSelectorManager = new OptionSelectorManager(numberOfOptions);
+        OptionSelectorManager optionSelectorManager = new OptionSelectorManager(-1); // -1 for custom options
         list  = optionSelectorManager.getList();
-        adapter = new WnMessageRowOptionArrayAdapter((android.app.Activity) inflater.getContext(), list, maxSelectedNumber);
+        adapter = new WnMessageCustomOptionArrayAdapter((android.app.Activity) inflater.getContext(), list, 1);
 
         setListAdapter(adapter);
 
@@ -68,5 +57,10 @@ public class WnMessageRowOptionFragment extends ListFragment {
                 selectedItems.add(String.valueOf(i) + " ");
         }
         return selectedItems.toString();
+    }
+
+    public void addOption(String option){
+        adapter.addOption(new WnMessageRowOption(option));
+        adapter.notifyDataSetChanged();
     }
 }

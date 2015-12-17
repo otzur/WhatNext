@@ -21,7 +21,12 @@ public class OptionSelectorManager {
     private List<WnMessageRowOption> list;
 
     public OptionSelectorManager(int numberOfOptions) {
-        createOptions(numberOfOptions);
+        if(numberOfOptions > 0) { //him and her
+            createOptions(numberOfOptions);
+        }
+        else{
+            createEmptyOptions();
+        }
     }
 
     public static int getNumberOfOptionsByTab(int tab){
@@ -40,9 +45,8 @@ public class OptionSelectorManager {
         }
         return numberOfOptions;
     }
+
     private List<WnMessageRowOption> createOptions(int numberOfOptions) {
-
-
         list = new ArrayList<>();
 
         switch (numberOfOptions)
@@ -75,17 +79,17 @@ public class OptionSelectorManager {
 
             }break;
         }
+        return list;
+    }
 
-        //list.add(get("Not Interesting"));
-        //list.add(get("Interesting"));
-        // Initially select one of the items
-        //list.get(1).setSelected(true);
+    private List<WnMessageRowOption> createEmptyOptions() {
+        list = new ArrayList<>();
+        //list.add(get("Press to add option"));
         return list;
     }
 
     private WnMessageRowOption get(String s) {
         return new WnMessageRowOption(s);
-
 
     }
 

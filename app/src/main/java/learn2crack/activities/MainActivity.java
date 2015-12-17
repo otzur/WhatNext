@@ -265,8 +265,14 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        //phoneNumber="";
+        //alreadyShowedNumbers = false;
         return true;
     }
+
+    boolean alreadyShowedNumbers = false;
+    String phoneNumber = ""; // for context menu
+
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
@@ -280,43 +286,43 @@ public class MainActivity extends AppCompatActivity implements
             return;
         }
         try {
-            SharedPreferences prefs = context.getSharedPreferences("Chat", 0);
-            SharedPreferences.Editor edit = prefs.edit();
-            edit.putString("CONTACT_HAS_WN", "1");
-            edit.commit();
-            int numOfPhones = contact.getPhonesSize();//cursor2.getCount();
-            String phoneNumber = "";
-            if(numOfPhones>1) {
-                LongSparseArray<String> phones= contact.getPhones();
-                int phonesSize = phones.size();
-                for(int i = 0 ; i < phonesSize ; i++){
-                    menu.add(phones.valueAt(i));
+            if(!alreadyShowedNumbers) {
+                SharedPreferences prefs = context.getSharedPreferences("Chat", 0);
+                SharedPreferences.Editor edit = prefs.edit();
+                edit.putString("CONTACT_HAS_WN", "1");
+                edit.commit();
+                int numOfPhones = contact.getPhonesSize();//cursor2.getCount();
+                if (numOfPhones > 1) {
+                    LongSparseArray<String> phones = contact.getPhones();
+                    int phonesSize = phones.size();
+                    for (int i = 0; i < phonesSize; i++) {
+                        menu.add(phones.valueAt(i));
+                    }
+                    phoneNumber = contact.getPhones().valueAt(0);
+                } else {
+                    if (numOfPhones >= 1) {
+                        phoneNumber = contact.getPhones().valueAt(0);
+                    }
+                    menu.add("Him and Her");
+                    menu.add("Custom");
+                    alreadyShowedNumbers = true;
                 }
-                phoneNumber = contact.getPhones().valueAt(0);
-            }
-            if(numOfPhones >= 1){
-                phoneNumber = contact.getPhones().valueAt(0);
+            } else {
+                menu.add("Him and Her");
+                menu.add("Custom");
             }
 
-            //String mobno = phone;
+            /*
             String type = "HimAndHer";
-            //WnMessageStatus status = WnMessageStatus.NEW;
-
             Log.i(TAG, "Start new activity");
             WnConversation wnConversation =  ObjectManager.createNewConversation(MainActivity.getAppContext(), phoneNumber, type);
             Bundle args = new Bundle();
             args.putSerializable("conversation", wnConversation);
-
-
-//            Bundle args = new Bundle();
-//            args.putString("mobno", phoneNumber);
-//            args.putString("type", "HimAndHer");
-//            args.putString("status", "New");
             Intent chat = new Intent(context, WnMessageNewActivity.class);
             chat.putExtra("INFO", args);
             chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-            context.startActivity(chat);
+            context.startActivity(chat);*/
         }
         catch (Exception ex) {
             Log.e(TAG, ex.getLocalizedMessage());
@@ -325,38 +331,45 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        SharedPreferences prefs = context.getSharedPreferences("Chat", 0);
-        //String hasWN = prefs.getString("CONTACT_HAS_WN", "0");
-        String phone = item.getTitle().toString();
-        //if(hasWN.equals("1")) {
-
-
-        String mobno = phone;
-        String type = "HimAndHer";
-        //WnMessageStatus status = WnMessageStatus.NEW;
-        WnConversation wnConversation =  ObjectManager.createNewConversation( MainActivity.getAppContext(), mobno, type);
+        //SharedPreferences prefs = context.getSharedPreferences("Chat", 0);
+        String type="Custom";
+        Class targerClass = null;
+        if(phoneNumber.equals("")) {
+            phoneNumber = item.getTitle().toString();
+            View temp = item.getActionView();
+            registerForContextMenu(temp);
+            //temp.setTag(R.id.TAG_CONTACT_ID, v.getTag(R.id.TAG_CONTACT_ID));
+            //temp.setTag(R.id.TAG_CONTACT, v.getTag(R.id.TAG_CONTACT));
+            temp.showContextMenu();
+            unregisterForContextMenu(temp);
+            return true;
+            //String phone = item.getTitle().toString();
+            //String mobno = phone;
+        } else {
+            switch (item.getTitle().toString()){
+                case "Him and Her":
+                    type = "HimAndHer";
+                    targerClass = WnMessageNewActivity.class;
+                    break;
+                case "Custom":
+                default:
+                    type = "Custom";
+                    targerClass = WnMessageCustomActivity.class;
+                    break;
+            }
+        }
+        //String type = "HimAndHer";
+        WnConversation wnConversation =  ObjectManager.createNewConversation( MainActivity.getAppContext(), phoneNumber, type);
         Bundle args = new Bundle();
         args.putSerializable("conversation", wnConversation);
 
-//            Bundle args = new Bundle();
-//            args.putString("mobno", phone);
-//            args.putString("type", "HimAndHer");
-//            args.putString("status", "New");
-            Intent chat = new Intent(context, WnMessageNewActivity.class);
-            chat.putExtra("INFO", args);
-            chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-            context.startActivity(chat);
-        /*}
-        else{
-            Intent intentt = new Intent(Intent.ACTION_VIEW);
-            intentt.setData(Uri.parse("sms:"));
-            intentt.setType("vnd.android-dir/mms-sms");
-            intentt.putExtra(Intent.EXTRA_TEXT, "invitation to use wn");
-            intentt.putExtra("address",  phone);
-            intentt.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intentt);
-        }*/
+        Intent chat = new Intent(context, targerClass);
+        chat.putExtra("INFO", args);
+        chat.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        alreadyShowedNumbers = false;
+        phoneNumber = "";
+        context.startActivity(chat);
         return true;
     }
 

@@ -1,10 +1,8 @@
 package learn2crack.activities;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -17,8 +15,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -32,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import learn2crack.bl.ObjectManager;
-import learn2crack.bl.OptionSelectorManager;
 import learn2crack.chat.R;
 import learn2crack.cheese.Cheeses;
 import learn2crack.models.WnConversation;
@@ -44,7 +41,7 @@ import learn2crack.utilities.JSONParser;
  * Created by otzur on 6/18/2015.
  */
 
-public class WnMessageNewActivity extends AppCompatActivity {
+public class WnMessageCustomActivity extends AppCompatActivity {
 
 
     Bundle bundle;
@@ -52,20 +49,21 @@ public class WnMessageNewActivity extends AppCompatActivity {
     WnConversation wnConversation;
     List<NameValuePair> params;
     static final String TAG = "WN";
+    EditText optionTextBox;
+    SectionPagerAdapter sectionPagerAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.message_new_layout);
+        setContentView(R.layout.message_custom_layout);
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        optionTextBox = (EditText) findViewById(R.id.option_text);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        TextView tvUserName = (TextView)findViewById(R.id.userName);
 
         prefs = getSharedPreferences("Chat", 0);
         bundle = getIntent().getBundleExtra("INFO");
@@ -74,12 +72,6 @@ public class WnMessageNewActivity extends AppCompatActivity {
             if (bundle.getSerializable("conversation") != null) {
 
                 wnConversation = (WnConversation) bundle.getSerializable("conversation");
-                //tvUserName.setText(wnConversation.getContacts().get(0).name);
-                //Log.i(TAG, "Inside new Activity");
-                //Log.i(TAG, "got conversation Serializable");
-                //Log.i(TAG, "status = " + wnConversation.getStatus());
-                //Log.i(TAG, "Conversation_guid = " + wnConversation.getConversation_guid());
-                //Log.i(TAG, "User name= " + wnConversation.getContacts().get(0).getName());
             }
             else
             {
@@ -93,9 +85,9 @@ public class WnMessageNewActivity extends AppCompatActivity {
             finish();
         }
 
-        viewPager.setAdapter(new SectionPagerAdapter(getSupportFragmentManager()));
+        sectionPagerAdapter = new SectionPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(sectionPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
-
         loadBackdrop();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabSend);
@@ -103,6 +95,23 @@ public class WnMessageNewActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 new Send(viewPager.getCurrentItem()).execute();
+            }
+        });
+
+        FloatingActionButton fabAddOption = (FloatingActionButton) findViewById(R.id.fabAdd);
+        fabAddOption.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(optionTextBox.getVisibility() != View.VISIBLE){
+                    optionTextBox.setVisibility(View.VISIBLE);
+                } else{
+                    String tempText = optionTextBox.getText().toString();
+                    if(!tempText.trim().equals("")){
+                        ((WnMessageCustomOptionFragment)sectionPagerAdapter.getItem(0)).addOption(tempText);
+                        optionTextBox.setText("");
+                        sectionPagerAdapter.notifyDataSetChanged();
+                    }
+                }
             }
         });
     }
@@ -123,12 +132,9 @@ public class WnMessageNewActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-        private void loadBackdrop() {
+    private void loadBackdrop() {
         final ImageView imageView = (ImageView) findViewById(R.id.backdrop);
         Glide.with(this).load(Cheeses.getRandomCheeseDrawable()).centerCrop().into(imageView);
-
-
-
     }
 
     private class Send extends AsyncTask<String, String, JSONObject> {
@@ -138,30 +144,22 @@ public class WnMessageNewActivity extends AppCompatActivity {
 
 
         public Send(int currentItem) {
-
             from =  prefs.getString("REG_FROM", "");
             Log.i(TAG,"from user   = " + from);
-
             Log.i(TAG,"Tab selected  = " + currentItem);
-            //selectedTab = currentItem;
             wnConversation.setTab(currentItem);
-
         }
 
         @Override
         protected JSONObject doInBackground(String... args) {
             JSONParser json = new JSONParser();
-            //UUID messageGuid = UUID.randomUUID();
-            //UUID convGuid = UUID.randomUUID();
-            //wnConversation.setConversation_guid(convGuid.toString());
 
-            WnMessageRowOptionFragment of = getVisibleFragment(wnConversation.getTab());
+            WnMessageCustomOptionFragment of = getVisibleFragment(-1);
             selected_options = of.getSelectedOptions();
             Log.i(TAG, "selected_options = " + of.getSelectedOptions());
 
 
             WnMessage wnMessage = ObjectManager.createNewMessage( wnConversation.getContacts().get(0).getPhoneNumber(), selected_options, WnMessageStatus.SENT, 1) ;
-            //wnMessage.setConversation_rowId(convGuid.toString());
 
             wnConversation.addMessage(wnMessage);
 
@@ -221,19 +219,21 @@ public class WnMessageNewActivity extends AppCompatActivity {
 
         }
 
-        private WnMessageRowOptionFragment getVisibleFragment(int index){
+        private WnMessageCustomOptionFragment getVisibleFragment(int index){
             FragmentManager fragmentManager = getSupportFragmentManager();
             List<Fragment> fragments = fragmentManager.getFragments();
             if(fragments.isEmpty())
                 return null;
             else
             {
-                return (WnMessageRowOptionFragment)fragments.get(index + 1);
+                return (WnMessageCustomOptionFragment)fragments.get(index + 1);
             }
         }
     }
 
     public class SectionPagerAdapter extends FragmentPagerAdapter {
+
+        WnMessageCustomOptionFragment mainFragment;
 
         public SectionPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -241,43 +241,26 @@ public class WnMessageNewActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-
-            WnMessageRowOptionFragment wnMessageRowOptionFragment = new WnMessageRowOptionFragment();
+            if(mainFragment!=null)
+                return mainFragment;
+            mainFragment = new WnMessageCustomOptionFragment();
             Bundle bundl = new Bundle();
-            switch (position) {
-                case 0: {
-                    bundl.putInt("numberOfOptions", OptionSelectorManager.getNumberOfOptionsByTab(0));
-
-                }break;
-                case 1: {
-                    bundl.putInt("numberOfOptions", OptionSelectorManager.getNumberOfOptionsByTab(1));
-                };break;
-                case 2:
-                default:
-                {
-                    bundl.putInt("numberOfOptions", OptionSelectorManager.getNumberOfOptionsByTab(2));
-
-                }break;
-            }
-            wnMessageRowOptionFragment.setArguments(bundl);
-            return wnMessageRowOptionFragment;
+            bundl.putInt("numberOfOptions", -1);
+            mainFragment.setArguments(bundl);
+            return mainFragment;
         }
 
         @Override
         public int getCount() {
-            return 3;
+            return 1;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "Coin";
-                case 1:
-                    return "Roulette";
-                case 2:
                 default:
-                    return "Table";
+                    return "Custom";
             }
         }
     }

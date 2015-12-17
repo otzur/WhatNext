@@ -132,6 +132,9 @@
         <activity android:name="learn2crack.activities.WnMessageChatActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"/>
+        <activity android:name="learn2crack.activities.WnMessageCustomActivity"
+            android:label="What Next"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
